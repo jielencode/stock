@@ -1,0 +1,34 @@
+package com.ufgov.zc.server.sf.dao.ibatis;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+
+import com.ufgov.zc.common.sf.model.SfChargeDetail;
+import com.ufgov.zc.server.sf.dao.SfChargeDetailMapper;
+
+public class SfChargeDetailMapperImp extends SqlMapClientDaoSupport implements SfChargeDetailMapper {
+
+  
+  public int deleteByPrimaryKey(BigDecimal chargeId) {
+    // TODO Auto-generated method stub
+    return getSqlMapClientTemplate().delete("com.ufgov.zc.server.sf.dao.SfChargeDetailMapper.deleteByPrimaryKey", chargeId);
+    
+  }
+
+  
+  public int insert(SfChargeDetail record) {
+    // TODO Auto-generated method stub
+    getSqlMapClientTemplate().insert("com.ufgov.zc.server.sf.dao.SfChargeDetailMapper.insert", record);
+    return 1;
+  }
+
+  
+  public List selectByPrimaryKey(BigDecimal chargeId) {
+    // TODO Auto-generated method stub
+    return getSqlMapClientTemplate().queryForList("com.ufgov.zc.server.sf.dao.SfChargeDetailMapper.selectByPrimaryKey", chargeId);
+    
+  }
+
+}
