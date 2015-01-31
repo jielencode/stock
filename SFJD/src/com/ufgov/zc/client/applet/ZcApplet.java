@@ -177,7 +177,7 @@ public class ZcApplet extends JBaseApplet {
     requestMeta.setEmpCode(empCode);
     requestMeta.setEmpName(empName);
     requestMeta.setUrlMap(urlMap);
-    System.out.println("---------set requestMeta=empCode" + requestMeta.getEmpCode());
+    //    System.out.println("---------set requestMeta=empCode" + requestMeta.getEmpCode());
 
     IBaseDataServiceDelegate baseDataServiceDelegate = (IBaseDataServiceDelegate) ServiceFactory.create(IBaseDataServiceDelegate.class,
       "baseDataServiceDelegate");
@@ -357,8 +357,8 @@ public class ZcApplet extends JBaseApplet {
   public String getParameter(String name) {
     if ("lookAndFeel".equals(name)) {
       String className = "com.ufgov.smartclient.plaf.GrayLookAndFeel";
-      String v = lookAndFeelMap.get(AsOptionMeta.getOptVal(SystemOptionConstants.OPT_SYS_LOOK_AND_FEEL));
-      if (v != null) {
+      String v = AsOptionMeta.getOptVal(SystemOptionConstants.OPT_SYS_LOOK_AND_FEEL);
+      if (v != null && v.trim().length()>10) {
         className = v;
       }
       return className;
