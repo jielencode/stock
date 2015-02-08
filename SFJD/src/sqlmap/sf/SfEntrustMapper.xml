@@ -10,23 +10,25 @@
     <result column="WT_DATE" jdbcType="DATE" property="wtDate" />
     <result column="SJR" jdbcType="VARCHAR" property="sjr" />
     <result column="SJR_TEL" jdbcType="VARCHAR" property="sjrTel" />
+    <result column="SJR_ADDRESS" jdbcType="VARCHAR" property="sjrAddress" />
     <result column="SJR_ZJ_TYPE" jdbcType="VARCHAR" property="sjrZjType" />
     <result column="SJR_ZJ_CODE" jdbcType="VARCHAR" property="sjrZjCode" />
     <result column="JD_ORG" jdbcType="VARCHAR" property="jdOrg" />
     <result column="JD_FZR" jdbcType="VARCHAR" property="jdFzr" />
-    <result column="JD_HISTORY" jdbcType="VARCHAR" property="jdHistory" />
-    <result column="JD_REQUIRE" jdbcType="VARCHAR" property="jdRequire" />
+    <result column="JD_FHR" jdbcType="VARCHAR" property="jdFhr" />
+    <result column="JD_HISTORY" jdbcType="CLOB" property="jdHistory"  typeHandler="org.springframework.orm.ibatis.support.ClobStringTypeHandler"/>
+    <result column="JD_REQUIRE" jdbcType="CLOB" property="jdRequire"  typeHandler="org.springframework.orm.ibatis.support.ClobStringTypeHandler"/>
     <result column="JD_COMPANY" jdbcType="VARCHAR" property="jdCompany" />
     <result column="REMARK" jdbcType="VARCHAR" property="remark" />
     <result column="IS_CXJD" jdbcType="VARCHAR" property="isCxjd" />
     <result column="WT_ID_PARENT" jdbcType="DECIMAL" property="wtIdParent" />
-    <result column="BRIEF" jdbcType="VARCHAR" property="brief" />
+    <result column="BRIEF" jdbcType="CLOB" property="brief" typeHandler="org.springframework.orm.ibatis.support.ClobStringTypeHandler"/>
     <result column="INPUTOR" jdbcType="VARCHAR" property="inputor" />
     <result column="INPUT_DATE" jdbcType="DATE" property="inputDate" />
     <result column="ACCEPTOR" jdbcType="VARCHAR" property="acceptor" />
     <result column="ACCEPT_DATE" jdbcType="DATE" property="acceptDate" />
     <result column="IS_ACCEPT" jdbcType="VARCHAR" property="isAccept" />
-    <result column="NOT_ACCEPT_REASON" jdbcType="VARCHAR" property="notAcceptReason" />
+    <result column="NOT_ACCEPT_REASON" jdbcType="CLOB" property="notAcceptReason" typeHandler="org.springframework.orm.ibatis.support.ClobStringTypeHandler"/>
     <result column="ND" jdbcType="DECIMAL" property="nd" />
     <!-- 鉴定对象属性 -->
     <result column="JD_TARGET_ID" jdbcType="DECIMAL" property="jdTarget.jdTargetId" />
@@ -50,13 +52,16 @@
     <result column="MAJOR_CODE" jdbcType="VARCHAR" property="majorCode" />
     
 	<result column="PROCESS_INST_ID" jdbcType="DECIMAL" property="processInstId" />
+    <result column="JD_DOC_SEND_TYPE" jdbcType="VARCHAR" property="jdDocSendType" />
+    <result column="JD_DOC_SEND_TYPE_FZ" jdbcType="VARCHAR" property="jdDocSendTypeFz" />
+    <result column="JD_CHARGE" jdbcType="DECIMAL" property="jdCharge" />
   </resultMap>
   
   <sql id="Base_Column_List">
     ENTRUST_ID, CODE, NAME, STATUS, ENTRUSTOR_ID, WT_DATE, SJR, SJR_TEL, SJR_ZJ_TYPE, 
     SJR_ZJ_CODE, MAJOR_CODE, JD_ORG, JD_FZR, JD_HISTORY, JD_REQUIRE, JD_COMPANY, REMARK, 
     IS_CXJD, WT_ID_PARENT, BRIEF, INPUTOR, INPUT_DATE, ACCEPTOR, ACCEPT_DATE, IS_ACCEPT, 
-    NOT_ACCEPT_REASON, ND, JD_TARGET_ID,PROCESS_INST_ID
+    NOT_ACCEPT_REASON, ND, JD_TARGET_ID,PROCESS_INST_ID,JD_FHR,SJR_ADDRESS,JD_DOC_SEND_TYPE,JD_DOC_SEND_TYPE_FZ,JD_CHARGE
   </sql>
   <select id="selectByPrimaryKey" parameterClass="java.math.BigDecimal" resultMap="BaseResultMap">
    select SF_ENTRUST.ENTRUST_ID,
@@ -68,8 +73,10 @@
        SF_ENTRUST.SJR_TEL,
        SF_ENTRUST.SJR_ZJ_TYPE,
        SF_ENTRUST.SJR_ZJ_CODE,
+       SF_ENTRUST.SJR_ADDRESS,
        SF_ENTRUST.JD_ORG,
        SF_ENTRUST.JD_FZR,
+       SF_ENTRUST.JD_FHR,
        SF_ENTRUST.JD_HISTORY,
        SF_ENTRUST.JD_REQUIRE,
        SF_ENTRUST.JD_COMPANY,
@@ -86,6 +93,9 @@
        SF_ENTRUST.ND,
        SF_ENTRUST.PROCESS_INST_ID,
        SF_ENTRUST.MAJOR_CODE,
+       SF_ENTRUST.JD_DOC_SEND_TYPE,
+       SF_ENTRUST.JD_DOC_SEND_TYPE_FZ,
+       SF_ENTRUST.JD_CHARGE,
        SF_ENTRUSTOR.ENTRUSTOR_ID,
        SF_ENTRUSTOR.CODE            AS ENTRUSTOR_CODE,
        SF_ENTRUSTOR.NAME            AS ENTRUSTOR_NAME,
@@ -117,8 +127,10 @@
        SF_ENTRUST.SJR_TEL,
        SF_ENTRUST.SJR_ZJ_TYPE,
        SF_ENTRUST.SJR_ZJ_CODE,
+       SF_ENTRUST.SJR_ADDRESS,
        SF_ENTRUST.JD_ORG,
        SF_ENTRUST.JD_FZR,
+       SF_ENTRUST.JD_FHR,
        SF_ENTRUST.JD_HISTORY,
        SF_ENTRUST.JD_REQUIRE,
        SF_ENTRUST.JD_COMPANY,
@@ -135,6 +147,9 @@
        SF_ENTRUST.ND,
        SF_ENTRUST.PROCESS_INST_ID,
        SF_ENTRUST.MAJOR_CODE,
+       SF_ENTRUST.JD_DOC_SEND_TYPE,
+       SF_ENTRUST.JD_DOC_SEND_TYPE_FZ,
+       SF_ENTRUST.JD_CHARGE,
        SF_ENTRUSTOR.ENTRUSTOR_ID,
        SF_ENTRUSTOR.CODE            AS ENTRUSTOR_CODE,
        SF_ENTRUSTOR.NAME            AS ENTRUSTOR_NAME,
@@ -175,6 +190,11 @@
 		</isEqual>	 		
 		<isEqual property="dattr1" compareValue="SF_DOSSIER">  <!--鉴定文书卷宗目录部件选择委托sql  -->	
 			not exists(select * from SF_DOSSIER t where t.entrust_id=SF_ENTRUST.ENTRUST_ID)					
+		</isEqual>		 		
+		<isEqual property="dattr1" compareValue="SF_ENTRUST">  <!--鉴定委托部件选择历史委托sql  -->			
+			<isNotNull  property="sfId">
+				SF_ENTRUST.ENTRUST_ID!=#sfId:DECIMAL#	
+			</isNotNull>				
 		</isEqual>		
    </isNotNull>
    
@@ -227,17 +247,18 @@
       WT_ID_PARENT, BRIEF, INPUTOR, 
       INPUT_DATE, ACCEPTOR, ACCEPT_DATE, 
       IS_ACCEPT, NOT_ACCEPT_REASON, ND, 
-      JD_TARGET_ID,PROCESS_INST_ID)
+      JD_TARGET_ID,PROCESS_INST_ID,JD_FHR,
+      SJR_ADDRESS,JD_DOC_SEND_TYPE,JD_DOC_SEND_TYPE_FZ,JD_CHARGE)
     values (#entrustId:DECIMAL#, #code:VARCHAR#, #name:VARCHAR#, 
       #status:VARCHAR#, #entrustorId:DECIMAL#, #wtDate:DATE#, 
       #sjr:VARCHAR#, #sjrTel:VARCHAR#, #sjrZjType:VARCHAR#, 
       #sjrZjCode:VARCHAR#, #majorCode:VARCHAR#, #jdOrg:VARCHAR#, 
-      #jdFzr:VARCHAR#, #jdHistory:VARCHAR#, #jdRequire:VARCHAR#, 
-      #jdCompany:VARCHAR#, #remark:VARCHAR#, #isCxjd:VARCHAR#, 
-      #wtIdParent:DECIMAL#, #brief:VARCHAR#, #inputor:VARCHAR#, 
+      #jdFzr:VARCHAR#, #jdHistory,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#, #jdRequire,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#, 
+      #jdCompany:VARCHAR#, #remark,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#, #isCxjd:VARCHAR#, 
+      #wtIdParent:DECIMAL#, #brief,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#, #inputor:VARCHAR#, 
       #inputDate:DATE#, #acceptor:VARCHAR#, #acceptDate:DATE#, 
-      #isAccept:VARCHAR#, #notAcceptReason:VARCHAR#, #nd:DECIMAL#, 
-      #jdTargetId:DECIMAL#,#processInstId:DECIMAL#)
+      #isAccept:VARCHAR#, #notAcceptReason,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#, #nd:DECIMAL#, 
+      #jdTargetId:DECIMAL#,#processInstId:DECIMAL#,#jdFhr:VARCHAR#,#sjrAddress:VARCHAR#,#jdDocSendType:VARCHAR#,#jdDocSendTypeFz:VARCHAR#,#jdCharge:DECIMAL#)
   </insert>
   <update id="updateByPrimaryKey" parameterClass="com.ufgov.zc.common.sf.model.SfEntrust">
     update SF_ENTRUST
@@ -250,13 +271,14 @@
       SJR_TEL = #sjrTel:VARCHAR#,
       SJR_ZJ_TYPE = #sjrZjType:VARCHAR#,
       SJR_ZJ_CODE = #sjrZjCode:VARCHAR#,
+      SJR_ADDRESS=#sjrAddress:VARCHAR#,
       MAJOR_CODE = #majorCode:VARCHAR#,
       JD_ORG = #jdOrg:VARCHAR#,
       JD_FZR = #jdFzr:VARCHAR#,
-      JD_HISTORY = #jdHistory:VARCHAR#,
-      JD_REQUIRE = #jdRequire:VARCHAR#,
+      JD_HISTORY = #jdHistory,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#,
+      JD_REQUIRE = #jdRequire,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#,
       JD_COMPANY = #jdCompany:VARCHAR#,
-      REMARK = #remark:VARCHAR#,
+      REMARK = #remark,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#,
       IS_CXJD = #isCxjd:VARCHAR#,
       WT_ID_PARENT = #wtIdParent:DECIMAL#,
       BRIEF = #brief:VARCHAR#,
@@ -265,10 +287,14 @@
       ACCEPTOR = #acceptor:VARCHAR#,
       ACCEPT_DATE = #acceptDate:DATE#,
       IS_ACCEPT = #isAccept:VARCHAR#,
-      NOT_ACCEPT_REASON = #notAcceptReason:VARCHAR#,
+      NOT_ACCEPT_REASON = #notAcceptReason,handler=org.springframework.orm.ibatis.support.ClobStringTypeHandler#,
       ND = #nd:DECIMAL#,
       JD_TARGET_ID = #jdTargetId:DECIMAL#,
-      PROCESS_INST_ID=#processInstId:DECIMAL#
+      PROCESS_INST_ID=#processInstId:DECIMAL#,
+      JD_FHR=#jdFhr:VARCHAR#,
+      JD_DOC_SEND_TYPE=#jdDocSendType:VARCHAR#,
+      JD_DOC_SEND_TYPE_FZ=#jdDocSendTypeFz:VARCHAR#,
+      JD_CHARGE=#jdCharge:DECIMAL#
     where ENTRUST_ID = #entrustId:DECIMAL#
   </update>
   

@@ -277,5 +277,7 @@
 	<sqlMap resource="sqlmap/sf/SfJdDocAuditDetailMapper.xml"/>
 	<sqlMap resource="sqlmap/sf/SfDossierMapper.xml"/>
 	<sqlMap resource="sqlmap/sf/SfAssistFileMapper.xml"/>
+	<sqlMap resource="sqlmap/sf/SfXysxTypeMapper.xml"/>
+	<sqlMap resource="sqlmap/sf/SfXysxMapper.xml"/>
      
 </sqlMapConfig>

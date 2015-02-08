@@ -126,4 +126,11 @@
       JDR=#jdr#
     where JD_RESULT_ID = #jdResultId:DECIMAL#
   </update>
+  
+  <select id="selectByEntrustId" parameterClass="java.math.BigDecimal" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from SF_JD_RESULT
+    where ENTRUST_ID = #entrustId:DECIMAL#
+  </select>
 </sqlMap>
