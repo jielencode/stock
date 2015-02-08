@@ -199,16 +199,16 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
 
     SfCharge charge = (SfCharge) listCursor.getCurrentObject();
 
-    if (charge != null ) {//列表页面双击进入
-      if(charge.getChargeId() != null){
+    if (charge != null) {//列表页面双击进入
+      if (charge.getChargeId() != null) {
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_BROWSE;
         charge = sfChargeServiceDelegate.selectByPrimaryKey(charge.getChargeId(), this.requestMeta);
         listCursor.setCurrentObject(charge);
-        this.setEditingObject(charge);        
-      }else if(charge.getEntrustId()!=null){//图形界面进来的新增，已经确定了entrust
+        this.setEditingObject(charge);
+      } else if (charge.getEntrustId() != null) {//图形界面进来的新增，已经确定了entrust
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
         setDefaultValue(charge);
-        this.setEditingObject(charge);                
+        this.setEditingObject(charge);
       }
     } else {//新增按钮进入
       this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
@@ -246,9 +246,9 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
   private void addTableLisenter() {
     // TODO Auto-generated method stub
 
-    final JPageableFixedTable table=detailTablePanel.getTable();    
+    final JPageableFixedTable table = detailTablePanel.getTable();
     final BeanTableModel model = (BeanTableModel) (table.getModel());
-    
+
     model.addTableModelListener(new TableModelListener() {
 
       public void tableChanged(TableModelEvent e) {
@@ -277,7 +277,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
               }
               bill.setTotalPrice(num);
               setEditingObject(bill);
-            }else if(SfChargeDetail.COL_TOTAL_PRICE.equals(model.getColumnIdentifier(e.getColumn()))){
+            } else if (SfChargeDetail.COL_TOTAL_PRICE.equals(model.getColumnIdentifier(e.getColumn()))) {
 
               BigDecimal num = BigDecimal.ZERO;
               for (int i = 0; i < table.getRowCount(); i++) {
@@ -288,7 +288,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
               }
               bill.setTotalPrice(num);
               setEditingObject(bill);
-              
+
             }
           }
         }
@@ -352,8 +352,9 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
 
       for (AbstractFieldEditor editor : fieldEditors) {
         // 工作流中定义可编辑的字段
-//        System.out.println(editor.getFieldName());
-        if(editor instanceof NewLineFieldEditor)continue;
+        //        System.out.println(editor.getFieldName());
+        if (editor instanceof NewLineFieldEditor)
+          continue;
         if (wfCanEditFieldMap != null && wfCanEditFieldMap.containsKey(Utils.getDBColNameByFieldName(editor.getEditObject(), editor.getFieldName()))) {
           isEdit = true;
           this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
@@ -362,23 +363,21 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
           editor.setEnabled(false);
         }
       }
-      
+
       //工作流中该节点选中了保存按钮可用，则当前状态当前人可用编辑
       if (saveButton.isVisible() && saveButton.isEnabled()) {
         isEdit = true;
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
       }
-      
+
     } else {
-      
+
       for (AbstractFieldEditor editor : fieldEditors) {
         if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
-          if ("status".equals(editor.getFieldName())
-            ||"totalPrice".equals(editor.getFieldName())
-            ||"nd".equals(editor.getFieldName())) {
+          if ("status".equals(editor.getFieldName()) || "totalPrice".equals(editor.getFieldName()) || "nd".equals(editor.getFieldName())) {
             editor.setEnabled(false);
           } else {
-            editor.setEnabled(true);          
+            editor.setEnabled(true);
           }
           isEdit = true;
         } else {
@@ -544,32 +543,32 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
     toolBar.setCompoId(getCompoId());
 
     toolBar.add(addButton);
-    
+
     toolBar.add(editButton);
 
     toolBar.add(saveButton);
 
-        toolBar.add(sendButton);
+    toolBar.add(sendButton);
 
     //    toolBar.add(saveAndSendButton);
 
-        toolBar.add(suggestPassButton);
+    toolBar.add(suggestPassButton);
 
     //    toolBar.add(sendGkButton);
 
-        toolBar.add(unAuditButton);
+    toolBar.add(unAuditButton);
 
-        toolBar.add(unTreadButton);
+    toolBar.add(unTreadButton);
 
-        toolBar.add(callbackButton);
+    toolBar.add(callbackButton);
 
     toolBar.add(deleteButton);
 
     //    toolBar.add(importButton);
 
-        toolBar.add(printButton);
+    toolBar.add(printButton);
 
-        toolBar.add(traceButton);
+    toolBar.add(traceButton);
 
     //    toolBar.add(previousButton);
 
@@ -647,8 +646,8 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
 
       }
 
-    });  
-  
+    });
+
     printButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -664,31 +663,31 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
         doSend();
       }
     });
-    
+
     suggestPassButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doSuggestPass();
       }
     });
-    
+
     callbackButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doCallback();
       }
     });
-    
+
     unTreadButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doUnTread();
       }
     });
-    
+
     unAuditButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doUnAudit();
       }
     });
-    
+
     traceButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doTrace();
@@ -700,7 +699,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
     // TODO Auto-generated method stub
     listCursor.setCurrentObject(null);
     refreshData();
-    
+
   }
 
   protected void doPrevious() {
@@ -831,7 +830,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
   private void updateDataFlowDialog() {
     // TODO Auto-generated method stub
     SfCharge charge = (SfCharge) this.listCursor.getCurrentObject();
-    if(listPanel!=null && listPanel.getParent() instanceof JClosableTabbedPane){
+    if (listPanel != null && listPanel.getParent() instanceof JClosableTabbedPane) {
       return;
     }
     if (parent instanceof SfChargeDialog) {//新增的，创建数据流界面
@@ -862,12 +861,12 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
       errorInfo.append("\n").append(mainValidateInfo.toString());
     }
     SfCharge charge = (SfCharge) this.listCursor.getCurrentObject();
-    if(charge.getTotalPrice()==null || charge.getTotalPrice().doubleValue()==0){
+    if (charge.getTotalPrice() == null || charge.getTotalPrice().doubleValue() == 0) {
       errorInfo.append("\n").append("没有填写费用.");
     }
-    for(int i=0;i<charge.getChargeDetaillst().size();i++){
-      SfChargeDetail d=(SfChargeDetail) charge.getChargeDetaillst().get(i);
-      if(d.getChargeStandardName()==null && (d.getRemark()==null||d.getRemark().trim().length()==0)){
+    for (int i = 0; i < charge.getChargeDetaillst().size(); i++) {
+      SfChargeDetail d = (SfChargeDetail) charge.getChargeDetaillst().get(i);
+      if (d.getChargeStandardName() == null && (d.getRemark() == null || d.getRemark().trim().length() == 0)) {
         errorInfo.append("\n").append("收费明细要指明").append(LangTransMeta.translate(SfChargeDetail.COL_CHARGE_STANDARD_NAME));
         errorInfo.append("或者在").append(LangTransMeta.translate(SfChargeDetail.COL_REMARK)).append("说明收费原因");
       }
@@ -965,7 +964,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
     AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfCharge.COL_STATUS), "status", SfCharge.SF_VS_CHARGE_STATUS);
     MoneyFieldEditor totalPrice = new MoneyFieldEditor(LangTransMeta.translate(SfCharge.COL_TOTAL_PRICE), "totalPrice");
     TextFieldEditor payer = new TextFieldEditor(LangTransMeta.translate(SfCharge.COL_PAYER), "payer");
-    SfUserSelectHandler userHandler=new SfUserSelectHandler() {      
+    SfUserSelectHandler userHandler = new SfUserSelectHandler() {
       @Override
       public void excute(List selectedDatas) {
         // TODO Auto-generated method stub
@@ -974,8 +973,9 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
           User user = (User) obj;
           currentBill.setCashier(user.getUserId());
           setEditingObject(currentBill);
-        }        
+        }
       }
+
       public void afterClear() {
         SfCharge currentBill = (SfCharge) listCursor.getCurrentObject();
         currentBill.setCashier(null);
@@ -985,13 +985,12 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
     dto = new ElementConditionDto();
     dto.setCoCode("000");
     dto.setNd(this.requestMeta.getSvNd());
-    ForeignEntityFieldEditor cashier = new ForeignEntityFieldEditor(userHandler.getSqlId(), dto, 20, userHandler,
-      userHandler.getColumNames(), LangTransMeta.translate(SfCharge.COL_CASHIER), "cashierName");
-//    TextFieldEditor cashier = new TextFieldEditor(LangTransMeta.translate(SfCharge.COL_CASHIER), "cashierName");
+    ForeignEntityFieldEditor cashier = new ForeignEntityFieldEditor(userHandler.getSqlId(), dto, 20, userHandler, userHandler.getColumNames(),
+      LangTransMeta.translate(SfCharge.COL_CASHIER), "cashierName");
+    //    TextFieldEditor cashier = new TextFieldEditor(LangTransMeta.translate(SfCharge.COL_CASHIER), "cashierName");
     DateFieldEditor cashDate = new DateFieldEditor(LangTransMeta.translate(SfCharge.COL_CASH_DATE), "cashDate");
-    TextAreaFieldEditor remark = new TextAreaFieldEditor(LangTransMeta.translate(SfCharge.COL_REMARK), "remark", 100, 2,5);
-    
-    
+    TextAreaFieldEditor remark = new TextAreaFieldEditor(LangTransMeta.translate(SfCharge.COL_REMARK), "remark", 100, 2, 5);
+
     TextFieldEditor inputor = new TextFieldEditor(LangTransMeta.translate(SfCharge.COL_INPUTOR), "inputor");
     DateFieldEditor inputDate = new DateFieldEditor(LangTransMeta.translate(SfCharge.COL_INPUT_DATE), "inputDate");
 
@@ -1002,7 +1001,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
     editorList.add(totalPrice);
     editorList.add(payer);
     editorList.add(new NewLineFieldEditor());
-    
+
     editorList.add(cashier);
     editorList.add(cashDate);
     editorList.add(new NewLineFieldEditor());
@@ -1011,8 +1010,6 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
 
     return editorList;
   }
-
- 
 
   /* (non-Javadoc)
    * @see com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel#createSubBillPanel()
@@ -1083,7 +1080,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
     // TODO Auto-generated method stub
     item.setTempId("" + System.currentTimeMillis());
     SfCharge e = listCursor.getCurrentObject();
-    item.setChargeId(e.getChargeId());
+    //    item.setChargeId(e.getChargeId());
   }
 
   public void doExit() {
@@ -1144,6 +1141,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
       updateDataFlowDialog();
     }
   }
+
   /**
    * 审核
    */
@@ -1153,7 +1151,8 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
     }
     SfCharge qx = (SfCharge) ObjectUtil.deepCopy(this.listCursor.getCurrentObject());
     requestMeta.setFuncId(this.suggestPassButton.getFuncId());
-    GkCommentDialog commentDialog = new GkCommentDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),ModalityType.APPLICATION_MODAL);
+    GkCommentDialog commentDialog = new GkCommentDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),
+      ModalityType.APPLICATION_MODAL);
     if (commentDialog.cancel) {
       return;
     }
@@ -1178,9 +1177,9 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
     }
   }
 
- /**
-  * 销审
-  */
+  /**
+   * 销审
+   */
   protected void doUnAudit() {
     SfCharge qx = (SfCharge) ObjectUtil.deepCopy(this.listCursor.getCurrentObject());
     boolean success = true;
@@ -1209,11 +1208,13 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
       JOptionPane.showMessageDialog(this, "销审失败 ！" + errorInfo, "错误", JOptionPane.ERROR_MESSAGE);
     }
   }
- /**
-  * 退回
-  */
+
+  /**
+   * 退回
+   */
   protected void doUnTread() {
-    GkCommentUntreadDialog commentDialog = new GkCommentUntreadDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),ModalityType.APPLICATION_MODAL);
+    GkCommentUntreadDialog commentDialog = new GkCommentUntreadDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),
+      ModalityType.APPLICATION_MODAL);
     if (commentDialog.cancel) {
       return;
     }
@@ -1242,9 +1243,9 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
     }
   }
 
- /**
-  * 收回
-  */
+  /**
+   * 收回
+   */
   protected void doCallback() {
     boolean success = true;
     SfCharge afterSaveBill = null;
@@ -1269,6 +1270,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
       JOptionPane.showMessageDialog(this, "收回失败 ！" + errorInfo, "错误", JOptionPane.ERROR_MESSAGE);
     }
   }
+
   /*
    * 流程跟踪
    */

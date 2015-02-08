@@ -10,14 +10,14 @@ public class SfChargeDetailFM {
   static {
 
     fieldMap.putAll(ZcBaseBillFM.fieldMap);
-    fieldMap.put("CHARGE_ID","chargeId");
-    fieldMap.put("CHARGE_STANDARD_ID","chargeStandardId");
-    fieldMap.put("CHARGE_STANDARD_NAME","chargeStandardName");
-    fieldMap.put("PRICE","price");
-    fieldMap.put("PRICE_TYPE","priceType");
-    fieldMap.put("QUANTITY","quantity");
-    fieldMap.put("REMARK","remark");
-    fieldMap.put("TOTAL_PRICE","totalPrice");
+    fieldMap.put("ENTRUST_ID", "entrustId");
+    fieldMap.put("CHARGE_STANDARD_ID", "chargeStandardId");
+    fieldMap.put("CHARGE_STANDARD_NAME", "chargeStandardName");
+    fieldMap.put("PRICE", "price");
+    fieldMap.put("PRICE_TYPE", "priceType");
+    fieldMap.put("QUANTITY", "quantity");
+    fieldMap.put("REMARK", "remark");
+    fieldMap.put("TOTAL_PRICE", "totalPrice");
 
   }
 }

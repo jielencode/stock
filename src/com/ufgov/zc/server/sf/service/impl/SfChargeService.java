@@ -18,10 +18,13 @@ import com.ufgov.zc.server.zc.ZcSUtil;
 public class SfChargeService implements ISfChargeService {
 
   private IWorkflowDao workflowDao;
+
   private WFEngineAdapter wfEngineAdapter;
+
   private SfChargeMapper chargeMapper;
+
   private SfChargeDetailMapper chargeDetailMapper;
-  
+
   public SfChargeDetailMapper getChargeDetailMapper() {
     return chargeDetailMapper;
   }
@@ -30,7 +33,6 @@ public class SfChargeService implements ISfChargeService {
     this.chargeDetailMapper = chargeDetailMapper;
   }
 
-  
   public IWorkflowDao getWorkflowDao() {
     return workflowDao;
   }
@@ -59,32 +61,32 @@ public class SfChargeService implements ISfChargeService {
     // TODO Auto-generated method stub
     return chargeMapper.getMainDataLst(elementConditionDto);
   }
-  
+
   public SfCharge selectByPrimaryKey(BigDecimal id, RequestMeta requestMeta) {
     // TODO Auto-generated method stub
-    SfCharge rtn= chargeMapper.selectByPrimaryKey(id);
+    SfCharge rtn = chargeMapper.selectByPrimaryKey(id);
     rtn.setChargeDetaillst(chargeDetailMapper.selectByPrimaryKey(id));
     rtn.setDbDigest(rtn.digest());
     return rtn;
   }
-  
+
   public SfCharge saveFN(SfCharge inData, RequestMeta requestMeta) {
     // TODO Auto-generated method stub
-    if (inData.getChargeId()==null ) {
+    if (inData.getChargeId() == null) {
 
-      BigDecimal id=new BigDecimal(ZcSUtil.getNextVal(SfCharge.SEQ_SF_CHARGE_ID));
-      inData.setChargeId(id);  
+      BigDecimal id = new BigDecimal(ZcSUtil.getNextVal(SfCharge.SEQ_SF_CHARGE_ID));
+      inData.setChargeId(id);
 
       boolean isDraft = false;
       String userId = requestMeta.getSvUserID();
       String compoId = requestMeta.getCompoId();
-      
+
       if (inData.getProcessInstId() == null || inData.getProcessInstId().longValue() == -1) {
         Long draftid = workflowDao.createDraftId();
         inData.setProcessInstId(draftid);
         isDraft = true;
-      }      
-      insert(inData,requestMeta);
+      }
+      insert(inData, requestMeta);
       if (isDraft) {
         AsWfDraft asWfDraft = new AsWfDraft();
         asWfDraft.setCompoId(compoId);
@@ -94,10 +96,10 @@ public class SfChargeService implements ISfChargeService {
         asWfDraft.setWfDraftId(BigDecimal.valueOf(inData.getProcessInstId().longValue()));
         workflowDao.insertAsWfdraft(asWfDraft);
       }
-   }else{
-     update(inData,requestMeta);
-   }
-   return inData;
+    } else {
+      update(inData, requestMeta);
+    }
+    return inData;
   }
 
   private void update(SfCharge inData, RequestMeta requestMeta) {
@@ -105,10 +107,10 @@ public class SfChargeService implements ISfChargeService {
     chargeMapper.updateByPrimaryKey(inData);
     chargeDetailMapper.deleteByPrimaryKey(inData.getChargeId());
 
-    if(inData.getChargeDetaillst()!=null){
-      for(int i=0;i<inData.getChargeDetaillst().size();i++){
-        SfChargeDetail m=(SfChargeDetail) inData.getChargeDetaillst().get(i);
-        m.setChargeId(inData.getChargeId());
+    if (inData.getChargeDetaillst() != null) {
+      for (int i = 0; i < inData.getChargeDetaillst().size(); i++) {
+        SfChargeDetail m = (SfChargeDetail) inData.getChargeDetaillst().get(i);
+        //        m.setChargeId(inData.getChargeId());
         chargeDetailMapper.insert(m);
       }
     }
@@ -117,20 +119,21 @@ public class SfChargeService implements ISfChargeService {
   private void insert(SfCharge inData, RequestMeta requestMeta) {
     // TODO Auto-generated method stub
     chargeMapper.insert(inData);
-    if(inData.getChargeDetaillst()!=null){
-      for(int i=0;i<inData.getChargeDetaillst().size();i++){
-        SfChargeDetail m=(SfChargeDetail) inData.getChargeDetaillst().get(i);
-        m.setChargeId(inData.getChargeId());
+    if (inData.getChargeDetaillst() != null) {
+      for (int i = 0; i < inData.getChargeDetaillst().size(); i++) {
+        SfChargeDetail m = (SfChargeDetail) inData.getChargeDetaillst().get(i);
+        //        m.setChargeId(inData.getChargeId());
         chargeDetailMapper.insert(m);
       }
     }
   }
+
   public void deleteByPrimaryKeyFN(BigDecimal id, RequestMeta requestMeta) {
     // TODO Auto-generated method stub
     chargeMapper.deleteByPrimaryKey(id);
     chargeDetailMapper.deleteByPrimaryKey(id);
   }
-  
+
   public SfCharge unAuditFN(SfCharge qx, RequestMeta requestMeta) {
     // TODO Auto-generated method stub
     wfEngineAdapter.rework(qx.getComment(), qx, requestMeta);
@@ -142,20 +145,20 @@ public class SfChargeService implements ISfChargeService {
     wfEngineAdapter.untread(qx.getComment(), qx, requestMeta);
     return qx;
   }
-  
+
   public SfCharge auditFN(SfCharge qx, RequestMeta requestMeta) throws Exception {
     // TODO Auto-generated method stub
-    qx=saveFN(qx, requestMeta);
+    qx = saveFN(qx, requestMeta);
     wfEngineAdapter.commit(qx.getComment(), qx, requestMeta);
-    return selectByPrimaryKey(qx.getChargeId(),requestMeta);
+    return selectByPrimaryKey(qx.getChargeId(), requestMeta);
   }
-  
+
   public SfCharge newCommitFN(SfCharge qx, RequestMeta requestMeta) {
     // TODO Auto-generated method stub
     wfEngineAdapter.newCommit(qx.getComment(), qx, requestMeta);
-    return selectByPrimaryKey(qx.getChargeId(),requestMeta);
+    return selectByPrimaryKey(qx.getChargeId(), requestMeta);
   }
-  
+
   public SfCharge callbackFN(SfCharge qx, RequestMeta requestMeta) {
     // TODO Auto-generated method stub
     wfEngineAdapter.callback(qx.getComment(), qx, requestMeta);

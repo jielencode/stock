@@ -31,7 +31,10 @@
 	
 	<bean id="sfEntrustService" class="com.ufgov.zc.server.sf.service.impl.SfEntrustService"		scope="singleton">
 		<property name="entrustMapper" ref="entrustMapper" />	
-		<property name="materialsMapper" ref="materialsMapper" />
+		<property name="materialsMapper" ref="materialsMapper" />	
+		<property name="xysxTypeMapper" ref="xysxTypeMapper" />	
+		<property name="xysxMapper" ref="xysxMapper" />
+		<property name="chargeDetailMapper" ref="chargeDetailMapper" />	
 		<property name="workflowDao" ref="workflowDao" />
 		<property name="wfEngineAdapter" ref="wfEngineAdapter" />	
 	</bean>		
@@ -39,6 +42,12 @@
 		<property name="sqlMapClient" ref="sqlMapClient" />
 	</bean>	
 	<bean id="materialsMapper" class="com.ufgov.zc.server.sf.dao.ibatis.SfMaterialsMapperImp"		scope="singleton">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>	
+	<bean id="xysxTypeMapper" class="com.ufgov.zc.server.sf.dao.ibatis.SfXysxTypeMapperImp"		scope="singleton">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>	
+	<bean id="xysxMapper" class="com.ufgov.zc.server.sf.dao.ibatis.SfXysxMapperImp"		scope="singleton">
 		<property name="sqlMapClient" ref="sqlMapClient" />
 	</bean>
 	
@@ -73,7 +82,6 @@
 	
 	<bean id="chargeService" class="com.ufgov.zc.server.sf.service.impl.SfChargeService"		scope="singleton">
 		<property name="chargeMapper" ref="chargeMapper" />	
-		<property name="chargeDetailMapper" ref="chargeDetailMapper" />	
 		<property name="workflowDao" ref="workflowDao" />
 		<property name="wfEngineAdapter" ref="wfEngineAdapter" />	
 	</bean>		
