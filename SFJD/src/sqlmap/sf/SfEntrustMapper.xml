@@ -298,6 +298,11 @@
     where ENTRUST_ID = #entrustId:DECIMAL#
   </update>
   
+  <update id="updateStatus" parameterClass="elementCondition">
+  	update SF_ENTRUST
+    set STATUS = #status:VARCHAR#
+     where ENTRUST_ID = #sfId:DECIMAL#
+  </update>
   <select id="selectUserFunc" parameterClass="elementCondition" resultClass="java.util.HashMap">
   	select USER_ID, COMPO_ID, FUNC_ID from v_sf_user_func 
   	where 1=1

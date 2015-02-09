@@ -21,7 +21,7 @@ public class SfEntrustMapperImp extends SqlMapClientDaoSupport implements SfEntr
   /* (non-Javadoc)
    * @see com.ufgov.zc.server.sf.dao.SfEntrustMapper#deleteByPrimaryKey(java.math.BigDecimal)
    */
-  
+
   public int deleteByPrimaryKey(BigDecimal entrustId) {
     // TODO Auto-generated method stub
     return getSqlMapClientTemplate().delete("com.ufgov.zc.server.sf.dao.SfEntrustMapper.deleteByPrimaryKey", entrustId);
@@ -30,7 +30,7 @@ public class SfEntrustMapperImp extends SqlMapClientDaoSupport implements SfEntr
   /* (non-Javadoc)
    * @see com.ufgov.zc.server.sf.dao.SfEntrustMapper#insert(com.ufgov.zc.common.sf.model.SfEntrust)
    */
-  
+
   public int insert(SfEntrust record) {
     // TODO Auto-generated method stub
     getSqlMapClientTemplate().insert("com.ufgov.zc.server.sf.dao.SfEntrustMapper.insert", record);
@@ -40,7 +40,7 @@ public class SfEntrustMapperImp extends SqlMapClientDaoSupport implements SfEntr
   /* (non-Javadoc)
    * @see com.ufgov.zc.server.sf.dao.SfEntrustMapper#insertSelective(com.ufgov.zc.common.sf.model.SfEntrust)
    */
-  
+
   public int insertSelective(SfEntrust record) {
     // TODO Auto-generated method stub
     return 0;
@@ -49,7 +49,7 @@ public class SfEntrustMapperImp extends SqlMapClientDaoSupport implements SfEntr
   /* (non-Javadoc)
    * @see com.ufgov.zc.server.sf.dao.SfEntrustMapper#selectByPrimaryKey(java.math.BigDecimal)
    */
-  
+
   public SfEntrust selectByPrimaryKey(BigDecimal entrustId) {
     // TODO Auto-generated method stub
     return (SfEntrust) getSqlMapClientTemplate().queryForObject("com.ufgov.zc.server.sf.dao.SfEntrustMapper.selectByPrimaryKey", entrustId);
@@ -58,7 +58,7 @@ public class SfEntrustMapperImp extends SqlMapClientDaoSupport implements SfEntr
   /* (non-Javadoc)
    * @see com.ufgov.zc.server.sf.dao.SfEntrustMapper#updateByPrimaryKeySelective(com.ufgov.zc.common.sf.model.SfEntrust)
    */
-  
+
   public int updateByPrimaryKeySelective(SfEntrust record) {
     // TODO Auto-generated method stub
     return 0;
@@ -67,16 +67,19 @@ public class SfEntrustMapperImp extends SqlMapClientDaoSupport implements SfEntr
   /* (non-Javadoc)
    * @see com.ufgov.zc.server.sf.dao.SfEntrustMapper#updateByPrimaryKey(com.ufgov.zc.common.sf.model.SfEntrust)
    */
-  
+
   public int updateByPrimaryKey(SfEntrust record) {
     // TODO Auto-generated method stub
     return getSqlMapClientTemplate().update("com.ufgov.zc.server.sf.dao.SfEntrustMapper.updateByPrimaryKey", record);
   }
 
-   
   public List getEntrustLst(ElementConditionDto dto) {
     // TODO Auto-generated method stub
-    return getSqlMapClientTemplate().queryForList("com.ufgov.zc.server.sf.dao.SfEntrustMapper.selectEntrustLst",dto);
+    return getSqlMapClientTemplate().queryForList("com.ufgov.zc.server.sf.dao.SfEntrustMapper.selectEntrustLst", dto);
   }
 
+  public int updateStatus(ElementConditionDto dto) {
+
+    return getSqlMapClientTemplate().update("com.ufgov.zc.server.sf.dao.SfEntrustMapper.updateStatus", dto);
+  }
 }

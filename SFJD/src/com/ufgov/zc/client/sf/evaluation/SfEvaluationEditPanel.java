@@ -29,6 +29,7 @@ import com.ufgov.zc.client.common.ListCursor;
 import com.ufgov.zc.client.common.ServiceFactory;
 import com.ufgov.zc.client.common.WorkEnv;
 import com.ufgov.zc.client.common.converter.sf.SfEvaluationToTableModelConverter;
+import com.ufgov.zc.client.component.AsValComboBox;
 import com.ufgov.zc.client.component.GkBaseDialog;
 import com.ufgov.zc.client.component.GkCommentDialog;
 import com.ufgov.zc.client.component.GkCommentUntreadDialog;
@@ -69,6 +70,7 @@ import com.ufgov.zc.client.sf.component.JClosableTabbedPane;
 import com.ufgov.zc.client.sf.dataflow.SfDataFlowDialog;
 import com.ufgov.zc.client.sf.dataflow.SfDataFlowUtil;
 import com.ufgov.zc.client.sf.entrust.SfEntrustHandler;
+import com.ufgov.zc.client.sf.util.SfJdPersonSelectHandler;
 import com.ufgov.zc.client.sf.util.SfUserSelectHandler;
 import com.ufgov.zc.client.util.SwingUtil;
 import com.ufgov.zc.client.zc.ButtonStatus;
@@ -76,6 +78,8 @@ import com.ufgov.zc.client.zc.ZcUtil;
 import com.ufgov.zc.common.sf.model.SfEntrust;
 import com.ufgov.zc.common.sf.model.SfEvaluation;
 import com.ufgov.zc.common.sf.model.SfEvaluationPerson;
+import com.ufgov.zc.common.sf.model.SfJdPerson;
+import com.ufgov.zc.common.sf.publish.ISfEntrustServiceDelegate;
 import com.ufgov.zc.common.sf.publish.ISfEvaluationServiceDelegate;
 import com.ufgov.zc.common.system.RequestMeta;
 import com.ufgov.zc.common.system.constants.SfElementConstants;
@@ -155,19 +159,25 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
   protected JTablePanel personsTablePanel = new JTablePanel();
 
-  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate ;
-  
-  private ISfEvaluationServiceDelegate sfEvaluationServiceDelegate ;
-  
+  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate;
+
+  private ISfEvaluationServiceDelegate sfEvaluationServiceDelegate;
+
+  private ISfEntrustServiceDelegate sfEntrustServiceDelegate;
+
+  final ElementConditionDto jdFzrDto = new ElementConditionDto();
+
   public SfEvaluationEditPanel(GkBaseDialog parent, ListCursor listCursor, String tabStatus, SfEvaluationListPanel listPanel) {
     // TODO Auto-generated constructor stub
     super(SfEvaluationEditPanel.class, BillElementMeta.getBillElementMetaWithoutNd(compoId));
-    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,"zcEbBaseServiceDelegate");
-    sfEvaluationServiceDelegate = (ISfEvaluationServiceDelegate) ServiceFactory.create(ISfEvaluationServiceDelegate.class,"sfEvaluationServiceDelegate");
-      
+    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
+    sfEvaluationServiceDelegate = (ISfEvaluationServiceDelegate) ServiceFactory.create(ISfEvaluationServiceDelegate.class,
+      "sfEvaluationServiceDelegate");
+    sfEntrustServiceDelegate = (ISfEntrustServiceDelegate) ServiceFactory.create(ISfEntrustServiceDelegate.class, "sfEntrustServiceDelegate");
+
     this.workPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId),
-      TitledBorder.CENTER, TitledBorder.TOP,new Font("宋体", Font.BOLD, 15), Color.BLUE));
-    
+      TitledBorder.CENTER, TitledBorder.TOP, new Font("宋体", Font.BOLD, 15), Color.BLUE));
+
     this.listCursor = listCursor;
 
     this.listPanel = listPanel;
@@ -181,7 +191,7 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     requestMeta.setCompoId(getCompoId());
 
     refreshData();
-    
+
     setButtonStatus();
 
     updateFieldEditorsEditable();
@@ -192,16 +202,18 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
     SfEvaluation evaluation = (SfEvaluation) listCursor.getCurrentObject();
 
-    if (evaluation != null ) {//列表页面双击进入
-      if( evaluation.getEvaluationId()!=null){
+    if (evaluation != null) {//列表页面双击进入
+      if (evaluation.getEvaluationId() != null) {
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_BROWSE;
         evaluation = sfEvaluationServiceDelegate.selectByPrimaryKey(evaluation.getEvaluationId(), this.requestMeta);
+        jdFzrDto.setDattr1(evaluation.getEntrust().getMajorCode());
         listCursor.setCurrentObject(evaluation);
         this.setEditingObject(evaluation);
-      }else if(evaluation.getEntrustId()!=null){//图形界面进来的新增，已经确定了entrust
+      } else if (evaluation.getEntrustId() != null) {//图形界面进来的新增，已经确定了entrust
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
+        jdFzrDto.setDattr1(evaluation.getEntrust().getMajorCode());
         setDefaultValue(evaluation);
-        this.setEditingObject(evaluation);        
+        this.setEditingObject(evaluation);
       }
     } else {//新增按钮进入
       this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
@@ -216,7 +228,6 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     setButtonStatus();
     updateFieldEditorsEditable();
   }
-
 
   private void setDefaultValue(SfEvaluation Evaluation) {
     // TODO Auto-generated method stub
@@ -234,11 +245,11 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     ZcUtil.translateColName(personsTablePanel.getTable(), SfEvaluationToTableModelConverter.getPersonInfo());
     setTablePorperty();
   }
-  
+
   private void setTablePorperty() {
-    final JPageableFixedTable table=personsTablePanel.getTable();
+    final JPageableFixedTable table = personsTablePanel.getTable();
     table.setDefaultEditor(String.class, new TextCellEditor());
-    SfUserSelectHandler handler=new SfUserSelectHandler() {      
+    SfUserSelectHandler handler = new SfUserSelectHandler() {
       @Override
       public void excute(List selectedDatas) {
         BeanTableModel model = (BeanTableModel) table.getModel();
@@ -261,68 +272,67 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     ElementConditionDto dto = new ElementConditionDto();
     dto.setCoCode(requestMeta.getSvCoCode());
     dto.setNd(requestMeta.getSvNd());
-    ForeignEntityFieldCellEditor foreignExpertCodeEditor = new ForeignEntityFieldCellEditor(handler.getSqlId(), dto, 20, handler, handler
-      .getColumNames(), "人员", "userName");
+    ForeignEntityFieldCellEditor foreignExpertCodeEditor = new ForeignEntityFieldCellEditor(handler.getSqlId(), dto, 20, handler,
+      handler.getColumNames(), "人员", "userName");
 
     SwingUtil.setTableCellEditor(table, SfEvaluationPerson.COL_NAME, foreignExpertCodeEditor);
   }
+
   protected void updateFieldEditorsEditable() {
 
-      SfEvaluation qx = (SfEvaluation) listCursor.getCurrentObject();
-      Long processInstId = qx.getProcessInstId();
-      if (processInstId != null && processInstId.longValue() > 0) {
-        // 工作流的单据
-        wfCanEditFieldMap = BillElementMeta.getWfCanEditField(qx, requestMeta);
-        if ("cancel".equals(this.oldEvaluation.getStatus())) {// 撤销单据设置字段为不可编辑
-          wfCanEditFieldMap = null;
-        }
+    SfEvaluation qx = (SfEvaluation) listCursor.getCurrentObject();
+    Long processInstId = qx.getProcessInstId();
+    if (processInstId != null && processInstId.longValue() > 0) {
+      // 工作流的单据
+      wfCanEditFieldMap = BillElementMeta.getWfCanEditField(qx, requestMeta);
+      if ("cancel".equals(this.oldEvaluation.getStatus())) {// 撤销单据设置字段为不可编辑
+        wfCanEditFieldMap = null;
+      }
 
-        for (AbstractFieldEditor editor : fieldEditors) {
-          // 工作流中定义可编辑的字段
-//          System.out.println(editor.getFieldName());
-          if(editor instanceof NewLineFieldEditor)continue;
-          if (wfCanEditFieldMap != null && wfCanEditFieldMap.containsKey(Utils.getDBColNameByFieldName(editor.getEditObject(), editor.getFieldName()))) {
-            isEdit = true;
-            this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
-            editor.setEnabled(true);
-          } else {
-            editor.setEnabled(false);
-          }
-        }
-        
-        //工作流中该节点选中了保存按钮可用，则当前状态当前人可用编辑
-        if (saveButton.isVisible() && saveButton.isEnabled()) {
+      for (AbstractFieldEditor editor : fieldEditors) {
+        // 工作流中定义可编辑的字段
+        //          System.out.println(editor.getFieldName());
+        if (editor instanceof NewLineFieldEditor)
+          continue;
+        if (wfCanEditFieldMap != null && wfCanEditFieldMap.containsKey(Utils.getDBColNameByFieldName(editor.getEditObject(), editor.getFieldName()))) {
           isEdit = true;
           this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
-        }
-        
-      } else {
-        
-        for (AbstractFieldEditor editor : fieldEditors) {
-          if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
-            if ("status".equals(editor.getFieldName())
-              ||"nd".equals(editor.getFieldName())) {
-              editor.setEnabled(false);
-            } else {
-              editor.setEnabled(true);          
-            }
-            isEdit = true;
-          } else {
-            editor.setEnabled(false);
-          }
+          editor.setEnabled(true);
+        } else {
+          editor.setEnabled(false);
         }
       }
 
-      setWFSubTableEditable(personsTablePanel, isEdit);
+      //工作流中该节点选中了保存按钮可用，则当前状态当前人可用编辑
+      if (saveButton.isVisible() && saveButton.isEnabled()) {
+        isEdit = true;
+        this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
+      }
+
+    } else {
+
+      for (AbstractFieldEditor editor : fieldEditors) {
+        if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
+          if ("status".equals(editor.getFieldName()) || "nd".equals(editor.getFieldName())) {
+            editor.setEnabled(false);
+          } else {
+            editor.setEnabled(true);
+          }
+          isEdit = true;
+        } else {
+          editor.setEnabled(false);
+        }
+      }
+    }
+
+    setWFSubTableEditable(personsTablePanel, isEdit);
 
   }
-
- 
 
   protected void setButtonStatus() {
     SfEvaluation Evaluation = (SfEvaluation) listCursor.getCurrentObject();
     setButtonStatus(Evaluation, requestMeta, this.listCursor);
-    
+
   }
 
   public void setButtonStatusWithoutWf() {
@@ -446,7 +456,7 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     }
 
     SfEvaluation Evaluation = (SfEvaluation) this.listCursor.getCurrentObject();
-     
+
     ZcUtil.setButtonEnable(this.btnStatusList, Evaluation.getStatus(), this.pageStatus, getCompoId(), Evaluation.getProcessInstId());
 
   }
@@ -456,9 +466,6 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     oldEvaluation = (SfEvaluation) ObjectUtil.deepCopy(listCursor.getCurrentObject());
 
   }
-
- 
- 
 
   public String getCompoId() {
     // TODO Auto-generated method stub
@@ -482,11 +489,11 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
     toolBar.add(sendButton);
 
-//    toolBar.add(saveAndSendButton);
+    //    toolBar.add(saveAndSendButton);
 
     toolBar.add(suggestPassButton);
 
-//    toolBar.add(sendGkButton);
+    //    toolBar.add(sendGkButton);
 
     toolBar.add(unAuditButton);
 
@@ -496,18 +503,17 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
     toolBar.add(deleteButton);
 
-//    toolBar.add(importButton);
+    //    toolBar.add(importButton);
 
     toolBar.add(printButton);
 
     toolBar.add(traceButton);
 
-//    toolBar.add(previousButton);
+    //    toolBar.add(previousButton);
 
-//    toolBar.add(nextButton);
+    //    toolBar.add(nextButton);
 
     toolBar.add(exitButton);
-
 
     editButton.addActionListener(new ActionListener() {
 
@@ -518,8 +524,6 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
       }
 
     });
-
-
 
     previousButton.addActionListener(new ActionListener() {
 
@@ -571,8 +575,8 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
       }
 
-    });   
-  
+    });
+
     printButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -588,39 +592,37 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
         doSend();
       }
     });
-    
+
     suggestPassButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doSuggestPass();
       }
     });
-    
+
     callbackButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doCallback();
       }
     });
-    
+
     unTreadButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doUnTread();
       }
     });
-    
+
     unAuditButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doUnAudit();
       }
     });
-    
+
     traceButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doTrace();
       }
     });
   }
-
- 
 
   protected void doPrevious() {
 
@@ -698,13 +700,13 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
     String errorInfo = "";
 
-    SfEvaluation Evaluation= (SfEvaluation) this.listCursor.getCurrentObject();
+    SfEvaluation Evaluation = (SfEvaluation) this.listCursor.getCurrentObject();
 
     try {
 
       requestMeta.setFuncId(saveButton.getFuncId());
 
-//      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
+      //      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
 
       Evaluation = sfEvaluationServiceDelegate.saveFN(Evaluation, this.requestMeta);
 
@@ -725,9 +727,9 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
       JOptionPane.showMessageDialog(this, "保存成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
 
       refreshListPanel();
-        refreshData();
-        updateDataFlowDialog();
-        
+      refreshData();
+      updateDataFlowDialog();
+
     } else {
 
       JOptionPane.showMessageDialog(this, "保存失败 ！\n" + errorInfo, "错误", JOptionPane.ERROR_MESSAGE);
@@ -737,27 +739,29 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     return success;
 
   }
-  
-  private void refreshListPanel(){
-    if(listPanel!=null){
+
+  private void refreshListPanel() {
+    if (listPanel != null) {
       listPanel.refreshCurrentTabData();
     }
   }
+
   /**
    * 更新数据流界面
    */
   private void updateDataFlowDialog() {
     // TODO Auto-generated method stub
-    SfEvaluation evaluation= (SfEvaluation) this.listCursor.getCurrentObject();
-    if(listPanel!=null && listPanel.getParent() instanceof JClosableTabbedPane){
+    SfEvaluation evaluation = (SfEvaluation) this.listCursor.getCurrentObject();
+    if (listPanel != null && listPanel.getParent() instanceof JClosableTabbedPane) {
       return;
     }
-    if(parent instanceof SfEvaluationDialog){//新增的委托书，创建数据流界面
-      SfDataFlowDialog d=new SfDataFlowDialog(compoId, SfDataFlowUtil.getEntrust(evaluation.getEntrustId()), listPanel);
+    if (parent instanceof SfEvaluationDialog) {//新增的委托书，创建数据流界面
+      SfDataFlowDialog d = new SfDataFlowDialog(compoId, SfDataFlowUtil.getEntrust(evaluation.getEntrustId()), listPanel);
       parent.dispose();
-    }else{
-      SfDataFlowDialog d=(SfDataFlowDialog) parent;
-      d.refresh(evaluation.getEntrustId());
+    } else {
+      SfDataFlowDialog d = (SfDataFlowDialog) parent;
+      if (evaluation != null)
+        d.refresh(evaluation.getEntrustId());
     }
   }
 
@@ -772,25 +776,39 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
    */
 
   protected boolean checkBeforeSave() {
+
     List mainNotNullList = mainBillElementMeta.getNotNullBillElement();
     SfEvaluation Evaluation = (SfEvaluation) this.listCursor.getCurrentObject();
+    if (SfElementConstants.VAL_N.equalsIgnoreCase(Evaluation.getIsAccept()) && Evaluation.getEntrust().getNotAcceptReason() == null) {
+      Evaluation.getEntrust().setNotAcceptReason(Evaluation.getEvaluationOpinions());
+    }
     StringBuilder errorInfo = new StringBuilder();
-    String mainValidateInfo = ZcUtil.validateBillElementNull(Evaluation, mainNotNullList);     
+    String mainValidateInfo = ZcUtil.validateBillElementNull(Evaluation, mainNotNullList);
     if (mainValidateInfo.length() != 0) {
       errorInfo.append("\n").append(mainValidateInfo.toString()).append("\n");
     }
-    
+    if (SfElementConstants.VAL_Y_N_NULL.equalsIgnoreCase(Evaluation.getEntrust().getIsAccept()) || Evaluation.getEntrust().getIsAccept() == null)
+      errorInfo.append("请指定").append(LangTransMeta.translate(SfEvaluation.COL_IS_ACCEPT)).append("\n");
+
+    if (SfElementConstants.VAL_Y.equalsIgnoreCase(Evaluation.getIsAccept())) {
+      if (Evaluation.getEntrust().getMajorCode() == null)
+        errorInfo.append("请指定").append(LangTransMeta.translate(SfEntrust.COL_MAJOR_NAME)).append("\n");
+      if (Evaluation.getEntrust().getJdFzr() == null)
+        errorInfo.append("请指定").append(LangTransMeta.translate(SfEntrust.COL_JD_FZR)).append("\n");
+      if (Evaluation.getEntrust().getJdFhr() == null && !SfElementConstants.VAL_Y.equalsIgnoreCase(Evaluation.getEntrust().getIsCxjd()))//重新鉴定不需要指定复核人
+        errorInfo.append("请指定").append(LangTransMeta.translate(SfEntrust.COL_JD_FHR)).append("\n");
+    }
     if (errorInfo.length() != 0) {
       JOptionPane.showMessageDialog(this, errorInfo.toString(), "提示", JOptionPane.WARNING_MESSAGE);
       return false;
     }
     return true;
   }
-  
+
   protected void doDelete() {
     requestMeta.setFuncId(deleteButton.getFuncId());
     SfEvaluation Evaluation = (SfEvaluation) this.listCursor.getCurrentObject();
-    
+
     int num = JOptionPane.showConfirmDialog(this, "是否删除当前单据", "删除确认", 0);
     if (num == JOptionPane.YES_OPTION) {
       boolean success = true;
@@ -806,7 +824,7 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
       if (success) {
         this.listCursor.removeCurrentObject();
-        JOptionPane.showMessageDialog(this, "删除成功！", "提示", JOptionPane.INFORMATION_MESSAGE);       
+        JOptionPane.showMessageDialog(this, "删除成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
         refreshListPanel();
         updateDataFlowDialog();
         doExit();
@@ -816,14 +834,12 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     }
   }
 
- 
   public boolean isDataChanged() {
     if (!this.saveButton.isVisible() || !saveButton.isEnabled()) {
       return false;
     }
     return !DigestUtil.digest(oldEvaluation).equals(DigestUtil.digest(listCursor.getCurrentObject()));
   }
-
 
   private void doPrintButton() {
 
@@ -843,54 +859,151 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
   public List<AbstractFieldEditor> createFieldEditors() {
 
     List<AbstractFieldEditor> editorList = new ArrayList<AbstractFieldEditor>();
-    
-    SfEntrustHandler entrustHandler=new SfEntrustHandler() {
-      
+
+    SfEntrustHandler entrustHandler = new SfEntrustHandler() {
+
       @Override
       public void excute(List selectedDatas) {
         // TODO Auto-generated method stub
         for (Object obj : selectedDatas) {
           SfEvaluation currentBill = (SfEvaluation) listCursor.getCurrentObject();
-          SfEntrust entrust=(SfEntrust)obj;
-          currentBill.setEntrustId(entrust.getEntrustId());
+          SfEntrust entrust = (SfEntrust) obj;
+          entrust = sfEntrustServiceDelegate.selectByPrimaryKey(entrust.getEntrustId(), requestMeta);
           currentBill.setEntrustCode(entrust.getCode());
-          currentBill.setName(entrust.getName()+"委托评审");
+          currentBill.setName(entrust.getName() + "委托评审");
+          currentBill.setEntrust(entrust);
+          jdFzrDto.setDattr1(currentBill.getEntrust().getMajorCode());
           setEditingObject(currentBill);
         }
       }
-      public void afterClear(){
+
+      public void afterClear() {
         SfEvaluation currentBill = (SfEvaluation) listCursor.getCurrentObject();
         currentBill.setEntrustId(null);
         currentBill.setEntrustCode(null);
         currentBill.setName(null);
+        currentBill.setEntrust(new SfEntrust());
         setEditingObject(currentBill);
       }
     };
-    ElementConditionDto dto=new ElementConditionDto();
+    ElementConditionDto dto = new ElementConditionDto();
     dto.setDattr1("SF_EVALUATION");
-    ForeignEntityFieldEditor entrust = new ForeignEntityFieldEditor(entrustHandler.getSqlId(), dto, 20,entrustHandler, entrustHandler.getColumNames(), LangTransMeta.translate(SfEvaluation.COL_ENTRUST_CODE),"entrustCode");
-    
+    ForeignEntityFieldEditor entrust = new ForeignEntityFieldEditor(entrustHandler.getSqlId(), dto, 20, entrustHandler,
+      entrustHandler.getColumNames(), LangTransMeta.translate(SfEvaluation.COL_ENTRUST_CODE), "entrustCode");
+
     TextFieldEditor name = new TextFieldEditor(LangTransMeta.translate(SfEvaluation.COL_NAME), "name");
-    AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfEvaluation.COL_STATUS), "status",SfEvaluation.SF_VS_EVALUATION_STATUS);
+    AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfEvaluation.COL_STATUS), "status", SfEvaluation.SF_VS_EVALUATION_STATUS);
     DateFieldEditor evaluatDate = new DateFieldEditor(LangTransMeta.translate(SfEvaluation.COL_EVALUATE_DATE), "evaluateDate");
-    AsValFieldEditor isAccept = new AsValFieldEditor(LangTransMeta.translate(SfEvaluation.COL_IS_ACCEPT), "isAccept",SfElementConstants.VS_Y_N);
-    TextAreaFieldEditor evaluationOpions=new TextAreaFieldEditor(LangTransMeta.translate(SfEvaluation.COL_EVALUATION_OPINIONS), "evaluationOpinions", 500, 10, 5);
-    TextAreaFieldEditor notAcceptReason=new TextAreaFieldEditor(LangTransMeta.translate(SfEvaluation.COL_NOT_ACCEPT_REASON), "notAcceptReason", 100, 2, 5);
+    TextFieldEditor evaluateAddress = new TextFieldEditor(LangTransMeta.translate(SfEvaluation.COL_EVALUATE_ADDRESS), "evaluateAddress");
+    AsValFieldEditor isAccept = new AsValFieldEditor(LangTransMeta.translate(SfEvaluation.COL_IS_ACCEPT), "entrust.isAccept",
+      SfElementConstants.VS_Y_N);
+    TextAreaFieldEditor evaluationOpions = new TextAreaFieldEditor(LangTransMeta.translate(SfEvaluation.COL_EVALUATION_OPINIONS),
+      "evaluationOpinions", -1, 6, 5);
+    TextAreaFieldEditor notAcceptReason = new TextAreaFieldEditor(LangTransMeta.translate(SfEvaluation.COL_NOT_ACCEPT_REASON), "notAcceptReason", -1,
+      2, 5);
     TextFieldEditor inputor = new TextFieldEditor(LangTransMeta.translate(SfEvaluation.COL_INPUTOR), "inputor");
     DateFieldEditor inputDate = new DateFieldEditor(LangTransMeta.translate(SfEvaluation.COL_INPUT_DATE), "inputDate");
-    
+
+    AsValFieldEditor majorCode = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_MAJOR_NAME), "entrust.majorCode", "SF_VS_MAJOR") {
+      @Override
+      protected void afterChange(AsValComboBox field) {
+        if (field.getSelectedAsVal() == null) {
+          jdFzrDto.setDattr1(null);
+          return;
+        }
+        String valId = field.getSelectedAsVal().getValId();
+        jdFzrDto.setDattr1(valId);
+      }
+    };
+
+    SfJdPersonSelectHandler jdFzrHandler = new SfJdPersonSelectHandler() {
+      @Override
+      public void excute(List selectedDatas) {
+        // TODO Auto-generated method stub
+        if (selectedDatas != null && selectedDatas.size() > 0) {
+          SfEvaluation cur = listCursor.getCurrentObject();
+          SfJdPerson user = (SfJdPerson) selectedDatas.get(0);
+          cur.getEntrust().setJdFzr(user.getAccount());
+          cur.getEntrust().setJdFzrName(user.getName());
+          setEditingObject(cur);
+        }
+      }
+
+      public void afterClear() {
+        SfEvaluation currentBill = (SfEvaluation) listCursor.getCurrentObject();
+        currentBill.getEntrust().setJdFzr(null);
+        setEditingObject(currentBill);
+      }
+
+      public boolean beforeSelect(ElementConditionDto dto) {
+        SfEvaluation currentBill = (SfEvaluation) listCursor.getCurrentObject();
+        if (currentBill.getEntrust().getMajorCode() == null || currentBill.getEntrust().getMajorCode().trim().length() == 0) {
+          JOptionPane
+            .showMessageDialog(self, "请先选择" + LangTransMeta.translate(SfEntrust.COL_MAJOR_NAME) + "！", "提示", JOptionPane.INFORMATION_MESSAGE);
+          return false;
+        }
+        return true;
+      }
+    };
+
+    jdFzrDto.setNd(requestMeta.getSvNd());
+    jdFzrDto.setCoCode(requestMeta.getSvCoCode());
+    ForeignEntityFieldEditor jdFzr = new ForeignEntityFieldEditor(jdFzrHandler.getSqlId(), jdFzrDto, 20, jdFzrHandler, jdFzrHandler.getColumNames(),
+      LangTransMeta.translate(SfEntrust.COL_JD_FZR), "entrust.jdFzrName");
+
+    SfJdPersonSelectHandler jdFhrHandler = new SfJdPersonSelectHandler() {
+      @Override
+      public void excute(List selectedDatas) {
+        // TODO Auto-generated method stub
+        if (selectedDatas != null && selectedDatas.size() > 0) {
+          SfEvaluation cur = listCursor.getCurrentObject();
+          SfJdPerson user = (SfJdPerson) selectedDatas.get(0);
+          cur.getEntrust().setJdFhr(user.getAccount());
+          cur.getEntrust().setJdFhrName(user.getName());
+          setEditingObject(cur);
+        }
+      }
+
+      public void afterClear() {
+        SfEvaluation currentBill = (SfEvaluation) listCursor.getCurrentObject();
+        currentBill.getEntrust().setJdFhr(null);
+        setEditingObject(currentBill);
+      }
+
+      public boolean beforeSelect(ElementConditionDto dto) {
+        SfEvaluation currentBill = (SfEvaluation) listCursor.getCurrentObject();
+        if (currentBill.getEntrust().getMajorCode() == null || currentBill.getEntrust().getMajorCode().trim().length() == 0) {
+          JOptionPane
+            .showMessageDialog(self, "请先选择" + LangTransMeta.translate(SfEntrust.COL_MAJOR_NAME) + "！", "提示", JOptionPane.INFORMATION_MESSAGE);
+          return false;
+        }
+        return true;
+      }
+    };
+    ForeignEntityFieldEditor jdFhr = new ForeignEntityFieldEditor(jdFhrHandler.getSqlId(), jdFzrDto, 20, jdFhrHandler, jdFhrHandler.getColumNames(),
+      LangTransMeta.translate(SfEntrust.COL_JD_FHR), "entrust.jdFhrName");
+
+    TextAreaFieldEditor remark = new TextAreaFieldEditor(LangTransMeta.translate(SfEvaluation.COL_REMARK), "remark", -1, 3, 5);
+
     editorList.add(entrust);
     editorList.add(name);
     editorList.add(status);
 
+    editorList.add(majorCode);
+    editorList.add(jdFzr);
+    editorList.add(jdFhr);
+
     editorList.add(evaluatDate);
+    editorList.add(evaluateAddress);
     editorList.add(isAccept);
-    
+
     editorList.add(evaluationOpions);
-    
+    editorList.add(remark);
+
     return editorList;
 
   }
+
   protected void init() {
 
     this.initToolBar(toolBar);
@@ -921,7 +1034,7 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
     }
 
-    JScrollPane js=new JScrollPane(workPanel);
+    JScrollPane js = new JScrollPane(workPanel);
     this.add(js, BorderLayout.CENTER);
   }
 
@@ -945,7 +1058,7 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
     personsTablePanel.getTable().getTableRowHeader().setPreferredSize(new Dimension(60, 0));
 
-    itemTabPane.addTab("送检材料", personsTablePanel);
+    itemTabPane.addTab("评审人员", personsTablePanel);
 
     JFuncToolBar personBtnBar = new JFuncToolBar();
 
@@ -986,15 +1099,14 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
         deleteSub(personsTablePanel);
       }
     });
-    itemTabPane.setMinimumSize(new Dimension(240, 300));    
+    itemTabPane.setMinimumSize(new Dimension(240, 300));
     return itemTabPane;
   }
 
-
   protected void setPersonDefaultValue(SfEvaluationPerson item) {
     // TODO Auto-generated method stub
-    item.setTempId(""+System.currentTimeMillis());
-    SfEvaluation e=listCursor.getCurrentObject();
+    item.setTempId("" + System.currentTimeMillis());
+    SfEvaluation e = listCursor.getCurrentObject();
     item.setEvaluationId(e.getEvaluationId());
   }
 
@@ -1016,13 +1128,12 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
       }
 
     }
-    if(this.parent instanceof SfDataFlowDialog){
-      ((SfDataFlowDialog)parent).removeTab(this, compoId);
-    }else{
+    if (this.parent instanceof SfDataFlowDialog) {
+      ((SfDataFlowDialog) parent).removeTab(this, compoId);
+    } else {
       this.parent.dispose();
     }
   }
-
 
   /**
    * 送审
@@ -1030,8 +1141,8 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
   protected void doSend() {
 
     boolean success = true;
-    SfEvaluation bill=this.listCursor.getCurrentObject();
-   
+    SfEvaluation bill = this.listCursor.getCurrentObject();
+
     SfEvaluation afterSaveBill = null;
 
     if (this.isDataChanged()) {
@@ -1058,6 +1169,7 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
       updateDataFlowDialog();
     }
   }
+
   /**
    * 审核
    */
@@ -1067,7 +1179,8 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     }
     SfEvaluation qx = (SfEvaluation) ObjectUtil.deepCopy(this.listCursor.getCurrentObject());
     requestMeta.setFuncId(this.suggestPassButton.getFuncId());
-    GkCommentDialog commentDialog = new GkCommentDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),ModalityType.APPLICATION_MODAL);
+    GkCommentDialog commentDialog = new GkCommentDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),
+      ModalityType.APPLICATION_MODAL);
     if (commentDialog.cancel) {
       return;
     }
@@ -1092,9 +1205,9 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     }
   }
 
- /**
-  * 销审
-  */
+  /**
+   * 销审
+   */
   protected void doUnAudit() {
     SfEvaluation qx = (SfEvaluation) ObjectUtil.deepCopy(this.listCursor.getCurrentObject());
     boolean success = true;
@@ -1123,11 +1236,13 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
       JOptionPane.showMessageDialog(this, "销审失败 ！" + errorInfo, "错误", JOptionPane.ERROR_MESSAGE);
     }
   }
- /**
-  * 退回
-  */
+
+  /**
+   * 退回
+   */
   protected void doUnTread() {
-    GkCommentUntreadDialog commentDialog = new GkCommentUntreadDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),ModalityType.APPLICATION_MODAL);
+    GkCommentUntreadDialog commentDialog = new GkCommentUntreadDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),
+      ModalityType.APPLICATION_MODAL);
     if (commentDialog.cancel) {
       return;
     }
@@ -1156,9 +1271,9 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     }
   }
 
- /**
-  * 收回
-  */
+  /**
+   * 收回
+   */
   protected void doCallback() {
     boolean success = true;
     SfEvaluation afterSaveBill = null;
