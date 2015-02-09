@@ -301,7 +301,7 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
     entrust.setAcceptor(requestMeta.getSvUserID());
     entrust.setJdCompany(AsOptionMeta.getOptVal(SfElementConstants.OPT_SF_JD_COMPANY_NAME));//天津市开平司法鉴定中心
     entrust.setWtDate(requestMeta.getSysDate());
-    entrust.setJdDocSendType("ziqu");
+    entrust.setJdDocSendType(SfEntrust.SF_VS_ENTRUST_DOC_SEND_TYPE_ZIQU);
     //获取空的协议事项
     List xysxLst = zcEbBaseServiceDelegate.queryDataForList("com.ufgov.zc.server.sf.dao.SfXysxMapper.selectByPrimaryKey", null, requestMeta);
     xysxLst = xysxLst == null ? new ArrayList() : xysxLst;
@@ -1034,8 +1034,8 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
     Hashtable userData = new Hashtable();
     SfEntrust entrust = (SfEntrust) this.listCursor.getCurrentObject();
     userData.put("entrust", entrust);
-    userData.put(IWordHandler.FILE_NAME, entrust.getCode() + "委托书");
-    IWordHandler handler = new SfEntrustWordPrintHandler();
+    userData.put(IWordHandler.FILE_NAME, entrust.getCode() + "委托协议");
+    IWordHandler handler = new SfAgreementWordHandler();
     String fileName = handler.createDocumnet(userData);
     try {
       Desktop.getDesktop().open(new File(fileName));

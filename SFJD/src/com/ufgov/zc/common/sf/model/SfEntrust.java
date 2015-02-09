@@ -31,6 +31,21 @@ public class SfEntrust extends ZcBaseBill {
 
   public static final String SF_VS_ENTRUST_DOC_SEND_TYPE = "SF_VS_ENTRUST_DOC_SEND_TYPE";
 
+  /**
+   * 自取
+   */
+  public static final String SF_VS_ENTRUST_DOC_SEND_TYPE_ZIQU = "ziqu";
+
+  /**
+   * 邮寄
+   */
+  public static final String SF_VS_ENTRUST_DOC_SEND_TYPE_YOUJI = "youji";
+
+  /**
+   * 其他方式
+   */
+  public static final String SF_VS_ENTRUST_DOC_SEND_TYPE_QITA = "qita";
+
   public static final String COL_ACCEPTOR = "SF_ENTRUST_ACCEPTOR"; // 受理人
 
   public static final String COL_ACCEPT_DATE = "SF_ENTRUST_ACCEPT_DATE"; // 受理时间
