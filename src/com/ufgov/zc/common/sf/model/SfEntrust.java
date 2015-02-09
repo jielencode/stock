@@ -636,6 +636,8 @@ public class SfEntrust extends ZcBaseBill {
    * @mbggenerated  Wed Jan 07 11:38:37 CST 2015
    */
   public String getMajorCode() {
+    if (getMajor() != null)
+      return getMajor().getMajorCode();
     return majorCode;
   }
 
