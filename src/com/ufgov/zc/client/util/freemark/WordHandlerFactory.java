@@ -3,8 +3,8 @@
  */
 package com.ufgov.zc.client.util.freemark;
 
-import com.ufgov.zc.client.sf.agreement.SfAgreementWordHandler;
 import com.ufgov.zc.client.sf.appendmaterialnotice.SfAppendMNWordHandler;
+import com.ufgov.zc.client.sf.entrust.SfAgreementWordHandler;
 import com.ufgov.zc.common.sf.model.SfAgreement;
 import com.ufgov.zc.common.sf.model.SfAppendMaterialNotice;
 import com.ufgov.zc.common.zc.model.ZcBaseBill;
