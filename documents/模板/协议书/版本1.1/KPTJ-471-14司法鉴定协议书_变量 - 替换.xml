@@ -1364,7 +1364,7 @@
 									<w:sz w:val="24"/>
 									<w:sz-cs w:val="24"/>
 								</w:rPr>
-								<w:t>{sfcxjd}</w:t>
+								<w:t>${sfcxjd}</w:t>
 							</w:r>
 						</w:p>
 					</w:tc>
