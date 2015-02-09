@@ -590,6 +590,16 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
 
       bs = new ButtonStatus();
 
+      bs.setButton(this.printXyButton);
+
+      bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
+
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
+
+      btnStatusList.add(bs);
+
+      bs = new ButtonStatus();
+
       bs.setButton(this.sendGkButton);
 
       bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
