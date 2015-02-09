@@ -13,14 +13,7 @@
 		icon="/img/sf/comment.bmp"
 		isMutliRecord="false"
 		nodeBusiness="com.ufgov.zc.client.sf.dataflow.nodebusiness.SfEvaluationNodeBusiness"/>
-		
-	<node compoId="SF_AGREEMENT"
-		text="协议书"
-		toolTip="协议书" 
-		icon="/img/sf/note.bmp"
-		isMutliRecord="false"
-		nodeBusiness="com.ufgov.zc.client.sf.dataflow.nodebusiness.SfAgreementNodeBusiness"/>
-		
+				
 	<node compoId="SF_CHARGE"
 		text="鉴定收费"
 		toolTip="鉴定收费" 
