@@ -316,7 +316,7 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
     ZcUtil.translateColName(materialsTablePanel.getTable(), SfEntrustToTableModelConverter.getMaterialInfo());
     setMaterialsTablePorperty();
 
-    jdChargeTablePanel.setTableModel(SfChargeToTableModelConverter.convertPersonsTableData(entrust.getJdChargeDetaillst()));
+    jdChargeTablePanel.setTableModel(SfChargeToTableModelConverter.convertChargeDetailsTableData(entrust.getJdChargeDetaillst()));
     ZcUtil.translateColName(jdChargeTablePanel.getTable(), SfChargeToTableModelConverter.getDetailInfo());
     setJdChargeTablePorperty();
     addJdChargeTableLisenter();
@@ -1234,8 +1234,7 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
 
       public boolean beforeSelect(ElementConditionDto dto) {
         SfEntrust currentBill = (SfEntrust) listCursor.getCurrentObject();
-        if (currentBill.getIsCxjd() == null || currentBill.getIsCxjd().trim().equalsIgnoreCase(SfElementConstants.VAL_N)
-          || currentBill.getIsCxjd().trim().equalsIgnoreCase(SfElementConstants.VAL_Y_N_NULL)) {
+        if (currentBill.getIsCxjd() == null || currentBill.getIsCxjd().trim().equalsIgnoreCase(SfElementConstants.VAL_N)) {
           JOptionPane.showMessageDialog(self, "请先选择" + LangTransMeta.translate(SfEntrust.COL_IS_CXJD) + "！", "提示", JOptionPane.INFORMATION_MESSAGE);
           return false;
         }

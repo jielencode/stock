@@ -3,10 +3,21 @@
  */
 package com.ufgov.zc.client.sf.util;
 
+import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.swing.JTable;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 
 import com.ufgov.zc.client.common.ServiceFactory;
 import com.ufgov.zc.client.common.WorkEnv;
@@ -104,5 +115,53 @@ public class SfUtil {
       rtn = "" + intVal;
     }
     return rtn;
+  }
+
+  public static int getScreenWidth() {
+    Dimension screenSize = getScreenSize();
+    return screenSize.width - 100;
+
+  }
+
+  public static int getScreenHeight() {
+    Dimension screenSize = getScreenSize();
+    return screenSize.height - 100;
+
+  }
+
+  /**
+   * @return
+   */
+  public static Dimension getScreenSize() {
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
+    GraphicsDevice gs = ge.getDefaultScreenDevice();
+
+    GraphicsConfiguration gc = gs.getDefaultConfiguration();
+
+    Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    return screenSize;
+  }
+
+  public static void FitTableColumns(JTable myTable) {
+    JTableHeader header = myTable.getTableHeader();
+    int rowCount = myTable.getRowCount();
+
+    Enumeration columns = myTable.getColumnModel().getColumns();
+    while (columns.hasMoreElements()) {
+      TableColumn column = (TableColumn) columns.nextElement();
+      int col = header.getColumnModel().getColumnIndex(column.getIdentifier());
+      int width = (int) myTable.getTableHeader().getDefaultRenderer()
+        .getTableCellRendererComponent(myTable, column.getIdentifier(), false, false, -1, col).getPreferredSize().getWidth();
+      for (int row = 0; row < rowCount; row++) {
+        int preferedWidth = (int) myTable.getCellRenderer(row, col)
+          .getTableCellRendererComponent(myTable, myTable.getValueAt(row, col), false, false, row, col).getPreferredSize().getWidth();
+        width = Math.max(width, preferedWidth);
+      }
+      header.setResizingColumn(column); // 此行很重要  
+      column.setWidth(width + myTable.getIntercellSpacing().width);
+    }
   }
 }

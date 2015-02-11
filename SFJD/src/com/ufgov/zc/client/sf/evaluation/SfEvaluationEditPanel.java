@@ -3,12 +3,15 @@ package com.ufgov.zc.client.sf.evaluation;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
+import java.awt.Desktop;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -23,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import com.ufgov.smartclient.common.UIUtilities;
 import com.ufgov.smartclient.component.table.fixedtable.JPageableFixedTable;
+import com.ufgov.zc.client.common.AsOptionMeta;
 import com.ufgov.zc.client.common.BillElementMeta;
 import com.ufgov.zc.client.common.LangTransMeta;
 import com.ufgov.zc.client.common.ListCursor;
@@ -73,6 +77,7 @@ import com.ufgov.zc.client.sf.entrust.SfEntrustHandler;
 import com.ufgov.zc.client.sf.util.SfJdPersonSelectHandler;
 import com.ufgov.zc.client.sf.util.SfUserSelectHandler;
 import com.ufgov.zc.client.util.SwingUtil;
+import com.ufgov.zc.client.util.freemark.IWordHandler;
 import com.ufgov.zc.client.zc.ButtonStatus;
 import com.ufgov.zc.client.zc.ZcUtil;
 import com.ufgov.zc.common.sf.model.SfEntrust;
@@ -236,6 +241,7 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     Evaluation.setNd(this.requestMeta.getSvNd());
     Evaluation.setInputDate(this.requestMeta.getSysDate());
     Evaluation.setInputor(requestMeta.getSvUserID());
+    Evaluation.setEvaluateAddress(AsOptionMeta.getOptVal(SfElementConstants.OPT_SF_JD_COMPANY_ADDRESS));
   }
 
   private void refreshSubData() {
@@ -787,7 +793,7 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     if (mainValidateInfo.length() != 0) {
       errorInfo.append("\n").append(mainValidateInfo.toString()).append("\n");
     }
-    if (SfElementConstants.VAL_Y_N_NULL.equalsIgnoreCase(Evaluation.getEntrust().getIsAccept()) || Evaluation.getEntrust().getIsAccept() == null)
+    if (Evaluation.getEntrust().getIsAccept() == null)
       errorInfo.append("请指定").append(LangTransMeta.translate(SfEvaluation.COL_IS_ACCEPT)).append("\n");
 
     if (SfElementConstants.VAL_Y.equalsIgnoreCase(Evaluation.getIsAccept())) {
@@ -843,6 +849,18 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
 
   private void doPrintButton() {
 
+    Hashtable userData = new Hashtable();
+    SfEvaluation evaluation = (SfEvaluation) this.listCursor.getCurrentObject();
+    userData.put("evaluation", evaluation);
+    userData.put(IWordHandler.FILE_NAME, evaluation.getName());
+    IWordHandler handler = new SfEvalutionWordPrintHandler();
+    String fileName = handler.createDocumnet(userData);
+    try {
+      Desktop.getDesktop().open(new File(fileName));
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(this, "抱歉！没有找到合适的程序来打开文件！" + fileName, "提示", JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
   }
 
   private void doEdit() {
@@ -896,7 +914,7 @@ public class SfEvaluationEditPanel extends AbstractMainSubEditPanel {
     DateFieldEditor evaluatDate = new DateFieldEditor(LangTransMeta.translate(SfEvaluation.COL_EVALUATE_DATE), "evaluateDate");
     TextFieldEditor evaluateAddress = new TextFieldEditor(LangTransMeta.translate(SfEvaluation.COL_EVALUATE_ADDRESS), "evaluateAddress");
     AsValFieldEditor isAccept = new AsValFieldEditor(LangTransMeta.translate(SfEvaluation.COL_IS_ACCEPT), "entrust.isAccept",
-      SfElementConstants.VS_Y_N);
+      SfElementConstants.VS_Y_N, true);
     TextAreaFieldEditor evaluationOpions = new TextAreaFieldEditor(LangTransMeta.translate(SfEvaluation.COL_EVALUATION_OPINIONS),
       "evaluationOpinions", -1, 6, 5);
     TextAreaFieldEditor notAcceptReason = new TextAreaFieldEditor(LangTransMeta.translate(SfEvaluation.COL_NOT_ACCEPT_REASON), "notAcceptReason", -1,

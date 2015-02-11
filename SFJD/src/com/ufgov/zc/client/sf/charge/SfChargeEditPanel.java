@@ -237,7 +237,7 @@ public class SfChargeEditPanel extends AbstractMainSubEditPanel {
   private void refreshSubData() {
     // TODO Auto-generated method stub
     SfCharge Charge = (SfCharge) listCursor.getCurrentObject();
-    detailTablePanel.setTableModel(SfChargeToTableModelConverter.convertPersonsTableData(Charge.getChargeDetaillst()));
+    detailTablePanel.setTableModel(SfChargeToTableModelConverter.convertChargeDetailsTableData(Charge.getChargeDetaillst()));
     ZcUtil.translateColName(detailTablePanel.getTable(), SfChargeToTableModelConverter.getDetailInfo());
     setTablePorperty();
     addTableLisenter();
