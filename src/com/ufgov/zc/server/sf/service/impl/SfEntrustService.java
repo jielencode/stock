@@ -143,7 +143,7 @@ public class SfEntrustService implements ISfEntrustService {
       }
     }
     if (inData.getXysxLst() != null) {
-      System.out.println("========================================");
+      //      System.out.println("========================================");
       for (int i = 0; i < inData.getXysxLst().size(); i++) {
         SfXysx d = (SfXysx) inData.getXysxLst().get(i);
         d.setEntrustId(inData.getEntrustId());

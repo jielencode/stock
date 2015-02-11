@@ -17,9 +17,10 @@ public class SfChargeDialog extends GkBaseDialog {
   private static final long serialVersionUID = 3874532519369068370L;
 
   private SfChargeListPanel listPanel;
-  private SfChargeEditPanel editPanel;
-  private SfChargeDialog self=this;
 
+  private SfChargeEditPanel editPanel;
+
+  private SfChargeDialog self = this;
 
   public SfChargeDialog(SfChargeListPanel listPanel, List beanList, int editingRow, String tabStatus) {
 
@@ -43,18 +44,11 @@ public class SfChargeDialog extends GkBaseDialog {
 
     //editPanel.refreshData();s
 
-//    this.setMaxSizeWindow();
+    //    this.setMaxSizeWindow();
 
     this.setVisible(true);
 
   }
-
-  
-  /* (non-Javadoc)
-
-   * @see com.ufgov.gk.client.component.GkBaseDialog#closeDialog()
-
-   */
 
   @Override
   public void closeDialog() {
@@ -62,6 +56,5 @@ public class SfChargeDialog extends GkBaseDialog {
     this.editPanel.doExit();
 
   }
-
 
 }

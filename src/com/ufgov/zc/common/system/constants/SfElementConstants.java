@@ -19,7 +19,7 @@ public interface SfElementConstants {
   /**
    * VS_Y/N有个空值，其valid是K
    */
-  public static final String VAL_Y_N_NULL = "K";
+  //  public static final String VAL_Y_N_NULL = "K";
 
   /**
    * 内部部门。sql形式实现，支持动态变化 

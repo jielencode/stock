@@ -18,6 +18,19 @@
     <result column="NAME" jdbcType="VARCHAR" property="name" />
     <result column="STATUS" jdbcType="VARCHAR" property="status" />
   </resultMap>
+  <resultMap id="feeResultMap" class="com.ufgov.zc.common.sf.model.SfPayFees">
+    <result column="ENTRUST_ID" jdbcType="DECIMAL" property="entrust.entrustId" />
+    <result column="ENTRUST_CODE" jdbcType="VARCHAR" property="entrust.code" />
+    <result column="ENTRUSTOR_ID" jdbcType="VARCHAR" property="entrustor.entrustorId" />
+    <result column="ENTRUSTOR_NAME" jdbcType="VARCHAR" property="entrustor.name" />
+    <result column="TOTAL_FEE" jdbcType="DECIMAL" property="totalFee" />
+    <result column="PAYED_FEE" jdbcType="DECIMAL" property="payedFee" />
+    <result column="MAJOR_NAME" jdbcType="VARCHAR" property="majorName" />
+    <result column="JD_FZR" jdbcType="VARCHAR" property="jdFzr" />
+    <result column="JD_FHR" jdbcType="VARCHAR" property="jdFhr" />
+    <result column="WT_DATE" jdbcType="DATE" property="entrust.wtDate" />
+    <result column="PAY_TIME" jdbcType="DATE" property="payTime" />  
+  </resultMap>
   <sql id="Base_Column_List">
     CHARGE_ID, ENTRUST_ID, CASHIER, CASH_DATE, INPUTOR, INPUT_DATE, ND, PAYER, TOTAL_PRICE, 
     REMARK, PROCESS_INST_ID, ENTRUST_CODE, NAME,STATUS
@@ -109,4 +122,40 @@
       STATUS=#status#
     where CHARGE_ID = #chargeId:DECIMAL#
   </update>
+  
+  <select id="getEntrustFees" parameterClass="com.ufgov.zc.common.system.dto.SfElementConditionDto" resultMap="feeResultMap">
+	  SELECT E.ENTRUST_ID,
+	       E.CODE          AS ENTRUST_CODE,
+	       ER.ENTRUSTOR_ID,
+	       ER.NAME         AS ENTRUSTOR_NAME,
+	       M.MAJOR_NAME,
+	       E.JD_FZR,
+	       E.JD_FHR,
+	       E.WT_DATE,
+	       TP.TOTAL_FEE,
+	       PAY.PAY_TIME,
+	       PAY.PAYED_FEE
+	  FROM SF_ENTRUST E,
+	       SF_ENTRUSTOR ER,
+	       SF_MAJOR M,
+	       (SELECT CD.ENTRUST_ID, SUM(CD.TOTAL_PRICE) AS TOTAL_FEE
+	          FROM SF_CHARGE_DETAIL CD
+	         GROUP BY CD.ENTRUST_ID) TP,
+	       (SELECT C.ENTRUST_ID,
+	               MAX(C.CASH_DATE) AS PAY_TIME,
+	               SUM(C.TOTAL_PRICE) AS PAYED_FEE
+	          FROM SF_CHARGE C
+	         GROUP BY C.ENTRUST_ID) PAY
+	 WHERE E.ENTRUSTOR_ID = ER.ENTRUSTOR_ID
+	   AND E.MAJOR_CODE = M.MAJOR_CODE
+	   AND E.ENTRUST_ID = TP.ENTRUST_ID
+	   AND E.ENTRUST_ID = PAY.ENTRUST_ID(+)
+  </select>
+  
+  <select id="selectByEntrustId" parameterClass="java.math.BigDecimal" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from SF_CHARGE
+    where ENTRUST_ID = #entrustId:DECIMAL#
+  </select>
 </sqlMap>
