@@ -3,12 +3,15 @@ package com.ufgov.zc.client.sf.outinfo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
+import java.awt.Desktop;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -54,8 +57,10 @@ import com.ufgov.zc.client.component.button.TraceButton;
 import com.ufgov.zc.client.component.button.UnauditButton;
 import com.ufgov.zc.client.component.button.UntreadButton;
 import com.ufgov.zc.client.component.table.BeanTableModel;
+import com.ufgov.zc.client.component.table.celleditor.DateCellEditor;
 import com.ufgov.zc.client.component.table.celleditor.MoneyCellEditor;
 import com.ufgov.zc.client.component.table.celleditor.TextCellEditor;
+import com.ufgov.zc.client.component.table.cellrenderer.DateCellRenderer;
 import com.ufgov.zc.client.component.table.cellrenderer.NumberCellRenderer;
 import com.ufgov.zc.client.component.table.codecelleditor.AsValComboBoxCellEditor;
 import com.ufgov.zc.client.component.table.codecellrenderer.AsValCellRenderer;
@@ -72,6 +77,7 @@ import com.ufgov.zc.client.sf.dataflow.SfDataFlowDialog;
 import com.ufgov.zc.client.sf.dataflow.SfDataFlowUtil;
 import com.ufgov.zc.client.sf.entrust.SfEntrustHandler;
 import com.ufgov.zc.client.util.SwingUtil;
+import com.ufgov.zc.client.util.freemark.IWordHandler;
 import com.ufgov.zc.client.zc.ButtonStatus;
 import com.ufgov.zc.client.zc.ZcUtil;
 import com.ufgov.zc.common.sf.model.SfEntrust;
@@ -350,6 +356,9 @@ public class SfOutInfoEditPanel extends AbstractMainSubEditPanel {
 
     SwingUtil.setTableCellEditor(table, SfOutInfoDetail.COL_QUANTITY, new MoneyCellEditor(false));
     SwingUtil.setTableCellRenderer(table, SfOutInfoDetail.COL_QUANTITY, new NumberCellRenderer());
+
+    SwingUtil.setTableCellEditor(table, SfOutInfoDetail.COL_PRODUCT_TIME, new DateCellEditor());
+    SwingUtil.setTableCellRenderer(table, SfOutInfoDetail.COL_PRODUCT_TIME, new DateCellRenderer());
   }
 
   protected void updateFieldEditorsEditable() {
@@ -392,6 +401,7 @@ public class SfOutInfoEditPanel extends AbstractMainSubEditPanel {
           }
           isEdit = true;
         } else {
+          isEdit = false;
           editor.setEnabled(false);
         }
       }
@@ -818,7 +828,7 @@ public class SfOutInfoEditPanel extends AbstractMainSubEditPanel {
     if (success) {
 
       JOptionPane.showMessageDialog(this, "保存成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
-
+      this.pageStatus = ZcSettingConstants.PAGE_STATUS_BROWSE;
       refreshListPanel();
       refreshData();
       updateDataFlowDialog();
@@ -959,6 +969,20 @@ public class SfOutInfoEditPanel extends AbstractMainSubEditPanel {
 
   private void doPrint() {
 
+    Hashtable userData = new Hashtable();
+    SfOutInfo outInfo = (SfOutInfo) this.listCursor.getCurrentObject();
+    SfEntrust entrust = sfEntrustServiceDelegate.selectByPrimaryKey(outInfo.getEntrustId(), requestMeta);
+    userData.put("entrust", entrust);
+    userData.put("outInfo", outInfo);
+    userData.put(IWordHandler.FILE_NAME, entrust.getCode() + "外部信息");
+    IWordHandler handler = new SfOutInfoWordPrintHandler();
+    String fileName = handler.createDocumnet(userData);
+    try {
+      Desktop.getDesktop().open(new File(fileName));
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(this, "抱歉！没有找到合适的程序来打开文件！" + fileName, "提示", JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
   }
 
   private void doEdit() {
