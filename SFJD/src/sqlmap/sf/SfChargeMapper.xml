@@ -17,6 +17,7 @@
     <result column="ENTRUST_CODE" jdbcType="VARCHAR" property="entrustCode" />
     <result column="NAME" jdbcType="VARCHAR" property="name" />
     <result column="STATUS" jdbcType="VARCHAR" property="status" />
+    <result column="PAYER_TEL" jdbcType="VARCHAR" property="payerTel" />
   </resultMap>
   <resultMap id="feeResultMap" class="com.ufgov.zc.common.sf.model.SfPayFees">
     <result column="ENTRUST_ID" jdbcType="DECIMAL" property="entrust.entrustId" />
@@ -33,7 +34,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     CHARGE_ID, ENTRUST_ID, CASHIER, CASH_DATE, INPUTOR, INPUT_DATE, ND, PAYER, TOTAL_PRICE, 
-    REMARK, PROCESS_INST_ID, ENTRUST_CODE, NAME,STATUS
+    REMARK, PROCESS_INST_ID, ENTRUST_CODE, NAME,STATUS,PAYER_TEL
   </sql>
   <select id="selectByPrimaryKey" parameterClass="java.math.BigDecimal" resultMap="BaseResultMap">
     select 
@@ -98,12 +99,12 @@
       CASH_DATE, INPUTOR, INPUT_DATE, 
       ND, PAYER, TOTAL_PRICE, 
       REMARK, PROCESS_INST_ID, ENTRUST_CODE, 
-      NAME,STATUS)
+      NAME,STATUS,PAYER_TEL)
     values (#chargeId:DECIMAL#, #entrustId:DECIMAL#, #cashier:VARCHAR#, 
       #cashDate:DATE#, #inputor:VARCHAR#, #inputDate:DATE#, 
       #nd:DECIMAL#, #payer:VARCHAR#, #totalPrice:DECIMAL#, 
       #remark:VARCHAR#, #processInstId:DECIMAL#, #entrustCode:VARCHAR#, 
-      #name:VARCHAR#,#status#)
+      #name:VARCHAR#,#status#,#payerTel#)
   </insert>
   <update id="updateByPrimaryKey" parameterClass="com.ufgov.zc.common.sf.model.SfCharge">
     update SF_CHARGE
@@ -119,7 +120,8 @@
       PROCESS_INST_ID = #processInstId:DECIMAL#,
       ENTRUST_CODE = #entrustCode:VARCHAR#,
       NAME = #name:VARCHAR#,
-      STATUS=#status#
+      STATUS=#status#,
+      PAYER_TEL=#payerTel#
     where CHARGE_ID = #chargeId:DECIMAL#
   </update>
   
@@ -150,6 +152,46 @@
 	   AND E.MAJOR_CODE = M.MAJOR_CODE
 	   AND E.ENTRUST_ID = TP.ENTRUST_ID
 	   AND E.ENTRUST_ID = PAY.ENTRUST_ID(+)
+	   <isNotNull prepend="AND" property="entrust.entrustId">
+	   		E.ENTRUST_ID=#entrust.entrustId:DECIMAL#
+	   </isNotNull>
+	   <isNull property="entrust.entrustId">
+		   	<isNotNull prepend="AND" property="entrustor.entrustorId">
+		   		E.ENTRUSTOR_ID=#entrustor.entrustorId:DECIMAL#
+		   	</isNotNull>	   		   	
+	   		<isNotNull prepend="AND" property="isPay">	
+				<isEqual property="isPay" compareValue="Y">
+					<![CDATA[TP.TOTAL_FEE<=PAY.PAYED_FEE]]>
+				</isEqual>  
+	   			<isEqual property="isPay" compareValue="N">
+	   				<![CDATA[TP.TOTAL_FEE>PAY.PAYED_FEE]]>
+	   			</isEqual>
+	   		</isNotNull> 
+		   	<isNotNull prepend="AND" property="major.majorCode">
+		   		E.MAJOR_CODE=#major.majorCode#
+		   	</isNotNull>
+		   	<isNotNull prepend="AND" property="entrust.jdFzr">
+		   		E.JD_FZR=#entrust.jdFzr#
+		   	</isNotNull>
+		   	<isNotNull prepend="AND" property="entrust.jdFhr">
+		   		E.JD_FHR=#entrust.jdFhr#	   	
+		   	</isNotNull>
+		   	<isNotNull prepend="AND" property="wtBeginTime">
+		   		<![CDATA[E.WT_DATE>=#wtBeginTime:DATE#]]>   	
+		   	</isNotNull>
+		   	<isNotNull prepend="AND" property="wtEndTime">
+		   		<![CDATA[E.WT_DATE<=#wtEndTime:DATE#]]>    	
+		   	</isNotNull>
+		   	<isNotNull prepend="AND" property="payBeginTime">
+		   		<![CDATA[PAY.PAY_TIME>=#payBeginTime:DATE#]]>   	
+		   	</isNotNull>
+		   	<isNotNull prepend="AND" property="payEndTime">
+		   		<![CDATA[PAY.PAY_TIME<=#payEndTime:DATE#]]>    	
+		   	</isNotNull>
+		   	<isNotNull prepend="AND" property="nd">
+		   		E.nd=#nd#
+		   	</isNotNull>
+	   </isNull>
   </select>
   
   <select id="selectByEntrustId" parameterClass="java.math.BigDecimal" resultMap="BaseResultMap">

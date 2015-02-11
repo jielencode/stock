@@ -103,6 +103,8 @@ public class YearComboBoxFieldeditor extends AbstractFieldEditor {
           valId = val.getValId();
           Integer v = Integer.parseInt(valId);
           BeanUtil.set(fieldName, v, getEditObject());
+        } else {
+          BeanUtil.set(fieldName, null, getEditObject());
         }
       }
 
