@@ -40,6 +40,10 @@ public class SfUtil {
 
   static List<HashMap<String, String>> userFuncs = new ArrayList<HashMap<String, String>>();
 
+  public static boolean canNew(String compoId) {
+    return canNew(compoId, null);
+  }
+
   /**
    * 判断当前用户对当前部件是否有新增权限
    * @param compoId
@@ -52,6 +56,10 @@ public class SfUtil {
     if (rtn)
       return rtn;
     return haveFunc(compoId, entrust, SfElementConstants.FUNC_ADD);
+  }
+
+  public static boolean haveFunc(String compoId, String func) {
+    return haveFunc(compoId, null, func);
   }
 
   /**

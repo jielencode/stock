@@ -67,6 +67,8 @@ import com.ufgov.zc.client.sf.util.SfJdPersonSelectHandler;
 import com.ufgov.zc.client.sf.util.SfUtil;
 import com.ufgov.zc.client.util.ListUtil;
 import com.ufgov.zc.client.util.SwingUtil;
+import com.ufgov.zc.client.zc.ButtonStatus;
+import com.ufgov.zc.client.zc.ZcUtil;
 import com.ufgov.zc.common.sf.model.SfCharge;
 import com.ufgov.zc.common.sf.model.SfEntrust;
 import com.ufgov.zc.common.sf.model.SfEntrustor;
@@ -77,6 +79,7 @@ import com.ufgov.zc.common.sf.publish.ISfChargeServiceDelegate;
 import com.ufgov.zc.common.sf.publish.ISfEntrustServiceDelegate;
 import com.ufgov.zc.common.system.RequestMeta;
 import com.ufgov.zc.common.system.constants.SfElementConstants;
+import com.ufgov.zc.common.system.constants.ZcSettingConstants;
 import com.ufgov.zc.common.system.dto.ElementConditionDto;
 import com.ufgov.zc.common.system.dto.SfElementConditionDto;
 import com.ufgov.zc.common.system.util.ObjectUtil;
@@ -122,7 +125,7 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
 
   private FuncButton searchButton = new CommonButton("fsearch", "搜索", "search.png");
 
-  private FuncButton clearButton = new CommonButton("fsearch", "清空", "clear.png");
+  private FuncButton clearButton = new CommonButton("fclear", "清空", "clear.png");
 
   private FuncButton deleteButton = new DeleteButton();
 
@@ -142,6 +145,8 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
 
   private HashMap<BigDecimal, List> payFeesCache = new HashMap<BigDecimal, List>();
 
+  private ArrayList<ButtonStatus> btnStatusList = new ArrayList<ButtonStatus>();
+
   static {
 
     LangTransMeta.init("SF%");
@@ -149,6 +154,11 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
   }
 
   public SfJdFeeMainPanel() {
+    init();
+  }
+
+  public SfJdFeeMainPanel(SfEntrust entrust) {
+    searchDto.setEntrust(entrust);
     init();
   }
 
@@ -163,11 +173,11 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
       TitledBorder.TOP, new Font("宋体", Font.BOLD, 15), Color.BLUE));
     intiPanel();
     refreshData();
+    setButtonStatus();
   }
 
   private void refreshData() {
     // TODO Auto-generated method stub
-    searchDto = new SfElementConditionDto();
     searchDto.setIsPay(SfElementConstants.VAL_N);
     searchDto.setNd(new Integer(requestMeta.getSvNd()));
     updateSearchDto();
@@ -852,4 +862,42 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
 
   }
 
+  private void setButtonStatus() {
+    if (this.btnStatusList.size() == 0) {
+
+      ButtonStatus bs = new ButtonStatus();
+      bs.setButton(this.addButton);
+      bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_ALL);
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
+      btnStatusList.add(bs);
+
+      bs = new ButtonStatus();
+      bs.setButton(this.deleteButton);
+      bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_ALL);
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
+      btnStatusList.add(bs);
+
+      bs = new ButtonStatus();
+      bs.setButton(this.editButton);
+      bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_ALL);
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
+      btnStatusList.add(bs);
+
+      bs = new ButtonStatus();
+      bs.setButton(this.searchButton);
+      bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_ALL);
+      bs.addPageStatus(ZcSettingConstants.BILL_STATUS_ALL);
+      btnStatusList.add(bs);
+
+      bs = new ButtonStatus();
+      bs.setButton(this.clearButton);
+      bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_ALL);
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
+      btnStatusList.add(bs);
+
+    }
+
+    ZcUtil.setButtonEnable(this.btnStatusList, null, ZcSettingConstants.PAGE_STATUS_BROWSE, "SF_JD_FEES", new Long(-1));
+
+  }
 }

@@ -14,12 +14,12 @@
 		isMutliRecord="false"
 		nodeBusiness="com.ufgov.zc.client.sf.dataflow.nodebusiness.SfEvaluationNodeBusiness"/>
 				
-	<node compoId="SF_CHARGE"
+	<node compoId="SF_JD_FEES"
 		text="鉴定收费"
 		toolTip="鉴定收费" 
 		icon="/img/sf/coin.bmp"
 		isMutliRecord="true"
-		nodeBusiness="com.ufgov.zc.client.sf.dataflow.nodebusiness.SfChargeNodeBusiness"/>
+		nodeBusiness="com.ufgov.zc.client.sf.dataflow.nodebusiness.SfJdFeeNodeBusiness"/>
 		
 	<node compoId="SF_RECEIPT"
 		text="回执管理"
