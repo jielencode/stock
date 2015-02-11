@@ -413,7 +413,7 @@ public class SfJdFeeEditPanel extends AbstractMainSubEditPanel {
 
     toolBar.setCompoId(getCompoId());
 
-    toolBar.add(addButton);
+    //    toolBar.add(addButton);
 
     toolBar.add(editButton);
 
@@ -496,6 +496,29 @@ public class SfJdFeeEditPanel extends AbstractMainSubEditPanel {
   protected void doDelete() {
     // TODO Auto-generated method stub
 
+    requestMeta.setFuncId(deleteButton.getFuncId());
+
+    int num = JOptionPane.showConfirmDialog(this, "是否删除当前单据", "删除确认", 0);
+    if (num == JOptionPane.YES_OPTION) {
+      boolean success = true;
+      String errorInfo = "";
+      try {
+        requestMeta.setFuncId(deleteButton.getFuncId());
+        sfChargeServiceDelegate.deleteByPrimaryKeyFN(currentBill.getChargeId(), requestMeta);
+      } catch (Exception e) {
+        logger.error(e.getMessage(), e);
+        success = false;
+        errorInfo += e.getMessage();
+      }
+
+      if (success) {
+        JOptionPane.showMessageDialog(this, "删除成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
+        refreshListPanel();
+        doExit();
+      } else {
+        JOptionPane.showMessageDialog(this, "删除失败 ！\n" + errorInfo, "错误", JOptionPane.ERROR_MESSAGE);
+      }
+    }
   }
 
   protected boolean doSave() {
@@ -518,6 +541,7 @@ public class SfJdFeeEditPanel extends AbstractMainSubEditPanel {
       //      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
 
       currentBill = sfChargeServiceDelegate.saveFN(currentBill, this.requestMeta);
+      currentBill.setFees(oldCharge.getFees());
 
     } catch (Exception e) {
 
@@ -558,6 +582,9 @@ public class SfJdFeeEditPanel extends AbstractMainSubEditPanel {
   protected void doEdit() {
     // TODO Auto-generated method stub
 
+    this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
+    updateFieldEditorsEditable();
+    setButtonStatus();
   }
 
   protected void doAdd() {
@@ -630,6 +657,7 @@ public class SfJdFeeEditPanel extends AbstractMainSubEditPanel {
     MoneyFieldEditor needFee = new MoneyFieldEditor("待交金额", "fees.needFee");
     MoneyFieldEditor benciFee = new MoneyFieldEditor("本次交费金额", "totalPrice");
     TextFieldEditor payer = new TextFieldEditor(LangTransMeta.translate(SfCharge.COL_PAYER), "payer");
+    TextFieldEditor payerTel = new TextFieldEditor(LangTransMeta.translate(SfCharge.COL_PAYER_TEL), "payerTel");
     SfUserSelectHandler userHandler = new SfUserSelectHandler() {
       @Override
       public void excute(List selectedDatas) {
@@ -677,7 +705,7 @@ public class SfJdFeeEditPanel extends AbstractMainSubEditPanel {
 
     editorList.add(benciFee);
     editorList.add(payer);
-    editorList.add(new NewLineFieldEditor());
+    editorList.add(payerTel);
 
     editorList.add(cashier);
     editorList.add(cashDate);

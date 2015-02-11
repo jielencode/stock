@@ -557,8 +557,16 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
           }
         }
       }
+    } else {
+      clearData();
     }
+  }
 
+  private void clearData() {
+    // TODO Auto-generated method stub
+    this.currentPayedFee = null;
+    this.currentEntrustFee = null;
+    payFeeTable.setModel(SfChargeToTableModelConverter.convertPayFeesTableData(new ArrayList()));
   }
 
   private void addEntrustFeesTableLisenter() {
