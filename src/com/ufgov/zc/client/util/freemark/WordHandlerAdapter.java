@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -23,11 +25,11 @@ import freemarker.template.Template;
 
 public abstract class WordHandlerAdapter implements IWordHandler {
 
-  IZcEbBaseServiceDelegate baseService = (IZcEbBaseServiceDelegate) ServiceFactory
-    .create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
-  
+  IZcEbBaseServiceDelegate baseService = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
+
   RequestMeta meta = WorkEnv.getInstance().getRequestMeta();
 
+  protected SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
 
   public String createDocumnet(Hashtable userDatas) {
     // TODO Auto-generated method stub
@@ -38,11 +40,11 @@ public abstract class WordHandlerAdapter implements IWordHandler {
     String modname = getTemplateFileId() + "_mod.doc";
 
     // 先保存模版临时文件   
-    String targetFileName=(String) userDatas.get(IWordHandler.FILE_NAME);
-    if(targetFileName==null){
-      targetFileName=System.currentTimeMillis()+"_rlt.doc";
-    }else{
-      targetFileName=targetFileName+"_rlt.doc";
+    String targetFileName = (String) userDatas.get(IWordHandler.FILE_NAME);
+    if (targetFileName == null) {
+      targetFileName = System.currentTimeMillis() + "_rlt.doc";
+    } else {
+      targetFileName = targetFileName + "_rlt.doc";
     }
 
     boolean isSucceed = WordFileUtil.createFile(WordFileUtil.getDir(), WordFileUtil.getDir() + modname, null, asf.getFileContent());
@@ -86,23 +88,32 @@ public abstract class WordHandlerAdapter implements IWordHandler {
     }
     return targetFilePath;
   }
+
   protected AsFile getTemplateFile(String temoplateFIleId, RequestMeta meta) {
     // TODO Auto-generated method stub
-    IBaseDataServiceDelegate baseService = (IBaseDataServiceDelegate) ServiceFactory.create(IBaseDataServiceDelegate.class, "baseDataServiceDelegate");
+    IBaseDataServiceDelegate baseService = (IBaseDataServiceDelegate) ServiceFactory
+      .create(IBaseDataServiceDelegate.class, "baseDataServiceDelegate");
 
     AsFile asfile = baseService.getAsFileById(temoplateFIleId, meta);
 
     return asfile;
   }
 
-  protected IZcEbBaseServiceDelegate getBaseService(){
+  protected IZcEbBaseServiceDelegate getBaseService() {
     return baseService;
   }
-  
-  protected RequestMeta getRequestMeta(){
+
+  protected RequestMeta getRequestMeta() {
     return meta;
   }
 
   public abstract String getTemplateFileId();
-  public abstract Map<String, Object> initTemplateData(Map<String, Object> sourceMap) ;
+
+  public abstract Map<String, Object> initTemplateData(Map<String, Object> sourceMap);
+
+  protected String formatDate(Date d) {
+    if (d == null)
+      return null;
+    return sd.format(d);
+  }
 }

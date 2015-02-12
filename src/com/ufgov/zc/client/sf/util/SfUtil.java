@@ -172,4 +172,42 @@ public class SfUtil {
       column.setWidth(width + myTable.getIntercellSpacing().width);
     }
   }
+
+  /**
+   * 将数字转换为整数字符或者double字符
+   * @param num
+   * @return
+   */
+  public static String convertNumToStr(BigDecimal num) {
+    // TODO Auto-generated method stub
+    if (num == null)
+      return null;
+    double d1 = num.doubleValue();
+    int k = num.intValue();
+    double d2 = new Double(k);
+    if (d1 > d2) {
+      return "" + d1;
+    } else {
+      return "" + k;
+    }
+  }
+
+  /**
+   * 将数字转换为整数字符或者double字符
+   * @param num
+   * @return
+   */
+  public static String convertNumToStr(double num) {
+    return convertNumToStr(new BigDecimal(num));
+  }
+
+  /**
+   * 将数字转换为整数字符或者double字符
+   * @param num
+   * @return
+   */
+  public static String convertNumToStr(float num) {
+    return convertNumToStr(new BigDecimal(num));
+  }
+
 }

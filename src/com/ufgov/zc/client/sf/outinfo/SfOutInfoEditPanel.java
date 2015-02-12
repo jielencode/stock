@@ -79,6 +79,7 @@ import com.ufgov.zc.client.sf.entrust.SfEntrustHandler;
 import com.ufgov.zc.client.util.SwingUtil;
 import com.ufgov.zc.client.util.freemark.IWordHandler;
 import com.ufgov.zc.client.zc.ButtonStatus;
+import com.ufgov.zc.client.zc.WordFileUtil;
 import com.ufgov.zc.client.zc.ZcUtil;
 import com.ufgov.zc.common.sf.model.SfEntrust;
 import com.ufgov.zc.common.sf.model.SfOutInfo;
@@ -198,6 +199,8 @@ public class SfOutInfoEditPanel extends AbstractMainSubEditPanel {
     this.parent = parent;
 
     this.colCount = 3;
+
+    WordFileUtil.setDir("sf");
 
     init();
 
