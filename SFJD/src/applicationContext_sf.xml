@@ -160,6 +160,7 @@
 		<property name="jdResultMapper" ref="jdResultMapper" />		
 		<property name="workflowDao" ref="workflowDao" />
 		<property name="wfEngineAdapter" ref="wfEngineAdapter" />	
+		<property name="sfEntrustService" ref="sfEntrustService" />
 	</bean>		
 	<bean id="jdResultMapper" class="com.ufgov.zc.server.sf.dao.ibatis.SfJdResultMapperImp"		scope="singleton">
 		<property name="sqlMapClient" ref="sqlMapClient" />
