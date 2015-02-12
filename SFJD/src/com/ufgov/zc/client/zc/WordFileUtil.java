@@ -29,8 +29,8 @@ import com.ufgov.zc.common.system.model.AsFile;
 public class WordFileUtil {
   private static final Logger logger = Logger.getLogger(WordFileUtil.class);
 
-  private static IBaseDataServiceDelegate baseDataServiceDelegate = (IBaseDataServiceDelegate) ServiceFactory
-    .create(IBaseDataServiceDelegate.class, "baseDataServiceDelegate");
+  private static IBaseDataServiceDelegate baseDataServiceDelegate = (IBaseDataServiceDelegate) ServiceFactory.create(IBaseDataServiceDelegate.class,
+    "baseDataServiceDelegate");
 
   private static RequestMeta requestMeta = WorkEnv.getInstance().getRequestMeta();
 
@@ -50,6 +50,8 @@ public class WordFileUtil {
   }
 
   public static String getDir() {
+    if (dir == null)
+      return tempDir;
     return dir;
   }
 
@@ -134,42 +136,43 @@ public class WordFileUtil {
       return false;
     }
   }
-    /**
-     * 通过文件全名和文件id写文件
-     * @param fullFileName
-     * @param fileID
-     * @return
-     * @throws Exception
-     */
-    public static void createFile(String fullFileName,String fileID) throws Exception{
-        File file = new File(fullFileName);
-        if (!file.getParentFile().exists()) {
-            file.mkdirs();
-        }
-        byte[] content=getFileContent(fileID);
-        FileOutputStream fos = null;
-        try {
-            delete(fullFileName);
 
-            fos = new FileOutputStream(fullFileName);
-
-            fos.write(content);
-
-        } catch (Exception ex) {
-            fullFileName = "";
-            JOptionPane.showMessageDialog(null, "从服务器载入文件(" + fullFileName + ")内容失败,检查服务器上此文件是否存在！", "错误",
-                    JOptionPane.ERROR_MESSAGE);
-            throw ex;
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        }
+  /**
+   * 通过文件全名和文件id写文件
+   * @param fullFileName
+   * @param fileID
+   * @return
+   * @throws Exception
+   */
+  public static void createFile(String fullFileName, String fileID) throws Exception {
+    File file = new File(fullFileName);
+    if (!file.getParentFile().exists()) {
+      file.mkdirs();
     }
+    byte[] content = getFileContent(fileID);
+    FileOutputStream fos = null;
+    try {
+      delete(fullFileName);
+
+      fos = new FileOutputStream(fullFileName);
+
+      fos.write(content);
+
+    } catch (Exception ex) {
+      fullFileName = "";
+      JOptionPane.showMessageDialog(null, "从服务器载入文件(" + fullFileName + ")内容失败,检查服务器上此文件是否存在！", "错误", JOptionPane.ERROR_MESSAGE);
+      throw ex;
+    } finally {
+      if (fos != null) {
+        try {
+          fos.close();
+        } catch (IOException e) {
+          logger.error(e.getMessage(), e);
+        }
+      }
+    }
+  }
+
   /**
    * 创建文件
    * @param fileName：文件名称
@@ -196,8 +199,7 @@ public class WordFileUtil {
 
     } catch (Exception ex) {
       fullFileName = "";
-      JOptionPane.showMessageDialog(null, "从服务器载入文件(" + fileName + ")内容失败,检查服务器上此文件是否存在！", "错误",
-        JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, "从服务器载入文件(" + fileName + ")内容失败,检查服务器上此文件是否存在！", "错误", JOptionPane.ERROR_MESSAGE);
     } finally {
       if (fos != null) {
         try {
@@ -218,21 +220,21 @@ public class WordFileUtil {
       file.mkdirs();
     }
     FileOutputStream fos = null;
-    OutputStreamWriter ow=null;
+    OutputStreamWriter ow = null;
     try {
       // 先删除文件
       deleteFile(filename);
       // 创建文件
       fos = new FileOutputStream(filename);
-      ow=new OutputStreamWriter(fos, "UTF-8");
-      String cc=new String(content,"UTF-8");
+      ow = new OutputStreamWriter(fos, "UTF-8");
+      String cc = new String(content, "UTF-8");
       ow.write(cc);
       ow.flush();
     } catch (Exception ex) {
       isSucceed = false;
-      logger.error("载入文件失败"+ex.getMessage(), ex);
-      if(panel!=null){
-      UIUtilities.showStaickTraceDialog(ex, panel, "载入文件失败", ex.getMessage());
+      logger.error("载入文件失败" + ex.getMessage(), ex);
+      if (panel != null) {
+        UIUtilities.showStaickTraceDialog(ex, panel, "载入文件失败", ex.getMessage());
       }
     } finally {
       if (ow != null) {
@@ -242,12 +244,12 @@ public class WordFileUtil {
           logger.error(e.getMessage(), e);
         }
       }
-        if (fos != null) {
-          try {
-            fos.close();
-          } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-          }
+      if (fos != null) {
+        try {
+          fos.close();
+        } catch (IOException e) {
+          logger.error(e.getMessage(), e);
+        }
       }
     }
     return isSucceed;
@@ -335,8 +337,7 @@ public class WordFileUtil {
       BigDecimal resultSize = available.divide(mByte, 2, BigDecimal.ROUND_HALF_UP);
 
       if (sizeLimit && resultSize.compareTo(maxSizeM) > 0) {
-        JOptionPane.showMessageDialog(null, "文件限制在" + maxSizeM + "m以内,此文件大于这个数不能上传！", "提示",
-          JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, "文件限制在" + maxSizeM + "m以内,此文件大于这个数不能上传！", "提示", JOptionPane.INFORMATION_MESSAGE);
         return flag;
       }
 
@@ -362,16 +363,15 @@ public class WordFileUtil {
     return flag;
   }
 
-
-  public static String uploadWordFile(String fileName,String fileId){
-    if(fileId!=null && fileId.trim().length()>0){
+  public static String uploadWordFile(String fileName, String fileId) {
+    if (fileId != null && fileId.trim().length() > 0) {
       updateAsFileContent(fileName, fileId);
-    }else{
-      fileId=insertAsFileContent(fileName);
+    } else {
+      fileId = insertAsFileContent(fileName);
     }
     return fileId;
   }
-  
+
   public static String insertAsFileContent(String fileName) {
     // TODO Auto-generated method stub
 
@@ -387,8 +387,7 @@ public class WordFileUtil {
       BigDecimal resultSize = available.divide(mByte, 2, BigDecimal.ROUND_HALF_UP);
 
       if (sizeLimit && resultSize.compareTo(maxSizeM) > 0) {
-        JOptionPane.showMessageDialog(null, "文件限制在" + maxSizeM + "m以内,此文件大于这个数不能上传！", "提示",
-          JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, "文件限制在" + maxSizeM + "m以内,此文件大于这个数不能上传！", "提示", JOptionPane.INFORMATION_MESSAGE);
         return "";
       }
 
@@ -434,8 +433,7 @@ public class WordFileUtil {
       BigDecimal resultSize = available.divide(mByte, 2, BigDecimal.ROUND_HALF_UP);
 
       if (sizeLimit && resultSize.compareTo(maxSizeM) > 0) {
-        JOptionPane.showMessageDialog(null, "文件限制在" + maxSizeM + "m以内,此文件大于这个数不能上传！", "提示",
-          JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, "文件限制在" + maxSizeM + "m以内,此文件大于这个数不能上传！", "提示", JOptionPane.INFORMATION_MESSAGE);
         return "";
       }
 
@@ -462,8 +460,7 @@ public class WordFileUtil {
     }
     return fileId;
   }
-  
-  
+
   /**
    * 获得转换后的全网页文件名称
    * @param htmlFileName
@@ -504,34 +501,34 @@ public class WordFileUtil {
   public static String getPortalHref(String fileName) {
     return AsOptionMeta.getOptVal("OPT_ZC_PORTAL_HREF_PATH") + fileName + ZcSettingConstants.HTML_FILE_SUFFIX;
   }
-  
-  public static String doSaveWordFile(String fileName,WordPane selfWordPane,Component self) {
+
+  public static String doSaveWordFile(String fileName, WordPane selfWordPane, Component self) {
     JFileChooser chooser = new JFileChooser();
     chooser.setDialogType(JFileChooser.SAVE_DIALOG);
     chooser.setDialogTitle("保存公告到:");
-    String path = "c:/"+fileName;
-    
+    String path = "c:/" + fileName;
+
     WordFileFilter wordFileter = new WordFileFilter();
     chooser.addChoosableFileFilter(wordFileter);
-    
-    chooser.setSelectedFile(new File(path));       
+
+    chooser.setSelectedFile(new File(path));
     int r = chooser.showSaveDialog(self);
     if (r == JFileChooser.APPROVE_OPTION) {
       path = chooser.getSelectedFile().getPath();
     }
 
     selfWordPane.save(path);
-   return new File(".").getAbsolutePath();    
+    return new File(".").getAbsolutePath();
   }
-  
-  public static class WordFileFilter extends FileFilter {   
-    public String getDescription() {   
-        return "*.doc";   
-    }   
-  
-    public boolean accept(File file) {   
-        String name = file.getName();   
-        return name.toLowerCase().endsWith(".doc");   
-    }   
-  }    
+
+  public static class WordFileFilter extends FileFilter {
+    public String getDescription() {
+      return "*.doc";
+    }
+
+    public boolean accept(File file) {
+      String name = file.getName();
+      return name.toLowerCase().endsWith(".doc");
+    }
+  }
 }
