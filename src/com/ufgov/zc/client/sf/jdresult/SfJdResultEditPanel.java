@@ -1,5 +1,6 @@
 package com.ufgov.zc.client.sf.jdresult;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Dialog.ModalityType;
@@ -12,6 +13,9 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
@@ -49,6 +53,7 @@ import com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel;
 import com.ufgov.zc.client.component.zc.fieldeditor.AsValFieldEditor;
 import com.ufgov.zc.client.component.zc.fieldeditor.DateFieldEditor;
 import com.ufgov.zc.client.component.zc.fieldeditor.ForeignEntityFieldEditor;
+import com.ufgov.zc.client.component.zc.fieldeditor.IntFieldEditor;
 import com.ufgov.zc.client.component.zc.fieldeditor.TextAreaFieldEditor;
 import com.ufgov.zc.client.component.zc.fieldeditor.TextFieldEditor;
 import com.ufgov.zc.client.sf.component.JClosableTabbedPane;
@@ -56,10 +61,12 @@ import com.ufgov.zc.client.sf.dataflow.SfDataFlowDialog;
 import com.ufgov.zc.client.sf.dataflow.SfDataFlowUtil;
 import com.ufgov.zc.client.sf.entrust.SfEntrustHandler;
 import com.ufgov.zc.client.sf.util.SfJdPersonSelectHandler;
+import com.ufgov.zc.client.sf.util.SfUtil;
 import com.ufgov.zc.client.zc.ButtonStatus;
 import com.ufgov.zc.client.zc.ZcUtil;
 import com.ufgov.zc.common.sf.model.SfEntrust;
 import com.ufgov.zc.common.sf.model.SfJdResult;
+import com.ufgov.zc.common.sf.model.SfJdTarget;
 import com.ufgov.zc.common.sf.publish.ISfEntrustServiceDelegate;
 import com.ufgov.zc.common.sf.publish.ISfJdResultServiceDelegate;
 import com.ufgov.zc.common.system.RequestMeta;
@@ -73,7 +80,7 @@ import com.ufgov.zc.common.system.util.Utils;
 import com.ufgov.zc.common.zc.model.ZcBaseBill;
 import com.ufgov.zc.common.zc.publish.IZcEbBaseServiceDelegate;
 
-public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
+public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
 
   /**
    * 
@@ -141,16 +148,39 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
   protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate;
 
   private ISfJdResultServiceDelegate sfJdResultServiceDelegate;
-  private ISfEntrustServiceDelegate sfEntrustServiceDelegate ;
-  
-  private ElementConditionDto reqDto=new ElementConditionDto();
+
+  private ISfEntrustServiceDelegate sfEntrustServiceDelegate;
+
+  private ElementConditionDto reqDto = new ElementConditionDto();
+
+  private List<AbstractFieldEditor> headFieldList = new ArrayList<AbstractFieldEditor>();
+
+  private List<AbstractFieldEditor> targetFieldList = new ArrayList<AbstractFieldEditor>();
+
+  private List<AbstractFieldEditor> footFieldList = new ArrayList<AbstractFieldEditor>();
+
+  TextAreaFieldEditor brief = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_BRIEF), "brief", -1, 5, 5);
+
+  TextAreaFieldEditor jdProcess = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_PROCESS), "jdProcess", -1, 5, 5);
+
+  TextAreaFieldEditor jdPingJia = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_RESULT), "jdResult", -1, 5, 5);
+
+  TextAreaFieldEditor jdOpinion = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_OPINION), "jdOpinion", -1, 5, 5);
+
+  TextAreaFieldEditor remark = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_REMARK), "remark", -1, 5, 5);
+
+  TextAreaFieldEditor zhuSu = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_ZHU_SU), "zhuSu", -1, 5, 5);
+
+  private JTabbedPane centerPanel;
+
+  private JPanel jdTargetDetailPanel;
 
   public SfJdResultEditPanel(GkBaseDialog parent, ListCursor listCursor, String tabStatus, SfJdResultListPanel listPanel) {
     // TODO Auto-generated constructor stub
     super(SfJdResultEditPanel.class, BillElementMeta.getBillElementMetaWithoutNd(compoId));
     zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
     sfJdResultServiceDelegate = (ISfJdResultServiceDelegate) ServiceFactory.create(ISfJdResultServiceDelegate.class, "sfJdResultServiceDelegate");
-    sfEntrustServiceDelegate = (ISfEntrustServiceDelegate) ServiceFactory.create(ISfEntrustServiceDelegate.class,"sfEntrustServiceDelegate");
+    sfEntrustServiceDelegate = (ISfEntrustServiceDelegate) ServiceFactory.create(ISfEntrustServiceDelegate.class, "sfEntrustServiceDelegate");
     mainBillElementMeta = BillElementMeta.getBillElementMetaWithoutNd(compoId);
     this.workPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId),
       TitledBorder.CENTER, TitledBorder.TOP, new Font("宋体", Font.BOLD, 15), Color.BLUE));
@@ -179,16 +209,16 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
 
     SfJdResult bill = (SfJdResult) listCursor.getCurrentObject();
 
-    if (bill != null ) {
-      if(bill.getJdResultId() != null){//列表页面双击进入
+    if (bill != null) {
+      if (bill.getJdResultId() != null) {//列表页面双击进入
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_BROWSE;
         bill = sfJdResultServiceDelegate.selectByPrimaryKey(bill.getJdResultId(), this.requestMeta);
         listCursor.setCurrentObject(bill);
-        this.setEditingObject(bill);        
-      }else if(bill.getEntrustId()!=null){//图形界面进来的新增，已经确定了entrust
+        this.setEditingObject(bill);
+      } else if (bill.getEntrustId() != null) {//图形界面进来的新增，已经确定了entrust
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
         setDefaultValue(bill);
-        this.setEditingObject(bill); 
+        this.setEditingObject(bill);
       }
     } else {//新增按钮进入
       this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
@@ -202,6 +232,7 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
     setOldObject();
     setButtonStatus();
     updateFieldEditorsEditable();
+    adjustTabs();
   }
 
   private void setDefaultValue(SfJdResult bill) {
@@ -216,7 +247,7 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
 
   private void refreshSubData() {
   }
-  
+
   protected void updateFieldEditorsEditable() {
 
     SfJdResult qx = (SfJdResult) listCursor.getCurrentObject();
@@ -238,19 +269,19 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
           editor.setEnabled(false);
         }
       }
-      
+
       //工作流中该节点选中了保存按钮可用，则当前状态当前人可用编辑
       if (saveButton.isVisible() && saveButton.isEnabled()) {
         isEdit = true;
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
       }
-      
+
     } else {
-      
+
       for (AbstractFieldEditor editor : fieldEditors) {
         if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
-          if ("inputDate".equals(editor.getFieldName())||"inputorName".equals(editor.getFieldName())||"status".equals(editor.getFieldName())
-            ||"nd".equals(editor.getFieldName())||"acceptor".equals(editor.getFieldName())||"acceptorName".equals(editor.getFieldName())) {
+          if ("inputDate".equals(editor.getFieldName()) || "inputorName".equals(editor.getFieldName()) || "status".equals(editor.getFieldName())
+            || "nd".equals(editor.getFieldName()) || "acceptor".equals(editor.getFieldName()) || "acceptorName".equals(editor.getFieldName())) {
             editor.setEnabled(false);
           } else {
             editor.setEnabled(true);
@@ -283,7 +314,7 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
       bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
 
       btnStatusList.add(bs);
-      
+
       bs = new ButtonStatus();
 
       bs.setButton(this.editButton);
@@ -402,33 +433,33 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
 
     toolBar.setCompoId(getCompoId());
 
-//    toolBar.add(addButton);
-    
+    //    toolBar.add(addButton);
+
     toolBar.add(editButton);
 
     toolBar.add(saveButton);
 
-        toolBar.add(sendButton);
+    toolBar.add(sendButton);
 
-//        toolBar.add(saveAndSendButton);
+    //        toolBar.add(saveAndSendButton);
 
-        toolBar.add(suggestPassButton);
+    toolBar.add(suggestPassButton);
 
     //    toolBar.add(sendGkButton);
 
-        toolBar.add(unAuditButton);
+    toolBar.add(unAuditButton);
 
-        toolBar.add(unTreadButton);
+    toolBar.add(unTreadButton);
 
-        toolBar.add(callbackButton);
+    toolBar.add(callbackButton);
 
-        toolBar.add(deleteButton);
+    toolBar.add(deleteButton);
 
     //    toolBar.add(importButton);
 
-        toolBar.add(traceButton);
+    toolBar.add(traceButton);
 
-        toolBar.add(printButton);
+    toolBar.add(printButton);
 
     //    toolBar.add(previousButton);
 
@@ -518,37 +549,36 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
 
     });
 
-    
     sendButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doSend();
       }
     });
-    
+
     suggestPassButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doSuggestPass();
       }
     });
-    
+
     callbackButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doCallback();
       }
     });
-    
+
     unTreadButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doUnTread();
       }
     });
-    
+
     unAuditButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doUnAudit();
       }
     });
-    
+
     traceButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doTrace();
@@ -558,12 +588,12 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
 
   protected void doAdd() {
     // TODO Auto-generated method stub
-    SfJdResult bill=new SfJdResult();
+    SfJdResult bill = new SfJdResult();
     setDefaultValue(bill);
     listCursor.getDataList().add(bill);
     listCursor.setCurrentObject(bill);
     refreshData();
-    
+
   }
 
   protected void doPrevious() {
@@ -694,7 +724,7 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
   private void updateDataFlowDialog() {
     // TODO Auto-generated method stub
     SfJdResult bill = (SfJdResult) this.listCursor.getCurrentObject();
-    if(listPanel!=null && listPanel.getParent() instanceof JClosableTabbedPane){
+    if (listPanel != null && listPanel.getParent() instanceof JClosableTabbedPane) {
       return;
     }
     if (parent instanceof SfJdResultDialog) {//新增的，创建数据流界面
@@ -724,20 +754,20 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
     if (mainValidateInfo.length() != 0) {
       errorInfo.append("\n").append(mainValidateInfo.toString());
     }
-     
-   /* //去除空行
-    List emptyLst=new ArrayList();
-    for(int i=0;i<bill.getValidateDetailLst().size();i++){
-      SfJdResultValidateDetail d=(SfJdResultValidateDetail) bill.getValidateDetailLst().get(i);      
-      if(d.getInfoReq()==null && d.getInfoReq().getJdResultReqCode()==null){
-        emptyLst.add(d);
-      }
-    }
-    if(emptyLst.size()>0){
-      bill.getValidateDetailLst().retainAll(emptyLst);
-      refreshValidateTableData();
-    }*/
-    
+
+    /* //去除空行
+     List emptyLst=new ArrayList();
+     for(int i=0;i<bill.getValidateDetailLst().size();i++){
+       SfJdResultValidateDetail d=(SfJdResultValidateDetail) bill.getValidateDetailLst().get(i);      
+       if(d.getInfoReq()==null && d.getInfoReq().getJdResultReqCode()==null){
+         emptyLst.add(d);
+       }
+     }
+     if(emptyLst.size()>0){
+       bill.getValidateDetailLst().retainAll(emptyLst);
+       refreshValidateTableData();
+     }*/
+
     if (errorInfo.length() != 0) {
       JOptionPane.showMessageDialog(this, errorInfo.toString(), "提示", JOptionPane.WARNING_MESSAGE);
       return false;
@@ -807,13 +837,15 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
         for (Object obj : selectedDatas) {
           SfJdResult currentBill = (SfJdResult) listCursor.getCurrentObject();
           SfEntrust entrust = (SfEntrust) obj;
-          entrust=sfEntrustServiceDelegate.selectByPrimaryKey(entrust.getEntrustId(), requestMeta);
+          entrust = sfEntrustServiceDelegate.selectByPrimaryKey(entrust.getEntrustId(), requestMeta);
           currentBill.setEntrustId(entrust.getEntrustId());
           currentBill.setEntrustCode(entrust.getCode());
           currentBill.setName(entrust.getName() + "鉴定结果");
           currentBill.setJdr(entrust.getJdFzr());
           currentBill.setBrief(entrust.getBrief());
+          currentBill.setEntrust(entrust);
           setEditingObject(currentBill);
+          adjustTabs();
           break;
         }
       }
@@ -832,7 +864,9 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
         currentBill.setJdResult(null);
         currentBill.setJdOpinion(null);
         currentBill.setRemark(null);
+        currentBill.setEntrust(new SfEntrust());
         setEditingObject(currentBill);
+        adjustTabs();
       }
     };
     ElementConditionDto dto = new ElementConditionDto();
@@ -841,70 +875,87 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
       entrustHandler.getColumNames(), LangTransMeta.translate(SfJdResult.COL_ENTRUST_CODE), "entrustCode");
     TextFieldEditor name = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_NAME), "name");
     AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfJdResult.COL_STATUS), "status", SfJdResult.SF_VS_JD_RESULT_STATUS);
-    AsValFieldEditor resultType = new AsValFieldEditor(LangTransMeta.translate(SfJdResult.COL_RESULT_TYPE), "resultType", SfJdResult.SF_VS_JD_RESULT_TYPE);
+    AsValFieldEditor resultType = new AsValFieldEditor(LangTransMeta.translate(SfJdResult.COL_RESULT_TYPE), "resultType",
+      SfJdResult.SF_VS_JD_RESULT_TYPE);
     DateFieldEditor jdDate = new DateFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_DATE), "jdDate");
     TextFieldEditor jdAddress = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_ADDRESS), "jdAddress");
-    TextAreaFieldEditor zcPersons = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_ZC_PERSONS), "zcPersons", 30, 2,5);
-    TextAreaFieldEditor brief = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_BRIEF), "brief", 100, 3,5);
-    TextAreaFieldEditor jdProcess = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_PROCESS), "jdProcess", 500, 3,5);
-    TextAreaFieldEditor jdResult = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_RESULT), "jdResult", 500, 3,5);
-    TextAreaFieldEditor jdOpinion = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_OPINION), "jdOpinion", 500, 3,5);
-    TextAreaFieldEditor remark = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_REMARK), "remark", 100, 2,5);
-    
-    SfJdPersonSelectHandler jdrHandler=new SfJdPersonSelectHandler() {
-      
+    TextAreaFieldEditor zcPersons = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_ZC_PERSONS), "zcPersons", 100, 2, 5);
+
+    SfJdPersonSelectHandler jdrHandler = new SfJdPersonSelectHandler() {
+
       @Override
       public void excute(List selectedDatas) {
         // TODO Auto-generated method stub
         for (Object obj : selectedDatas) {
           SfJdResult currentBill = (SfJdResult) listCursor.getCurrentObject();
-          User jdr=(User)obj;
+          User jdr = (User) obj;
           currentBill.setJdr(jdr.getUserId());
           break;
         }
       }
     };
-    dto=new ElementConditionDto();
-    ForeignEntityFieldEditor jdr = new ForeignEntityFieldEditor(jdrHandler.getSqlId(), dto, 20, jdrHandler,
-      jdrHandler.getColumNames(), LangTransMeta.translate(SfJdResult.COL_JDR), "jdrName");
+    dto = new ElementConditionDto();
+    ForeignEntityFieldEditor jdr = new ForeignEntityFieldEditor(jdrHandler.getSqlId(), dto, 20, jdrHandler, jdrHandler.getColumNames(),
+      LangTransMeta.translate(SfJdResult.COL_JDR), "jdrName");
     TextFieldEditor inputor = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_INPUTOR), "inputorName");
     DateFieldEditor inputDate = new DateFieldEditor(LangTransMeta.translate(SfJdResult.COL_INPUT_DATE), "inputDate");
-    
 
-    editorList.add(entrust);
-    editorList.add(name);
-    editorList.add(status);
+    TextFieldEditor jdTargetName = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_TARGET), "jdTarget.name");
+    TextFieldEditor jdTargetName2 = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_TARGET), "jdTarget.name");
+    IntFieldEditor jdTargetAge = new IntFieldEditor(LangTransMeta.translate(SfJdTarget.COL_AGE), "jdTarget.age");
+    AsValFieldEditor jdTargetSex = new AsValFieldEditor(LangTransMeta.translate(SfJdTarget.COL_SEX), "jdTarget.sex", SfElementConstants.VS_SEX);
+    TextFieldEditor jdTargetIdName = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ID_NAME), "jdTarget.idName");
+    TextFieldEditor jdTargetIdCode = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ID_CODE), "jdTarget.idCode");
+    TextFieldEditor jdTargetPhone = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_PHONE), "jdTarget.phone");
+    TextFieldEditor jdTargetAddress = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ADDRESS), "jdTarget.address");
 
-    editorList.add(jdr);
-    editorList.add(jdDate);
-    editorList.add(jdAddress);
-    
-    editorList.add(zcPersons);
+    TextFieldEditor jdMethod = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_METHOD), "jdMethod");
+
+    headFieldList.add(entrust);
+    headFieldList.add(name);
+    headFieldList.add(status);
+
+    headFieldList.add(jdr);
+    headFieldList.add(jdDate);
+    headFieldList.add(jdAddress);
+
+    headFieldList.add(jdTargetName);
+    headFieldList.add(jdMethod);
+    headFieldList.add(zcPersons);
+
+    headFieldList.add(resultType);
+    headFieldList.add(inputor);
+    headFieldList.add(inputDate);
+
+    targetFieldList.add(jdTargetName2);
+    targetFieldList.add(jdTargetAge);
+    targetFieldList.add(jdTargetSex);
+    targetFieldList.add(jdTargetIdName);
+    targetFieldList.add(jdTargetIdCode);
+    targetFieldList.add(jdTargetPhone);
+    targetFieldList.add(jdTargetAddress);
+
     editorList.add(brief);
     editorList.add(jdProcess);
-
-    editorList.add(jdResult);
+    editorList.add(jdPingJia);
     editorList.add(jdOpinion);
-
-    editorList.add(resultType);
-    editorList.add(inputor);
-    editorList.add(inputDate);
-    
     editorList.add(remark);
+    editorList.add(zhuSu);
+
+    editorList.addAll(headFieldList);
+    editorList.addAll(footFieldList);
+    editorList.addAll(targetFieldList);
 
     return editorList;
   }
-
-
-
 
   /* (non-Javadoc)
    * @see com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel#createSubBillPanel()
    */
   @Override
   public JComponent createSubBillPanel() {
-    
-   return null;
+
+    return null;
   }
 
   public void doExit() {
@@ -965,6 +1016,7 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
       updateDataFlowDialog();
     }
   }
+
   /**
    * 审核
    */
@@ -974,7 +1026,8 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
     }
     SfJdResult qx = (SfJdResult) ObjectUtil.deepCopy(this.listCursor.getCurrentObject());
     requestMeta.setFuncId(this.suggestPassButton.getFuncId());
-    GkCommentDialog commentDialog = new GkCommentDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),ModalityType.APPLICATION_MODAL);
+    GkCommentDialog commentDialog = new GkCommentDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),
+      ModalityType.APPLICATION_MODAL);
     if (commentDialog.cancel) {
       return;
     }
@@ -999,9 +1052,9 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
     }
   }
 
- /**
-  * 销审
-  */
+  /**
+   * 销审
+   */
   protected void doUnAudit() {
     SfJdResult qx = (SfJdResult) ObjectUtil.deepCopy(this.listCursor.getCurrentObject());
     boolean success = true;
@@ -1030,11 +1083,13 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
       JOptionPane.showMessageDialog(this, "销审失败 ！" + errorInfo, "错误", JOptionPane.ERROR_MESSAGE);
     }
   }
- /**
-  * 退回
-  */
+
+  /**
+   * 退回
+   */
   protected void doUnTread() {
-    GkCommentUntreadDialog commentDialog = new GkCommentUntreadDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),ModalityType.APPLICATION_MODAL);
+    GkCommentUntreadDialog commentDialog = new GkCommentUntreadDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),
+      ModalityType.APPLICATION_MODAL);
     if (commentDialog.cancel) {
       return;
     }
@@ -1063,9 +1118,9 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
     }
   }
 
- /**
-  * 收回
-  */
+  /**
+   * 收回
+   */
   protected void doCallback() {
     boolean success = true;
     SfJdResult afterSaveBill = null;
@@ -1101,5 +1156,74 @@ public class SfJdResultEditPanel  extends AbstractMainSubEditPanel {
     }
     ZcUtil.showTraceDialog(bean, compoId);
   }
-}
 
+  protected void init() {
+
+    this.initToolBar(toolBar);
+
+    this.setLayout(new BorderLayout());
+
+    this.add(toolBar, BorderLayout.NORTH);
+
+    fieldEditors = createFieldEditors();
+
+    JPanel headPanel = SfUtil.createFieldEditorPanel(this.billClass, this.eleMeta, headFieldList, 3);
+    JPanel footPanel = SfUtil.createFieldEditorPanel(this.billClass, this.eleMeta, footFieldList, 3);
+    initCenterPanel();
+
+    workPanel.setLayout(new BorderLayout());
+
+    workPanel.add(headPanel, BorderLayout.NORTH);
+
+    workPanel.add(centerPanel, BorderLayout.CENTER);
+
+    workPanel.add(footPanel, BorderLayout.SOUTH);
+
+    JScrollPane js = new JScrollPane(workPanel);
+    this.add(js, BorderLayout.CENTER);
+  }
+
+  private void initCenterPanel() {
+    // TODO Auto-generated method stub
+
+    centerPanel = new JTabbedPane();
+
+    if (jdTargetDetailPanel == null) {
+      JPanel p = SfUtil.createFieldEditorPanel(this.billClass, mainBillElementMeta, targetFieldList, 3);
+      jdTargetDetailPanel = new JPanel();
+      jdTargetDetailPanel.setLayout(new BorderLayout());
+      jdTargetDetailPanel.add(p, BorderLayout.NORTH);
+    }
+    centerPanel.add("被鉴定人", jdTargetDetailPanel);
+
+    centerPanel.add("检案摘要", brief);
+
+    centerPanel.add("主诉", zhuSu);
+
+    centerPanel.add("鉴定过程", jdProcess);
+
+    centerPanel.add("综合评价", jdPingJia);
+
+    centerPanel.add("鉴定意见", jdOpinion);
+
+    centerPanel.add("备注", remark);
+  }
+
+  /**
+   * 根据不同类型的鉴定，隐藏部分页签
+   */
+  private void adjustTabs() {
+    SfJdResult bill = (SfJdResult) listCursor.getCurrentObject();
+    if (bill == null || bill.getEntrust() == null || bill.getEntrust().getMajorCode() == null) {
+      return;
+    }
+
+    String fayiCode = AsOptionMeta.getOptVal(SfElementConstants.OPT_SF_MAJOR_FA_YI_CODE);
+    if (bill.getEntrust().getMajorCode().equals(fayiCode)) {
+      centerPanel.remove(jdPingJia);
+    } else {
+      centerPanel.remove(zhuSu);
+      centerPanel.remove(jdTargetDetailPanel);
+    }
+  }
+}

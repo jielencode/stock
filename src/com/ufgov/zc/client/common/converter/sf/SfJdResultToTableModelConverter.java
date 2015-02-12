@@ -12,7 +12,7 @@ import com.ufgov.zc.client.datacache.AsValDataCache;
 import com.ufgov.zc.common.sf.model.SfJdResult;
 
 public class SfJdResultToTableModelConverter {
-  
+
   public static TableModel convertMainLst(List mainLst) {
     // TODO Auto-generated method stub
 
@@ -26,13 +26,13 @@ public class SfJdResultToTableModelConverter {
     names.add(LangTransMeta.translate(SfJdResult.COL_JDR));
     names.add(LangTransMeta.translate(SfJdResult.COL_STATUS));
     if (mainLst != null && mainLst.size() > 0) {
-      SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd");
+      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
       for (int i = 0; i < mainLst.size(); i++) {
         Vector rowData = new Vector();
         SfJdResult outInfo = (SfJdResult) mainLst.get(i);
         rowData.add(outInfo.getEntrustCode());
         rowData.add(outInfo.getName());
-        rowData.add(df.format(outInfo.getJdDate()));
+        rowData.add(outInfo.getJdDate() == null ? null : df.format(outInfo.getJdDate()));
         rowData.add(outInfo.getJdrName());
         rowData.add(AsValDataCache.getName(SfJdResult.SF_VS_JD_RESULT_STATUS, outInfo.getStatus()));
         values.add(rowData);

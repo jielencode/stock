@@ -53,6 +53,11 @@ public interface SfElementConstants {
    */
   public static final String OPT_SF_JD_COMPANY_TEL = "OPT_SF_JD_COMPANY_TEL";
 
+  /**
+   * 法医鉴定专业编号
+   */
+  public static final String OPT_SF_MAJOR_FA_YI_CODE = "OPT_SF_MAJOR_FA_YI_CODE";
+
   // word文件加密的密码
   public static final String WORD_PASSWORD = "sfjd";
 

@@ -70,7 +70,7 @@ import com.ufgov.zc.common.system.util.ObjectUtil;
  * @author Administrator
  *
  */
-public class SfJdResultListPanel  extends AbstractEditListBill implements ParentWindowAware {
+public class SfJdResultListPanel extends AbstractEditListBill implements ParentWindowAware {
   /**
    * 
    */
@@ -88,9 +88,9 @@ public class SfJdResultListPanel  extends AbstractEditListBill implements Parent
 
   private ElementConditionDto elementConditionDto = new ElementConditionDto();
 
-  private ISfJdResultServiceDelegate sfJdResultServiceDelegate ;
+  private ISfJdResultServiceDelegate sfJdResultServiceDelegate;
 
-  private IBaseDataServiceDelegate baseDataServiceDelegate ;
+  private IBaseDataServiceDelegate baseDataServiceDelegate;
 
   private SfEntrust entrust;
 
@@ -105,151 +105,220 @@ public class SfJdResultListPanel  extends AbstractEditListBill implements Parent
     this.parentWindow = parentWindow;
 
   }
-  public SfJdResultListPanel(){
+
+  public SfJdResultListPanel() {
     this(null);
   }
-  public SfJdResultListPanel(SfEntrust entrust){
-    this.entrust=entrust;
+
+  public SfJdResultListPanel(SfEntrust entrust) {
+    this.entrust = entrust;
     init();
   }
-  void init(){
-  sfJdResultServiceDelegate = (ISfJdResultServiceDelegate) ServiceFactory.create(ISfJdResultServiceDelegate.class,"sfJdResultServiceDelegate");
-  baseDataServiceDelegate = (IBaseDataServiceDelegate) ServiceFactory.create(IBaseDataServiceDelegate.class,"baseDataServiceDelegate");
 
+  void init() {
+    sfJdResultServiceDelegate = (ISfJdResultServiceDelegate) ServiceFactory.create(ISfJdResultServiceDelegate.class, "sfJdResultServiceDelegate");
+    baseDataServiceDelegate = (IBaseDataServiceDelegate) ServiceFactory.create(IBaseDataServiceDelegate.class, "baseDataServiceDelegate");
 
-  UIUtilities.asyncInvoke(new DefaultInvokeHandler<List<SearchCondition>>() {
+    UIUtilities.asyncInvoke(new DefaultInvokeHandler<List<SearchCondition>>() {
 
-    @Override
-    public List<SearchCondition> execute() throws Exception {
+      @Override
+      public List<SearchCondition> execute() throws Exception {
 
-      List<SearchCondition> needDisplaySearchConditonList = SearchConditionUtil.getNeedDisplaySearchConditonList(WorkEnv.getInstance()
+        List<SearchCondition> needDisplaySearchConditonList = SearchConditionUtil.getNeedDisplaySearchConditonList(WorkEnv.getInstance()
 
-      .getCurrUserId(), SfJdResult.TAB_ID);
+        .getCurrUserId(), SfJdResult.TAB_ID);
 
-      return needDisplaySearchConditonList;
+        return needDisplaySearchConditonList;
 
-    }
-
-    @Override
-    public void success(List<SearchCondition> needDisplaySearchConditonList) {
-
-      List<TableDisplay> showingDisplays = SearchConditionUtil.getNeedDisplayTableDisplay(needDisplaySearchConditonList);
-
-      init(createDataDisplay(showingDisplays), null);//调用父类方法
-
-      revalidate();
-
-      repaint();
-
-    }
-    @Override
-    public void after()
-    {
-      super.after();
-      checkEntrust();
-    }
-
-  });
-
-  requestMeta.setCompoId(compoId);
-}
-
-/**
- * 检查当前是否设置了entrust，如果设置了，则切换到全部页签，显示过滤后的数据
- */
-protected void checkEntrust() {
-  // TODO Auto-generated method stub
-  if(entrust!=null){
-    for(int i=0;i<getTopDataDisplay().getShowingTableDisplays().size();i++){
-      TableDisplay td=getTopDataDisplay().getShowingTableDisplays().get(i);
-      if(td.getStatus().equals("all")){
-        getTopDataDisplay().getTabbedPane().setSelectedComponent(td);
-        break;
       }
+
+      @Override
+      public void success(List<SearchCondition> needDisplaySearchConditonList) {
+
+        List<TableDisplay> showingDisplays = SearchConditionUtil.getNeedDisplayTableDisplay(needDisplaySearchConditonList);
+
+        init(createDataDisplay(showingDisplays), null);//调用父类方法
+
+        revalidate();
+
+        repaint();
+
+      }
+
+      @Override
+      public void after() {
+        super.after();
+        checkEntrust();
+      }
+
+    });
+
+    requestMeta.setCompoId(compoId);
+  }
+
+  /**
+   * 检查当前是否设置了entrust，如果设置了，则切换到全部页签，显示过滤后的数据
+   */
+  protected void checkEntrust() {
+    // TODO Auto-generated method stub
+    if (entrust != null) {
+      for (int i = 0; i < getTopDataDisplay().getShowingTableDisplays().size(); i++) {
+        TableDisplay td = getTopDataDisplay().getShowingTableDisplays().get(i);
+        if (td.getStatus().equals("all")) {
+          getTopDataDisplay().getTabbedPane().setSelectedComponent(td);
+          break;
+        }
+      }
+      AbstractSearchConditionArea conditonArea = getTopSearchConditionArea();
+      AbstractSearchConditionItem conditionItem = conditonArea.getCondItemsByCondiFieldCode("ENTRUST_CODE");
+      SfEntrustSearchConditionItem sfEntrustConditionItem = (SfEntrustSearchConditionItem) conditionItem;
+      sfEntrustConditionItem.setValue(entrust);
+      refreshCurrentTabData();
     }
-    AbstractSearchConditionArea conditonArea=getTopSearchConditionArea();
-    AbstractSearchConditionItem conditionItem=conditonArea.getCondItemsByCondiFieldCode("ENTRUST_CODE");    
-    SfEntrustSearchConditionItem sfEntrustConditionItem=(SfEntrustSearchConditionItem)conditionItem;
-    sfEntrustConditionItem.setValue(entrust);   
-    refreshCurrentTabData();
-  }
-}
-public void setEntrust(SfEntrust entrust){
-  this.entrust=entrust;
-}
-private AbstractDataDisplay createDataDisplay(List<TableDisplay> showingDisplays) {
-
-  return new DataDisplay(SearchConditionUtil.getAllTableDisplay(SfJdResult.TAB_ID), showingDisplays,
-
-  createTopConditionArea(), true);//true:显示收索条件区 false：不显示收索条件区
-
-}
-private AbstractSearchConditionArea topSearchConditionArea;
-
-private AbstractSearchConditionArea createTopConditionArea() {
-
-  Map defaultValueMap = new HashMap();
-
-  defaultValueMap.put("ND", ""+requestMeta.getSvNd());
-  if(entrust!=null){
-    defaultValueMap.put("ENTRUST_CODE", entrust);    
   }
 
-  topSearchConditionArea = new SaveableSearchConditionArea(SfJdResult.SEARCH_ID, null, true, defaultValueMap, null);
+  public void setEntrust(SfEntrust entrust) {
+    this.entrust = entrust;
+  }
 
-  AbstractSearchConditionItem item = this.topSearchConditionArea.getCondItemsByCondiFieldCode(null);
+  private AbstractDataDisplay createDataDisplay(List<TableDisplay> showingDisplays) {
 
-  return topSearchConditionArea;
+    return new DataDisplay(SearchConditionUtil.getAllTableDisplay(SfJdResult.TAB_ID), showingDisplays,
 
-}
-private AbstractSearchConditionArea getTopSearchConditionArea() {
-  return topSearchConditionArea;
-}
-private final class DataDisplay extends MultiDataDisplay {
-
-  private DataDisplay(List<TableDisplay> displays, List<TableDisplay> showingDisplays, AbstractSearchConditionArea conditionArea,
-
-  boolean showConditionArea) {
-
-    super(displays, showingDisplays, conditionArea, showConditionArea, SfJdResult.TAB_ID);
-
-    setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId), TitledBorder.CENTER, TitledBorder.TOP, new Font("宋体",
-
-    Font.BOLD, 15), Color.BLUE));
+    createTopConditionArea(), true);//true:显示收索条件区 false：不显示收索条件区
 
   }
 
-  protected void preprocessShowingTableDisplay(List<TableDisplay> showingTableDisplays) {
+  private AbstractSearchConditionArea topSearchConditionArea;
 
-    for (final TableDisplay d : showingTableDisplays) {
+  private AbstractSearchConditionArea createTopConditionArea() {
 
-      final JGroupableTable table = d.getTable();
+    Map defaultValueMap = new HashMap();
 
-      table.addMouseListener(new MouseAdapter() {
+    defaultValueMap.put("ND", "" + requestMeta.getSvNd());
+    if (entrust != null) {
+      defaultValueMap.put("ENTRUST_CODE", entrust);
+    }
 
-        public void mouseClicked(MouseEvent e) {
+    topSearchConditionArea = new SaveableSearchConditionArea(SfJdResult.SEARCH_ID, null, true, defaultValueMap, null);
 
-          if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+    AbstractSearchConditionItem item = this.topSearchConditionArea.getCondItemsByCondiFieldCode(null);
 
-            String tabStatus = d.getStatus();
+    return topSearchConditionArea;
 
-            JGroupableTable table = d.getTable();
+  }
 
-            MyTableModel model = (MyTableModel) table.getModel();
+  private AbstractSearchConditionArea getTopSearchConditionArea() {
+    return topSearchConditionArea;
+  }
 
-            int row = table.getSelectedRow();
+  private final class DataDisplay extends MultiDataDisplay {
 
-            List viewList = (List) ObjectUtil.deepCopy(ListUtil.convertToTableViewOrderList(model.getList(), table));
+    private DataDisplay(List<TableDisplay> displays, List<TableDisplay> showingDisplays, AbstractSearchConditionArea conditionArea,
 
-            SfJdResult charge=(SfJdResult) viewList.get(row);
-            if(self.getParent() instanceof JClosableTabbedPane){
-              new SfJdResultDialog(self, viewList, row, topDataDisplay.getActiveTableDisplay().getStatus());
-            }else{
-              new SfDataFlowDialog(compoId,SfDataFlowUtil.getEntrust(charge.getEntrustId()),self);
+    boolean showConditionArea) {
+
+      super(displays, showingDisplays, conditionArea, showConditionArea, SfJdResult.TAB_ID);
+
+      setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId), TitledBorder.CENTER,
+        TitledBorder.TOP, new Font("宋体",
+
+        Font.BOLD, 15), Color.BLUE));
+
+    }
+
+    protected void preprocessShowingTableDisplay(List<TableDisplay> showingTableDisplays) {
+
+      for (final TableDisplay d : showingTableDisplays) {
+
+        final JGroupableTable table = d.getTable();
+
+        table.addMouseListener(new MouseAdapter() {
+
+          public void mouseClicked(MouseEvent e) {
+
+            if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+
+              String tabStatus = d.getStatus();
+
+              JGroupableTable table = d.getTable();
+
+              MyTableModel model = (MyTableModel) table.getModel();
+
+              int row = table.getSelectedRow();
+
+              List viewList = (List) ObjectUtil.deepCopy(ListUtil.convertToTableViewOrderList(model.getList(), table));
+
+              SfJdResult charge = (SfJdResult) viewList.get(row);
+              if (self.getParent() instanceof JClosableTabbedPane) {
+                new SfJdResultDialog(self, viewList, row, topDataDisplay.getActiveTableDisplay().getStatus());
+              } else {
+                new SfDataFlowDialog(compoId, SfDataFlowUtil.getEntrust(charge.getEntrustId()), self);
+              }
+
             }
 
           }
 
+        });
+
+      }
+
+    }
+
+    @Override
+    protected void handleTableDisplayActived(AbstractSearchConditionItem[] searchConditionItems, final TableDisplay tableDisplay) {
+
+      elementConditionDto.setWfcompoId(compoId);
+
+      elementConditionDto.setExecutor(WorkEnv.getInstance().getCurrUserId());
+
+      elementConditionDto.setNd(WorkEnv.getInstance().getTransNd());
+
+      elementConditionDto.setStatus(tableDisplay.getStatus());
+
+      for (AbstractSearchConditionItem item : searchConditionItems) {
+
+        item.putToElementConditionDto(elementConditionDto);
+
+      }
+
+      final Container c = tableDisplay.getTable().getParent();
+
+      UIUtilities.asyncInvoke(new DefaultInvokeHandler<TableModel>() {
+
+        @Override
+        public void before() {
+
+          assert c != null;
+
+          installLoadingComponent(c);
+
+        }
+
+        @Override
+        public void after() {
+
+          assert c != null;
+
+          unInstallLoadingComponent(c);
+
+          c.add(tableDisplay.getTable());
+
+        }
+
+        @Override
+        public TableModel execute() throws Exception {
+          return SfJdResultToTableModelConverter.convertMainLst(self.sfJdResultServiceDelegate.getMainDataLst(elementConditionDto, requestMeta));
+
+        }
+
+        @Override
+        public void success(TableModel model) {
+
+          tableDisplay.setTableModel(model);
+          //        setButtonsVisiable();
+          setButtonStatus();
         }
 
       });
@@ -258,73 +327,11 @@ private final class DataDisplay extends MultiDataDisplay {
 
   }
 
-  @Override
-  protected void handleTableDisplayActived(AbstractSearchConditionItem[] searchConditionItems, final TableDisplay tableDisplay) {
+  static {
 
-    elementConditionDto.setWfcompoId(compoId);
-
-    elementConditionDto.setExecutor(WorkEnv.getInstance().getCurrUserId());
-
-    elementConditionDto.setNd(WorkEnv.getInstance().getTransNd());
-
-    elementConditionDto.setStatus(tableDisplay.getStatus());
-
-    for (AbstractSearchConditionItem item : searchConditionItems) {
-
-      item.putToElementConditionDto(elementConditionDto);
-
-    }
-
-    final Container c = tableDisplay.getTable().getParent();
-
-    UIUtilities.asyncInvoke(new DefaultInvokeHandler<TableModel>() {
-
-      @Override
-      public void before() {
-
-        assert c != null;
-
-        installLoadingComponent(c);
-
-      }
-
-      @Override
-      public void after() {
-
-        assert c != null;
-
-        unInstallLoadingComponent(c);
-
-        c.add(tableDisplay.getTable());
-
-      }
-
-      @Override
-      public TableModel execute() throws Exception {
-        return SfJdResultToTableModelConverter.convertMainLst(self.sfJdResultServiceDelegate.getMainDataLst(elementConditionDto, requestMeta));
-
-      }
-
-      @Override
-      public void success(TableModel model) {
-
-        tableDisplay.setTableModel(model);
-//        setButtonsVisiable();
-        setButtonStatus();
-      }
-
-    });
+    LangTransMeta.init("SF%");
 
   }
-
-}
-
-static {
-
-  LangTransMeta.init("SF%");
-
-}
-
 
   /**
    * @param args
@@ -541,6 +548,7 @@ static {
     }
 
   }
+
   @Override
   protected void addToolBarComponent(JFuncToolBar toolBar) {
 
@@ -552,13 +560,13 @@ static {
 
     // toolBar.add(updateButton);
 
-//    toolBar.add(deleteButton);
+    //    toolBar.add(deleteButton);
 
     toolBar.add(helpButton);
 
-//    toolBar.add(sendButton);//送审
+    //    toolBar.add(sendButton);//送审
 
-//    toolBar.add(suggestPassButton);//填写意见审核通过
+    //    toolBar.add(suggestPassButton);//填写意见审核通过
 
     //    toolBar.add(auditFinalButton);
 
@@ -570,13 +578,13 @@ static {
 
     //    toolBar.add(cancelButton);//撤销
 
-//    toolBar.add(traceButton);
+    //    toolBar.add(traceButton);
 
     //toolBar.add(printButton);
 
     //toolBar.add(isSendToNextButton);
 
-//    toolBar.add(traceDataButton);
+    //    toolBar.add(traceDataButton);
 
     // 初始化按钮的action事件
 
@@ -591,8 +599,6 @@ static {
       }
 
     });
-
-
 
     printButton.addActionListener(new ActionListener() {
 
@@ -624,10 +630,8 @@ static {
 
     });
 
-    
   }
 
- 
   public void refreshCurrentTabData() {
 
     topSearchConditionArea.doSearch();
@@ -671,8 +675,9 @@ static {
   private void doAdd() {
 
     new SfJdResultDialog(self, new ArrayList(1), -1, topDataDisplay.getActiveTableDisplay().getStatus());
+    //    new SfJdResultFirstDialog(self);
 
-//    new SfDataFlowDialog(compoId,null,self);
+    //    new SfDataFlowDialog(compoId,null,self);
   }
 
   private void doSend() {
@@ -682,7 +687,6 @@ static {
   private void doBatEdit() {
 
   }
-
 
   private void doBlankout() {
 
@@ -830,11 +834,9 @@ static {
     addButton.setVisible(SfUtil.canNew(compoId, null));
   }
 
- 
   public String getcompoId() {
     // TODO Auto-generated method stub
     return compoId;
   }
-
 
 }
