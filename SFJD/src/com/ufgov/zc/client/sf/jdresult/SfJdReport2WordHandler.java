@@ -32,6 +32,7 @@ public class SfJdReport2WordHandler extends WordHandlerAdapter {
   @Override
   public String getTemplateFileId() {
     // TODO Auto-generated method stub
+
     return "sf_jd_yijianshu_template";
   }
 
