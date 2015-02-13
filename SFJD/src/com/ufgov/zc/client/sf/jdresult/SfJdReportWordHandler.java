@@ -16,15 +16,15 @@ import com.ufgov.zc.common.system.constants.SfElementConstants;
 import com.ufgov.zc.common.system.util.DateUtil;
 
 /**
- * 检验意见书模板
+ * 检验报告模板
  * @author Administrator
  *
  */
-public class SfJdReport2WordHandler extends WordHandlerAdapter {
+public class SfJdReportWordHandler extends WordHandlerAdapter {
 
   boolean isZhenBen = true;
 
-  public SfJdReport2WordHandler(boolean isZhenben) {
+  public SfJdReportWordHandler(boolean isZhenben) {
     super();
     this.isZhenBen = isZhenben;
   }
@@ -32,7 +32,7 @@ public class SfJdReport2WordHandler extends WordHandlerAdapter {
   @Override
   public String getTemplateFileId() {
     // TODO Auto-generated method stub
-    return "sf_jd_yijianshu_template";
+    return "sf_jd_baogao_template";
   }
 
   @Override
@@ -49,11 +49,11 @@ public class SfJdReport2WordHandler extends WordHandlerAdapter {
     String jgmc = AsOptionMeta.getOptVal(SfElementConstants.OPT_SF_JD_COMPANY_NAME);
     dataMap.put("jgmc", StringUtil.freeMarkFillWordChar(jgmc));
     if (isZhenBen) {
-      dataMap.put("bh", StringUtil.freeMarkFillWordChar("编号KPTJ-499-1A-14"));
+      dataMap.put("bh", StringUtil.freeMarkFillWordChar("编号KPTJ-499-2A-14"));
       dataMap.put("zfb", StringUtil.freeMarkFillWordChar("正  本"));
       dataMap.put("fyj", StringUtil.freeMarkFillWordChar("司法鉴定委托书、司法鉴定许可证、司法鉴定人执业证"));
     } else {
-      dataMap.put("bh", StringUtil.freeMarkFillWordChar("编号KPTJ-499-1B-14"));
+      dataMap.put("bh", StringUtil.freeMarkFillWordChar("编号KPTJ-499-2B-14"));
       dataMap.put("zfb", StringUtil.freeMarkFillWordChar("副  本"));
       dataMap.put("fyj", StringUtil.freeMarkFillWordChar("司法鉴定许可证"));
     }
