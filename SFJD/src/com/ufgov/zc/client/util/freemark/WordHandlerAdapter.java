@@ -25,9 +25,10 @@ import freemarker.template.Template;
 
 public abstract class WordHandlerAdapter implements IWordHandler {
 
-  IZcEbBaseServiceDelegate baseService = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
+  protected IZcEbBaseServiceDelegate baseService = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,
+    "zcEbBaseServiceDelegate");
 
-  RequestMeta meta = WorkEnv.getInstance().getRequestMeta();
+  protected RequestMeta meta = WorkEnv.getInstance().getRequestMeta();
 
   protected SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
 

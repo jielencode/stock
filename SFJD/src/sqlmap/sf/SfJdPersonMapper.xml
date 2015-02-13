@@ -30,6 +30,12 @@
     from SF_JD_PERSON
     where JD_PERSON_ID = #jdPersonId:DECIMAL#
   </select>
+  <select id="selectByAccount" resultMap="BaseResultMap" parameterClass="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from SF_JD_PERSON
+    where ACCOUNT = #account:VARCHAR#
+  </select>
   <select id="selectMainDataLst" parameterClass="elementCondition" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />

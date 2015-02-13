@@ -43,7 +43,6 @@ import com.ufgov.zc.client.component.button.FuncButton;
 import com.ufgov.zc.client.component.button.ImportButton;
 import com.ufgov.zc.client.component.button.NextButton;
 import com.ufgov.zc.client.component.button.PreviousButton;
-import com.ufgov.zc.client.component.button.PrintButton;
 import com.ufgov.zc.client.component.button.SaveButton;
 import com.ufgov.zc.client.component.button.SendButton;
 import com.ufgov.zc.client.component.button.SendGkButton;
@@ -51,6 +50,7 @@ import com.ufgov.zc.client.component.button.SuggestAuditPassButton;
 import com.ufgov.zc.client.component.button.TraceButton;
 import com.ufgov.zc.client.component.button.UnauditButton;
 import com.ufgov.zc.client.component.button.UntreadButton;
+import com.ufgov.zc.client.component.button.zc.CommonButton;
 import com.ufgov.zc.client.component.ui.fieldeditor.AbstractFieldEditor;
 import com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel;
 import com.ufgov.zc.client.component.zc.fieldeditor.AsValFieldEditor;
@@ -119,7 +119,11 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
 
   protected FuncButton sendButton = new SendButton();
 
-  public FuncButton printButton = new PrintButton();
+  public FuncButton printButton = new CommonButton("fprint", "鉴定记录", "print.gif", true);
+
+  public FuncButton printZbButton = new CommonButton("fprintZb", "鉴定结果正本", "print.gif", true);
+
+  public FuncButton printFbButton = new CommonButton("fprintFb", "鉴定结果副本", "print.gif", true);
 
   public FuncButton importButton = new ImportButton();
 
@@ -178,6 +182,16 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
   private JTabbedPane centerPanel;
 
   private JPanel jdTargetDetailPanel;
+
+  List<String> hideTabs = new ArrayList<String>();
+
+  //  HashMap<String, JComponent> hideTabs = new HashMap<String, JComponent>();
+
+  String titleZonghpj = "综合评价";
+
+  String titleZhusu = "主诉";
+
+  String titleJdTarget = "被鉴定人";
 
   public SfJdResultEditPanel(GkBaseDialog parent, ListCursor listCursor, String tabStatus, SfJdResultListPanel listPanel) {
     // TODO Auto-generated constructor stub
@@ -285,7 +299,7 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
       for (AbstractFieldEditor editor : fieldEditors) {
         if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
           if ("inputDate".equals(editor.getFieldName()) || "inputorName".equals(editor.getFieldName()) || "status".equals(editor.getFieldName())
-            || "nd".equals(editor.getFieldName()) || "acceptor".equals(editor.getFieldName()) || "acceptorName".equals(editor.getFieldName())) {
+            || "nd".equals(editor.getFieldName()) || "jdrName".equals(editor.getFieldName()) || "entrust.majorCode".equals(editor.getFieldName())) {
             editor.setEnabled(false);
           } else {
             editor.setEnabled(true);
@@ -405,6 +419,22 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
 
       bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
 
+      bs = new ButtonStatus();
+
+      bs.setButton(this.printZbButton);
+
+      bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
+
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
+
+      bs = new ButtonStatus();
+
+      bs.setButton(this.printFbButton);
+
+      bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
+
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
+
       btnStatusList.add(bs);
 
     }
@@ -464,6 +494,16 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
     toolBar.add(traceButton);
 
     toolBar.add(printButton);
+    printButton.setText("鉴定记录");
+    printButton.setToolTipText("打印鉴定记录");
+
+    toolBar.add(printZbButton);
+    printZbButton.setText("鉴定结果正本");
+    printZbButton.setToolTipText("打印鉴定结果正本");
+
+    toolBar.add(printFbButton);
+    printFbButton.setText("鉴定结果副本");
+    printFbButton.setToolTipText("打印鉴定结果副本");
 
     //    toolBar.add(previousButton);
 
@@ -543,11 +583,31 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
 
     });
 
+    printZbButton.addActionListener(new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+
+        doPrintReport(true);
+
+      }
+
+    });
+
+    printFbButton.addActionListener(new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+
+        doPrintReport(false);
+
+      }
+
+    });
+
     printButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
-        doPrint();
+        doPrintJdRecord();
 
       }
 
@@ -588,6 +648,33 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
         doTrace();
       }
     });
+  }
+
+  protected void doPrintReport(boolean printZb) {
+    // TODO Auto-generated method stub
+
+    Hashtable userData = new Hashtable();
+    SfJdResult jdResult = (SfJdResult) this.listCursor.getCurrentObject();
+    userData.put("jdresult", jdResult);
+
+    IWordHandler handler = new SfJdReport2WordHandler(printZb);
+    String zfb = "正本";
+    if (!printZb) {
+      zfb = "副本";
+    }
+    if (SfJdResult.RESULT_TYPE_JYBG.equalsIgnoreCase(jdResult.getResultType())) {
+      userData.put(IWordHandler.FILE_NAME, jdResult.getEntrust().getName() + "检验报告" + zfb);
+    } else {
+      userData.put(IWordHandler.FILE_NAME, jdResult.getEntrust().getName() + "检验意见书" + zfb);
+    }
+
+    String fileName = handler.createDocumnet(userData);
+    try {
+      Desktop.getDesktop().open(new File(fileName));
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(this, "抱歉！没有找到合适的程序来打开文件！" + fileName, "提示", JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
   }
 
   protected void doAdd() {
@@ -814,7 +901,7 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
     return !DigestUtil.digest(oldJdResult).equals(DigestUtil.digest(listCursor.getCurrentObject()));
   }
 
-  private void doPrint() {
+  private void doPrintJdRecord() {
 
     Hashtable userData = new Hashtable();
     SfJdResult entrust = (SfJdResult) this.listCursor.getCurrentObject();
@@ -1219,15 +1306,15 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
       jdTargetDetailPanel.setLayout(new BorderLayout());
       jdTargetDetailPanel.add(p, BorderLayout.NORTH);
     }
-    centerPanel.add("被鉴定人", jdTargetDetailPanel);
+    centerPanel.add(titleJdTarget, jdTargetDetailPanel);
 
     centerPanel.add("检案摘要", brief);
 
-    centerPanel.add("主诉", zhuSu);
+    centerPanel.add(titleZhusu, zhuSu);
 
     centerPanel.add("鉴定过程", jdProcess);
 
-    centerPanel.add("综合评价", jdPingJia);
+    centerPanel.add(titleZonghpj, jdPingJia);
 
     centerPanel.add("鉴定意见", jdOpinion);
 
@@ -1240,15 +1327,55 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
   private void adjustTabs() {
     SfJdResult bill = (SfJdResult) listCursor.getCurrentObject();
     if (bill == null || bill.getEntrust() == null || bill.getEntrust().getMajorCode() == null) {
+
+      if (hideTabs.size() > 0) {
+        for (int i = 0; i < hideTabs.size(); i++) {
+          String title = hideTabs.get(i);
+          if (titleJdTarget.equals(title)) {
+            centerPanel.add(titleJdTarget, jdTargetDetailPanel);
+            continue;
+          }
+          if (titleZhusu.equals(title)) {
+            centerPanel.add(titleZhusu, zhuSu);
+            continue;
+          }
+          if (titleZonghpj.equals(title)) {
+            centerPanel.add(titleZonghpj, jdPingJia);
+            continue;
+          }
+        }
+        hideTabs.clear();
+      }
       return;
     }
 
     String fayiCode = AsOptionMeta.getOptVal(SfElementConstants.OPT_SF_MAJOR_FA_YI_CODE);
     if (bill.getEntrust().getMajorCode().equals(fayiCode)) {
-      centerPanel.remove(jdPingJia);
+      if (hideTabs.contains(titleZhusu)) {
+        centerPanel.add(titleZhusu, zhuSu);
+        hideTabs.remove(titleZhusu);
+      }
+      if (hideTabs.contains(titleJdTarget)) {
+        centerPanel.add(titleJdTarget, jdTargetDetailPanel);
+        hideTabs.remove(titleJdTarget);
+      }
+      if (!hideTabs.contains(titleZonghpj)) {
+        centerPanel.remove(jdPingJia);
+        hideTabs.add(titleZonghpj);
+      }
     } else {
-      centerPanel.remove(zhuSu);
-      centerPanel.remove(jdTargetDetailPanel);
+      if (!hideTabs.contains(titleZhusu)) {
+        centerPanel.remove(zhuSu);
+        hideTabs.add(titleZhusu);
+      }
+      if (!hideTabs.contains(titleJdTarget)) {
+        centerPanel.remove(jdTargetDetailPanel);
+        hideTabs.add(titleJdTarget);
+      }
+      if (hideTabs.contains(titleZonghpj)) {
+        centerPanel.add(titleZonghpj, jdPingJia);
+        hideTabs.remove(titleZonghpj);
+      }
     }
   }
 }
