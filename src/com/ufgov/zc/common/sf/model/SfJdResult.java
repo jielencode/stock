@@ -711,6 +711,10 @@ public class SfJdResult extends ZcBaseBill {
   }
 
   public String getJdTargetName() {
+    if (jdTargetName != null)
+      return jdTargetName;
+    if (getJdTarget() != null)
+      return getJdTarget().getName();
     return jdTargetName;
   }
 

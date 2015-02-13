@@ -3,11 +3,14 @@ package com.ufgov.zc.client.sf.jdresult;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.DefaultKeyboardFocusManager;
+import java.awt.Desktop;
 import java.awt.Dialog.ModalityType;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -62,6 +65,7 @@ import com.ufgov.zc.client.sf.dataflow.SfDataFlowUtil;
 import com.ufgov.zc.client.sf.entrust.SfEntrustHandler;
 import com.ufgov.zc.client.sf.util.SfJdPersonSelectHandler;
 import com.ufgov.zc.client.sf.util.SfUtil;
+import com.ufgov.zc.client.util.freemark.IWordHandler;
 import com.ufgov.zc.client.zc.ButtonStatus;
 import com.ufgov.zc.client.zc.ZcUtil;
 import com.ufgov.zc.common.sf.model.SfEntrust;
@@ -812,6 +816,24 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
 
   private void doPrint() {
 
+    Hashtable userData = new Hashtable();
+    SfJdResult entrust = (SfJdResult) this.listCursor.getCurrentObject();
+    userData.put("jdresult", entrust);
+    userData.put(IWordHandler.FILE_NAME, entrust.getName() + "鉴定记录");
+
+    IWordHandler handler = new SfJdResultWordHandler();
+    String fayiCode = AsOptionMeta.getOptVal(SfElementConstants.OPT_SF_MAJOR_FA_YI_CODE);
+    if (fayiCode.equals(entrust.getEntrust().getMajorCode())) {
+      handler = new SfJdResultFayiWordHandler();
+    }
+
+    String fileName = handler.createDocumnet(userData);
+    try {
+      Desktop.getDesktop().open(new File(fileName));
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(this, "抱歉！没有找到合适的程序来打开文件！" + fileName, "提示", JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
   }
 
   private void doEdit() {
@@ -880,6 +902,7 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
     DateFieldEditor jdDate = new DateFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_DATE), "jdDate");
     TextFieldEditor jdAddress = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_ADDRESS), "jdAddress");
     TextAreaFieldEditor zcPersons = new TextAreaFieldEditor(LangTransMeta.translate(SfJdResult.COL_ZC_PERSONS), "zcPersons", 100, 2, 5);
+    AsValFieldEditor majorCode = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_MAJOR_NAME), "entrust.majorCode", "SF_VS_MAJOR");
 
     SfJdPersonSelectHandler jdrHandler = new SfJdPersonSelectHandler() {
 
@@ -900,8 +923,8 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
     TextFieldEditor inputor = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_INPUTOR), "inputorName");
     DateFieldEditor inputDate = new DateFieldEditor(LangTransMeta.translate(SfJdResult.COL_INPUT_DATE), "inputDate");
 
-    TextFieldEditor jdTargetName = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_TARGET), "jdTarget.name");
-    TextFieldEditor jdTargetName2 = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_TARGET), "jdTarget.name");
+    TextFieldEditor jdTargetName = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_TARGET), "jdTargetName");
+    TextFieldEditor jdTargetName2 = new TextFieldEditor(LangTransMeta.translate(SfJdResult.COL_JD_TARGET), "jdTargetName");
     IntFieldEditor jdTargetAge = new IntFieldEditor(LangTransMeta.translate(SfJdTarget.COL_AGE), "jdTarget.age");
     AsValFieldEditor jdTargetSex = new AsValFieldEditor(LangTransMeta.translate(SfJdTarget.COL_SEX), "jdTarget.sex", SfElementConstants.VS_SEX);
     TextFieldEditor jdTargetIdName = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ID_NAME), "jdTarget.idName");
@@ -921,6 +944,8 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
 
     headFieldList.add(jdTargetName);
     headFieldList.add(jdMethod);
+    headFieldList.add(majorCode);
+
     headFieldList.add(zcPersons);
 
     headFieldList.add(resultType);
