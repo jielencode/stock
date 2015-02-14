@@ -87,7 +87,7 @@ import com.ufgov.zc.common.system.util.Utils;
 import com.ufgov.zc.common.zc.model.ZcBaseBill;
 import com.ufgov.zc.common.zc.publish.IZcEbBaseServiceDelegate;
 
-public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
+public class SfDossierEditPanel extends AbstractMainSubEditPanel {
 
   /**
    * 
@@ -154,36 +154,36 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
 
   protected JTablePanel personsTablePanel = new JTablePanel();
 
-  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate ;
-  
-  private ISfDossierServiceDelegate sfDossierServiceDelegate ;
-  
+  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate;
+
+  private ISfDossierServiceDelegate sfDossierServiceDelegate;
+
   private ISfEntrustServiceDelegate sfEntrustServiceDelegate;
-  
+
   protected WordPane wordPane;
-  
-  private boolean openAndProtect=true;
+
+  private boolean openAndProtect = true;
 
   protected String fileName = "";
-  
+
   protected JTabbedPane tabPane = new JTabbedPane();
 
   private SfEntrust entrust;
 
-  ElementConditionDto entrustDto=new ElementConditionDto();
-  
+  ElementConditionDto entrustDto = new ElementConditionDto();
+
   public SfDossierEditPanel(GkBaseDialog parent, ListCursor listCursor, String tabStatus, SfDossierListPanel listPanel) {
     // TODO Auto-generated constructor stub
     super(SfDossierEditPanel.class, BillElementMeta.getBillElementMetaWithoutNd(compoId));
-    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,"zcEbBaseServiceDelegate");
-      
-    sfDossierServiceDelegate = (ISfDossierServiceDelegate) ServiceFactory.create(ISfDossierServiceDelegate.class,"sfDossierServiceDelegate");
-    
-    sfEntrustServiceDelegate = (ISfEntrustServiceDelegate) ServiceFactory.create(ISfEntrustServiceDelegate.class,"sfEntrustServiceDelegate");
-      
+    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
+
+    sfDossierServiceDelegate = (ISfDossierServiceDelegate) ServiceFactory.create(ISfDossierServiceDelegate.class, "sfDossierServiceDelegate");
+
+    sfEntrustServiceDelegate = (ISfEntrustServiceDelegate) ServiceFactory.create(ISfEntrustServiceDelegate.class, "sfEntrustServiceDelegate");
+
     this.workPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId),
-      TitledBorder.CENTER, TitledBorder.TOP,new Font("宋体", Font.BOLD, 15), Color.BLUE));
-    
+      TitledBorder.CENTER, TitledBorder.TOP, new Font("宋体", Font.BOLD, 15), Color.BLUE));
+
     this.listCursor = listCursor;
 
     this.listPanel = listPanel;
@@ -197,15 +197,15 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     requestMeta.setCompoId(getCompoId());
 
     WordFileUtil.setDir("sf");
-    
+
     addSubPane();
-    
+
     refreshMainData();
   }
 
   protected void addSubPane() {
     //下面一句是为了打开word后刷新窗口
-    wordPane=new WordPane();
+    wordPane = new WordPane();
     wordPane.setMinimumSize(new Dimension(10, 100));
     parent.setSize(parent.getSize().width + 1, parent.getSize().height + 1);
     wordPane.addPropertyChangeListener(WordPane.EVENT_NAME_OPEN_CALLBACK, new PropertyChangeListener() {
@@ -222,29 +222,30 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     tabPane.validate();
     tabPane.repaint();
   }
+
   private void refreshMainData() {
     // TODO Auto-generated method stub
 
     SfDossier bill = (SfDossier) listCursor.getCurrentObject();
 
-    if (bill != null ) {
-      if(bill.getDossierId()!=null){//列表页面双击进入
+    if (bill != null) {
+      if (bill.getDossierId() != null) {//列表页面双击进入
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_BROWSE;
-        this.openAndProtect=true;
+        this.openAndProtect = true;
         bill = sfDossierServiceDelegate.selectByPrimaryKey(bill.getDossierId(), this.requestMeta);
         listCursor.setCurrentObject(bill);
         this.setEditingObject(bill);
-      }else if(bill.getEntrustId()!=null){//图形界面进来的新增，已经确定了entrust
+      } else if (bill.getEntrustId() != null) {//图形界面进来的新增，已经确定了entrust
         this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
-        this.openAndProtect=false;
+        this.openAndProtect = false;
         setDefaultValue(bill);
         listCursor.getDataList().add(bill);
         listCursor.setCurrentObject(bill);
-        this.setEditingObject(bill);        
+        this.setEditingObject(bill);
       }
     } else {//新增按钮进入
       this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
-      this.openAndProtect=false;
+      this.openAndProtect = false;
       bill = new SfDossier();
       setDefaultValue(bill);
       listCursor.getDataList().add(bill);
@@ -254,26 +255,26 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     updateBtnFields();
   }
 
-
   private void refreshData() {
 
     refreshMainData();
 
     refreshSubTableData();
-    
+
     updateBtnFields();
   }
-  
-  private void updateBtnFields(){
+
+  private void updateBtnFields() {
     setOldObject();
     setButtonStatus();
     updateFieldEditorsEditable();
   }
 
-  private void refreshSubTableData(){
+  private void refreshSubTableData() {
     refreshWordPanel();
     updateBtnFields();
   }
+
   public synchronized void closeWordPanel(WordPane wp, boolean isSave) {
     if (wp != null && wp.isDocOpened()) {
       wp.close(isSave);
@@ -287,7 +288,7 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
   public void refreshWordPanel() {
 
     SfDossier bill = (SfDossier) listCursor.getCurrentObject();
-    String fileId=bill.getFileId();
+    String fileId = bill.getFileId();
 
     closeWordPanel(wordPane, false);
 
@@ -295,25 +296,27 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
 
       this.fileName = WordFileUtil.loadMold(fileId);
 
-    } else if(bill.getEntrustId()!=null) {
-      SfEntrust entrust=getEntrust(bill.getEntrustId());
+    } else if (bill.getEntrustId() != null) {
+      SfEntrust entrust = getEntrust(bill.getEntrustId());
       selectEntrust(entrust);
       return;
-    }else{
+    } else {
       this.fileName = WordFileUtil.loadDefaultMold();
     }
-    if(openAndProtect){
-    wordPane.openAndProtect(this.fileName, SfElementConstants.WORD_PASSWORD);
-    }else{
+    if (openAndProtect) {
+      wordPane.openAndProtect(this.fileName, SfElementConstants.WORD_PASSWORD);
+    } else {
       wordPane.open(this.fileName);
     }
 
   }
+
   private SfEntrust getEntrust(BigDecimal entrustId) {
     // TODO Auto-generated method stub
-    if(entrust!=null)return entrust;
-     entrust=sfEntrustServiceDelegate.selectByPrimaryKey(entrustId, requestMeta);
-     return entrust;
+    if (entrust != null)
+      return entrust;
+    entrust = sfEntrustServiceDelegate.selectByPrimaryKey(entrustId, requestMeta);
+    return entrust;
   }
 
   private void setDefaultValue(SfDossier bill) {
@@ -323,75 +326,76 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     bill.setInputDate(this.requestMeta.getSysDate());
     bill.setInputor(requestMeta.getSvUserID());
   }
-    protected void updateFieldEditorsEditable() {
+
+  protected void updateFieldEditorsEditable() {
+
+    for (AbstractFieldEditor editor : fieldEditors) {
+      if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
+        if ("inputDate".equals(editor.getFieldName()) || "inputorName".equals(editor.getFieldName()) || "status".equals(editor.getFieldName())) {
+          editor.setEnabled(false);
+        } else {
+          editor.setEnabled(true);
+        }
+      } else {
+        editor.setEnabled(false);
+      }
+    }
+
+    SfDossier qx = (SfDossier) listCursor.getCurrentObject();
+    Long processInstId = qx.getProcessInstId();
+    if (processInstId != null && processInstId.longValue() > 0) {
+      // 工作流的单据
+      wfCanEditFieldMap = BillElementMeta.getWfCanEditField(qx, requestMeta);
+      if ("cancel".equals(this.oldDossier.getStatus())) {// 撤销单据设置字段为不可编辑
+        wfCanEditFieldMap = null;
+      }
 
       for (AbstractFieldEditor editor : fieldEditors) {
-        if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
-          if ("inputDate".equals(editor.getFieldName())||"inputorName".equals(editor.getFieldName())
-            ||"status".equals(editor.getFieldName())) {
-            editor.setEnabled(false);
-          } else {
-            editor.setEnabled(true);
-          }
+        if (editor instanceof NewLineFieldEditor) {
+          continue;
+        }
+        // 工作流中定义可编辑的字段
+        if (wfCanEditFieldMap != null && wfCanEditFieldMap.containsKey(Utils.getDBColNameByFieldName(editor.getEditObject(), editor.getFieldName()))) {
+          isEdit = true;
+          this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
+          editor.setEnabled(true);
         } else {
           editor.setEnabled(false);
         }
-      }      
+      }
 
-      SfDossier qx = (SfDossier) listCursor.getCurrentObject();
-      Long processInstId = qx.getProcessInstId();
-      if (processInstId != null && processInstId.longValue() > 0) {
-        // 工作流的单据
-        wfCanEditFieldMap = BillElementMeta.getWfCanEditField(qx, requestMeta);
-        if ("cancel".equals(this.oldDossier.getStatus())) {// 撤销单据设置字段为不可编辑
-          wfCanEditFieldMap = null;
-        }
+      //工作流中该节点选中了保存按钮可用，则当前状态当前人可用编辑
+      if (saveButton.isVisible() && saveButton.isEnabled()) {
+        isEdit = true;
+        this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
+      }
 
-        for (AbstractFieldEditor editor : fieldEditors) {
-          if(editor instanceof NewLineFieldEditor){
-            continue;
-          }
-          // 工作流中定义可编辑的字段
-          if (wfCanEditFieldMap != null && wfCanEditFieldMap.containsKey(Utils.getDBColNameByFieldName(editor.getEditObject(), editor.getFieldName()))) {
-            isEdit = true;
-            this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
+    } else {
+
+      for (AbstractFieldEditor editor : fieldEditors) {
+        if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
+          if ("inputDate".equals(editor.getFieldName()) || "inputorName".equals(editor.getFieldName()) || "status".equals(editor.getFieldName())
+            || "dossierType".equals(editor.getFieldName())) {
+            editor.setEnabled(false);
+          } else {
             editor.setEnabled(true);
-          } else {
-            editor.setEnabled(false);
           }
-        }
-        
-        //工作流中该节点选中了保存按钮可用，则当前状态当前人可用编辑
-        if (saveButton.isVisible() && saveButton.isEnabled()) {
           isEdit = true;
-          this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
-        }
-        
-      } else {
-        
-        for (AbstractFieldEditor editor : fieldEditors) {
-          if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
-            if ("inputDate".equals(editor.getFieldName())||"inputorName".equals(editor.getFieldName())||"status".equals(editor.getFieldName())) {
-              editor.setEnabled(false);
-            } else {
-              editor.setEnabled(true);
-            }
-            isEdit = true;
-          } else {
-            editor.setEnabled(false);
-          }
+        } else {
+          editor.setEnabled(false);
         }
       }
-//      setWFSubTableEditable(biTablePanel, isEdit);
+    }
+    //      setWFSubTableEditable(biTablePanel, isEdit);
   }
-    
-    private void protectWordPanel() {
-      wordPane.protectDoc(SfElementConstants.WORD_PASSWORD);
-    } 
+
+  private void protectWordPanel() {
+    wordPane.protectDoc(SfElementConstants.WORD_PASSWORD);
+  }
 
   protected void setButtonStatus() {
     SfDossier bill = (SfDossier) listCursor.getCurrentObject();
-    setButtonStatus(bill, requestMeta, this.listCursor);    
+    setButtonStatus(bill, requestMeta, this.listCursor);
   }
 
   public void setButtonStatusWithoutWf() {
@@ -416,7 +420,7 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
       bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_ALL);
       bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
       btnStatusList.add(bs);
-      
+
       bs = new ButtonStatus();
       bs.setButton(this.sendButton);
       bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
@@ -455,7 +459,7 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     }
 
     SfDossier bill = (SfDossier) this.listCursor.getCurrentObject();
-     
+
     ZcUtil.setButtonEnable(this.btnStatusList, bill.getStatus(), this.pageStatus, getCompoId(), bill.getProcessInstId());
 
   }
@@ -465,7 +469,6 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     oldDossier = (SfDossier) ObjectUtil.deepCopy(listCursor.getCurrentObject());
 
   }
-
 
   public String getCompoId() {
     // TODO Auto-generated method stub
@@ -489,11 +492,11 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
 
     toolBar.add(sendButton);
 
-//    toolBar.add(saveAndSendButton);
+    //    toolBar.add(saveAndSendButton);
 
     toolBar.add(suggestPassButton);
 
-//    toolBar.add(sendGkButton);
+    //    toolBar.add(sendGkButton);
 
     toolBar.add(unAuditButton);
 
@@ -503,18 +506,17 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
 
     toolBar.add(deleteButton);
 
-//    toolBar.add(importButton);
+    //    toolBar.add(importButton);
 
     toolBar.add(printButton);
 
     toolBar.add(traceButton);
 
-//    toolBar.add(previousButton);
+    //    toolBar.add(previousButton);
 
-//    toolBar.add(nextButton);
+    //    toolBar.add(nextButton);
 
     toolBar.add(exitButton);
-
 
     editButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -553,31 +555,31 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
         doDelete();
       }
     });
-    
+
     sendButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doSend();
       }
     });
-    
+
     suggestPassButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doSuggestPass();
       }
     });
-    
+
     callbackButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doCallback();
       }
     });
-    
+
     unTreadButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doUnTread();
       }
     });
-    
+
     unAuditButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doUnAudit();
@@ -588,15 +590,13 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
         doTrace();
       }
     });
-  
+
     printButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         doPrint();
       }
     });
   }
-
- 
 
   /*
    * 流程跟踪
@@ -651,7 +651,7 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
 
     boolean success = true;
     String errorInfo = "";
-    SfDossier bill= (SfDossier) this.listCursor.getCurrentObject();
+    SfDossier bill = (SfDossier) this.listCursor.getCurrentObject();
     try {
       //保存word文件
       // 支持直接修改word内容。
@@ -660,7 +660,7 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
       String fileId = WordFileUtil.uploadWordFile(fileName, bill.getFileId());
       bill.setFileId(fileId);
       requestMeta.setFuncId(saveButton.getFuncId());
-//      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
+      //      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
       bill = sfDossierServiceDelegate.saveFN(bill, this.requestMeta);
       listCursor.setCurrentObject(bill);
     } catch (Exception e) {
@@ -672,32 +672,33 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
       JOptionPane.showMessageDialog(this, "保存成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
       refreshListPanel();
       refreshMainData();
-      updateDataFlowDialog();        
+      updateDataFlowDialog();
     } else {
       JOptionPane.showMessageDialog(this, "保存失败 ！\n" + errorInfo, "错误", JOptionPane.ERROR_MESSAGE);
     }
     return success;
   }
-  
-  private void refreshListPanel(){
-    if(listPanel!=null){
+
+  private void refreshListPanel() {
+    if (listPanel != null) {
       listPanel.refreshCurrentTabData();
     }
   }
+
   /**
    * 更新数据流界面
    */
   private void updateDataFlowDialog() {
     // TODO Auto-generated method stub
-    SfDossier bill= (SfDossier) this.listCursor.getCurrentObject();
-    if(listPanel!=null && listPanel.getParent() instanceof JClosableTabbedPane){
+    SfDossier bill = (SfDossier) this.listCursor.getCurrentObject();
+    if (listPanel != null && listPanel.getParent() instanceof JClosableTabbedPane) {
       return;
     }
-    if(parent instanceof SfDossierDialog){//新增的委托书，创建数据流界面
-      SfDataFlowDialog d=new SfDataFlowDialog(compoId, SfDataFlowUtil.getEntrust(bill.getEntrustId()), listPanel);
+    if (parent instanceof SfDossierDialog) {//新增的委托书，创建数据流界面
+      SfDataFlowDialog d = new SfDataFlowDialog(compoId, SfDataFlowUtil.getEntrust(bill.getEntrustId()), listPanel);
       parent.dispose();
-    }else{
-      SfDataFlowDialog d=(SfDataFlowDialog) parent;
+    } else {
+      SfDataFlowDialog d = (SfDataFlowDialog) parent;
       d.refresh(bill.getEntrustId());
     }
   }
@@ -716,22 +717,22 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     List mainNotNullList = mainBillElementMeta.getNotNullBillElement();
     SfDossier bill = (SfDossier) this.listCursor.getCurrentObject();
     StringBuilder errorInfo = new StringBuilder();
-    String mainValidateInfo = ZcUtil.validateBillElementNull(bill, mainNotNullList);     
+    String mainValidateInfo = ZcUtil.validateBillElementNull(bill, mainNotNullList);
     if (mainValidateInfo.length() != 0) {
       errorInfo.append("\n").append(mainValidateInfo.toString()).append("\n");
     }
-    
+
     if (errorInfo.length() != 0) {
       JOptionPane.showMessageDialog(this, errorInfo.toString(), "提示", JOptionPane.WARNING_MESSAGE);
       return false;
     }
     return true;
   }
-  
+
   protected void doDelete() {
     requestMeta.setFuncId(deleteButton.getFuncId());
     SfDossier bill = (SfDossier) this.listCursor.getCurrentObject();
-    
+
     int num = JOptionPane.showConfirmDialog(this, "是否删除当前单据", "删除确认", 0);
     if (num == JOptionPane.YES_OPTION) {
       boolean success = true;
@@ -747,7 +748,7 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
 
       if (success) {
         this.listCursor.removeCurrentObject();
-        JOptionPane.showMessageDialog(this, "删除成功！", "提示", JOptionPane.INFORMATION_MESSAGE);       
+        JOptionPane.showMessageDialog(this, "删除成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
         refreshListPanel();
         doExit();
       } else {
@@ -756,7 +757,6 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     }
   }
 
- 
   public boolean isDataChanged() {
     if (!this.saveButton.isVisible() || !saveButton.isEnabled()) {
       return false;
@@ -764,9 +764,8 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     return !DigestUtil.digest(oldDossier).equals(DigestUtil.digest(listCursor.getCurrentObject()));
   }
 
-
   private void doPrint() {
-    if(wordPane!=null){
+    if (wordPane != null) {
       wordPane.print();
     }
   }
@@ -774,7 +773,7 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
   private void doEdit() {
 
     this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
-    this.openAndProtect=false;
+    this.openAndProtect = false;
     wordPane.unProtectDoc(SfElementConstants.WORD_PASSWORD);
     updateFieldEditorsEditable();
     setButtonStatus();
@@ -787,79 +786,86 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
   public List<AbstractFieldEditor> createFieldEditors() {
 
     List<AbstractFieldEditor> editorList = new ArrayList<AbstractFieldEditor>();
-    
-    SfEntrustHandler entrustHandler=new SfEntrustHandler() {
-      
+
+    SfEntrustHandler entrustHandler = new SfEntrustHandler() {
+
       @Override
       public void excute(List selectedDatas) {
         // TODO Auto-generated method stub
         for (Object obj : selectedDatas) {
           SfDossier currentBill = (SfDossier) listCursor.getCurrentObject();
-          SfEntrust entrust=(SfEntrust)obj;
-          entrust=getEntrust(entrust.getEntrustId());
+          SfEntrust entrust = (SfEntrust) obj;
+          entrust = getEntrust(entrust.getEntrustId());
           currentBill.setEntrustId(entrust.getEntrustId());
           currentBill.setEntrustCode(entrust.getCode());
-          currentBill.setName(entrust.getName()+"检验卷宗目录");
+          currentBill.setName(entrust.getName() + "检验卷宗目录");
+          currentBill.setEntrust(entrust);
+          SfDossierUtil.setDossierType(currentBill);
           setEditingObject(currentBill);
           selectEntrust(entrust);
         }
       }
-      public void afterClear(){
+
+      public void afterClear() {
         SfDossier currentBill = (SfDossier) listCursor.getCurrentObject();
         currentBill.setEntrustId(null);
         currentBill.setEntrustCode(null);
         currentBill.setName(null);
+        currentBill.setEntrust(new SfEntrust());
         setEditingObject(currentBill);
       }
-      
-      public boolean beforeSelect(ElementConditionDto dto){
-        SfDossier bill = (SfDossier) listCursor.getCurrentObject();
-        if(bill.getDossierType()==null || bill.getDossierType().trim().length()==0){
-          JOptionPane.showMessageDialog(self, "请先选择卷宗类别！", "提示", JOptionPane.INFORMATION_MESSAGE);
-          return false;
-        }
-        return true;
-      }
+
+      /*  public boolean beforeSelect(ElementConditionDto dto) {
+          SfDossier bill = (SfDossier) listCursor.getCurrentObject();
+          if (bill.getDossierType() == null || bill.getDossierType().trim().length() == 0) {
+            JOptionPane.showMessageDialog(self, "请先选择卷宗类别！", "提示", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+          }
+          return true;
+        }*/
     };
     entrustDto.setDattr1("SF_DOSSIER");
-    ForeignEntityFieldEditor entrust = new ForeignEntityFieldEditor(entrustHandler.getSqlId(), entrustDto, 20,entrustHandler, entrustHandler.getColumNames(), LangTransMeta.translate(SfDossier.COL_ENTRUST_CODE),"entrustCode");
-    
+    ForeignEntityFieldEditor entrust = new ForeignEntityFieldEditor(entrustHandler.getSqlId(), entrustDto, 20, entrustHandler,
+      entrustHandler.getColumNames(), LangTransMeta.translate(SfDossier.COL_ENTRUST_CODE), "entrustCode");
+
     TextFieldEditor name = new TextFieldEditor(LangTransMeta.translate(SfDossier.COL_NAME), "name");
-    AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfDossier.COL_STATUS), "status",SfDossier.SF_VS_DOSSIER_STATUS);
-    AsValFieldEditor dossierType = new AsValFieldEditor(LangTransMeta.translate(SfDossier.COL_DOSSIER_TYPE), "dossierType",SfDossier.SF_VS_DOSSIER_TYPE){
+    AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfDossier.COL_STATUS), "status", SfDossier.SF_VS_DOSSIER_STATUS);
+    AsValFieldEditor dossierType = new AsValFieldEditor(LangTransMeta.translate(SfDossier.COL_DOSSIER_TYPE), "dossierType",
+      SfDossier.SF_VS_DOSSIER_TYPE) {
       @Override
       protected void afterChange(AsValComboBox field) {
-        if(field.getSelectedAsVal()==null || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_BROWSE)){
-          entrustDto.setDattr2(null);
-          return;
-        }
-        String valId = field.getSelectedAsVal().getValId();
-        entrustDto.setDattr2(valId);
-        SfDossier bill = (SfDossier) listCursor.getCurrentObject();
-        if(bill.getEntrustId()!=null && valId!=null){
-          SfEntrust entrust=getEntrust(bill.getEntrustId());
-          selectEntrust(entrust);          
-        }
+        /*  if (field.getSelectedAsVal() == null || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_BROWSE)) {
+            entrustDto.setDattr2(null);
+            return;
+          }
+          String valId = field.getSelectedAsVal().getValId();
+          entrustDto.setDattr2(valId);
+          SfDossier bill = (SfDossier) listCursor.getCurrentObject();
+          if (bill.getEntrustId() != null && valId != null) {
+            SfEntrust entrust = getEntrust(bill.getEntrustId());
+            selectEntrust(entrust);
+          }*/
       }
     };
-//    dossierType.addv
-    TextAreaFieldEditor remark=new TextAreaFieldEditor(LangTransMeta.translate(SfDossier.COL_REMARK), "remark", 100, 2, 5);
+    //    dossierType.addv
+    TextAreaFieldEditor remark = new TextAreaFieldEditor(LangTransMeta.translate(SfDossier.COL_REMARK), "remark", 100, 2, 5);
     TextFieldEditor inputor = new TextFieldEditor(LangTransMeta.translate(SfDossier.COL_INPUTOR), "inputorName");
     DateFieldEditor inputDate = new DateFieldEditor(LangTransMeta.translate(SfDossier.COL_INPUT_DATE), "inputDate");
 
-    editorList.add(dossierType); 
     editorList.add(entrust);
     editorList.add(name);
+    editorList.add(dossierType);
 
     editorList.add(status);
-    editorList.add(inputor);    
+    editorList.add(inputor);
     editorList.add(inputDate);
 
     editorList.add(remark);
-    
+
     return editorList;
 
   }
+
   protected void init() {
 
     this.initToolBar(toolBar);
@@ -877,20 +883,20 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
       initFieldEditorPanel();
 
     }
-    
+
     workPanel.setLayout(new BorderLayout());
-    
+
     JComponent subPanel = createSubBillPanel();
     if (subPanel == null) {
-      subPanel=new JPanel();
+      subPanel = new JPanel();
     }
-    JSplitPane sp=new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+    JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
     sp.setOneTouchExpandable(true);//让分割线显示出箭头
     sp.setContinuousLayout(true);//操作箭头，重绘图形
     sp.setDividerLocation(0.28);
     sp.setDividerSize(15);//設置分割線寬度的大小
     sp.add(fieldEditorPanel, JSplitPane.TOP);
-    sp.add(subPanel,JSplitPane.BOTTOM);
+    sp.add(subPanel, JSplitPane.BOTTOM);
     workPanel.add(sp, BorderLayout.CENTER);
     this.add(workPanel, BorderLayout.CENTER);
   }
@@ -909,9 +915,9 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
 
         JPanel pan = (JPanel) tab.getSelectedComponent();
 
-       /* if ("panel_filenamezb".equals(pan.getName())) {
-          refreshZbFile(zbFileID);
-        }*/
+        /* if ("panel_filenamezb".equals(pan.getName())) {
+           refreshZbFile(zbFileID);
+         }*/
         /*
         if (isShowPanel && pan!=null) {
           if ("panel_filename1".equals(pan.getName()) && cnt1++ < 1) {
@@ -946,50 +952,51 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
       }
 
     }
-    if(this.parent instanceof SfDataFlowDialog){
-      ((SfDataFlowDialog)parent).removeTab(this, compoId);
-    }else{
+    if (this.parent instanceof SfDataFlowDialog) {
+      ((SfDataFlowDialog) parent).removeTab(this, compoId);
+    } else {
       this.parent.dispose();
     }
   }
+
   protected void selectEntrust(SfEntrust entrust) {
 
-    if (entrust!=null) {
-      
+    if (entrust != null) {
+
       SfDossier bill = (SfDossier) listCursor.getCurrentObject();
       bill.setEntrustCode(entrust.getCode());
       bill.setEntrustId(entrust.getEntrustId());
-      bill.setName(entrust.getCode()+"卷宗目录"); 
-      setEditingObject(bill); 
-      createWord(entrust);   
+      bill.setName(entrust.getCode() + "卷宗目录");
+      setEditingObject(bill);
+      createWord(entrust);
     }
   }
-  
-  private void createWord(SfEntrust entrust){
+
+  private void createWord(SfEntrust entrust) {
 
     SfDossier bill = (SfDossier) listCursor.getCurrentObject();
-    
-    if(entrust!=null && bill.getDossierType()!=null && bill.getDossierType().trim().length()>0){
+    entrust = bill.getEntrust();
+    if (entrust != null && bill.getDossierType() != null && bill.getDossierType().trim().length() > 0) {
       Hashtable userData = new Hashtable();
       userData.put("dossier", bill);
       userData.put(IWordHandler.FILE_NAME, bill.getName());
-      userData.put("entrust", entrust);
-  
-      IWordHandler handler=null;
-      if(bill.getDossierType().equals(SfDossier.DOSSIER_TYPE_FA_YI)){
-        handler=new SfDossierFaYiWordHandler();        
-      }else if(bill.getDossierType().equals(SfDossier.DOSSIER_TYPE_WU_ZHENG)){
-        handler=new SfDossierWuZhengWordHandler();                
+      userData.put("entrust", bill.getEntrust());
+
+      IWordHandler handler = null;
+      if (bill.getDossierType().equals(SfDossier.DOSSIER_TYPE_FA_YI)) {
+        handler = new SfDossierFaYiWordHandler();
+      } else if (bill.getDossierType().equals(SfDossier.DOSSIER_TYPE_WU_ZHENG)) {
+        handler = new SfDossierWuZhengWordHandler();
       }
-      if(handler==null){
+      if (handler == null) {
         JOptionPane.showMessageDialog(this.parent, "没有找到模版，请手工编制", "提示", JOptionPane.WARNING_MESSAGE);
         return;
       }
       fileName = handler.createDocumnet(userData);
       if (wordPane != null) {
         wordPane.close(false);
-      }      
-       wordPane.open(this.fileName);    
+      }
+      wordPane.open(this.fileName);
     }
   }
 
@@ -1026,6 +1033,7 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
       updateDataFlowDialog();
     }
   }
+
   /**
    * 审核
    */
@@ -1035,7 +1043,8 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     }
     SfDossier qx = (SfDossier) ObjectUtil.deepCopy(this.listCursor.getCurrentObject());
     requestMeta.setFuncId(this.suggestPassButton.getFuncId());
-    GkCommentDialog commentDialog = new GkCommentDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),ModalityType.APPLICATION_MODAL);
+    GkCommentDialog commentDialog = new GkCommentDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),
+      ModalityType.APPLICATION_MODAL);
     if (commentDialog.cancel) {
       return;
     }
@@ -1060,9 +1069,9 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     }
   }
 
- /**
-  * 销审
-  */
+  /**
+   * 销审
+   */
   protected void doUnAudit() {
     SfDossier qx = (SfDossier) ObjectUtil.deepCopy(this.listCursor.getCurrentObject());
     boolean success = true;
@@ -1091,11 +1100,13 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
       JOptionPane.showMessageDialog(this, "销审失败 ！" + errorInfo, "错误", JOptionPane.ERROR_MESSAGE);
     }
   }
- /**
-  * 退回
-  */
+
+  /**
+   * 退回
+   */
   protected void doUnTread() {
-    GkCommentUntreadDialog commentDialog = new GkCommentUntreadDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),ModalityType.APPLICATION_MODAL);
+    GkCommentUntreadDialog commentDialog = new GkCommentUntreadDialog(DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow(),
+      ModalityType.APPLICATION_MODAL);
     if (commentDialog.cancel) {
       return;
     }
@@ -1124,9 +1135,9 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     }
   }
 
- /**
-  * 收回
-  */
+  /**
+   * 收回
+   */
   protected void doCallback() {
     boolean success = true;
     SfDossier afterSaveBill = null;
@@ -1152,4 +1163,3 @@ public class SfDossierEditPanel   extends AbstractMainSubEditPanel {
     }
   }
 }
-

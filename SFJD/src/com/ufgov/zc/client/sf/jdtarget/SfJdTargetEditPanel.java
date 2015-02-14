@@ -23,7 +23,6 @@ import com.ufgov.zc.client.common.ListCursor;
 import com.ufgov.zc.client.common.ServiceFactory;
 import com.ufgov.zc.client.common.WorkEnv;
 import com.ufgov.zc.client.component.GkBaseDialog;
-import com.ufgov.zc.client.component.IntDocument;
 import com.ufgov.zc.client.component.JFuncToolBar;
 import com.ufgov.zc.client.component.button.AddButton;
 import com.ufgov.zc.client.component.button.CallbackButton;
@@ -55,7 +54,6 @@ import com.ufgov.zc.common.sf.model.SfJdTarget;
 import com.ufgov.zc.common.sf.publish.ISfJdTargetServiceDelegate;
 import com.ufgov.zc.common.system.RequestMeta;
 import com.ufgov.zc.common.system.constants.SfElementConstants;
-import com.ufgov.zc.common.system.constants.ZcElementConstants;
 import com.ufgov.zc.common.system.constants.ZcSettingConstants;
 import com.ufgov.zc.common.system.util.DigestUtil;
 import com.ufgov.zc.common.system.util.ObjectUtil;
@@ -65,7 +63,7 @@ import com.ufgov.zc.common.zc.publish.IZcEbBaseServiceDelegate;
  * @author Administrator
  *
  */
-public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
+public class SfJdTargetEditPanel extends AbstractMainSubEditPanel {
 
   private static final Logger logger = Logger.getLogger(SfJdTargetEditPanel.class);
 
@@ -130,17 +128,18 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
   protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,
 
   "zcEbBaseServiceDelegate");
-  
-  private ISfJdTargetServiceDelegate sfJdTargetServiceDelegate = (ISfJdTargetServiceDelegate) ServiceFactory.create(ISfJdTargetServiceDelegate.class,"sfJdTargetServiceDelegate");
-  
+
+  private ISfJdTargetServiceDelegate sfJdTargetServiceDelegate = (ISfJdTargetServiceDelegate) ServiceFactory.create(ISfJdTargetServiceDelegate.class,
+    "sfJdTargetServiceDelegate");
+
   private ForeignEntityDialog forenEntityDialog;
-  
+
   public SfJdTargetEditPanel(SfJdTargetDialog parent, ListCursor listCursor, String tabStatus, SfJdTargetListPanel listPanel) {
     // TODO Auto-generated constructor stub
     super(SfJdTargetEditPanel.class, BillElementMeta.getBillElementMetaWithoutNd(compoId));
 
     this.workPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId),
-      TitledBorder.CENTER, TitledBorder.TOP,new Font("宋体", Font.BOLD, 15), Color.BLUE));
+      TitledBorder.CENTER, TitledBorder.TOP, new Font("宋体", Font.BOLD, 15), Color.BLUE));
 
     this.listCursor = listCursor;
 
@@ -155,7 +154,7 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     requestMeta.setCompoId(getCompoId());
 
     refreshData();
-    
+
     setButtonStatus();
 
     updateFieldEditorsEditable();
@@ -172,7 +171,7 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     this.forenEntityDialog = forenEntityDialog;
 
     this.workPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId),
-      TitledBorder.CENTER, TitledBorder.TOP,new Font("宋体", Font.BOLD, 15), Color.BLUE));
+      TitledBorder.CENTER, TitledBorder.TOP, new Font("宋体", Font.BOLD, 15), Color.BLUE));
 
     this.colCount = 3;
 
@@ -187,12 +186,13 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     updateFieldEditorsEditable();
 
   }
+
   private void refreshData() {
     // TODO Auto-generated method stub
 
     SfJdTarget jdTarget = (SfJdTarget) listCursor.getCurrentObject();
 
-    if (jdTarget != null && jdTarget.getJdTargetId()!=null) {//列表页面双击进入
+    if (jdTarget != null && jdTarget.getJdTargetId() != null) {//列表页面双击进入
 
       this.pageStatus = ZcSettingConstants.PAGE_STATUS_BROWSE;
 
@@ -221,21 +221,17 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
   }
 
-
   protected void updateFieldEditorsEditable() {
 
-      for (AbstractFieldEditor editor : fieldEditors) {
-        if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
-          editor.setEnabled(true);
-        } else {
-          editor.setEnabled(false);
-        }
+    for (AbstractFieldEditor editor : fieldEditors) {
+      if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
+        editor.setEnabled(true);
+      } else {
+        editor.setEnabled(false);
       }
-    
+    }
 
   }
-
- 
 
   protected void setButtonStatus() {
     SfJdTarget jdTarget = (SfJdTarget) listCursor.getCurrentObject();
@@ -261,7 +257,7 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
       bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
 
-      bs.addBillStatus(ZcSettingConstants.WF_STATUS_DRAFT);
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
 
       btnStatusList.add(bs);
 
@@ -362,7 +358,7 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     }
 
     SfJdTarget jdTarget = (SfJdTarget) this.listCursor.getCurrentObject();
-     
+
     ZcUtil.setButtonEnable(this.btnStatusList, null, this.pageStatus, getCompoId(), jdTarget.getProcessInstId());
 
   }
@@ -372,9 +368,6 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     oldjdTarget = (SfJdTarget) ObjectUtil.deepCopy(listCursor.getCurrentObject());
 
   }
-
- 
- 
 
   public String getCompoId() {
     // TODO Auto-generated method stub
@@ -396,34 +389,33 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
     toolBar.add(saveButton);
 
-//    toolBar.add(sendButton);
+    //    toolBar.add(sendButton);
 
-//    toolBar.add(saveAndSendButton);
+    //    toolBar.add(saveAndSendButton);
 
-//    toolBar.add(suggestPassButton);
+    //    toolBar.add(suggestPassButton);
 
-//    toolBar.add(sendGkButton);
+    //    toolBar.add(sendGkButton);
 
-//    toolBar.add(unAuditButton);
+    //    toolBar.add(unAuditButton);
 
-//    toolBar.add(unTreadButton);
+    //    toolBar.add(unTreadButton);
 
-//    toolBar.add(callbackButton);
+    //    toolBar.add(callbackButton);
 
     toolBar.add(deleteButton);
 
-//    toolBar.add(importButton);
+    //    toolBar.add(importButton);
 
-//    toolBar.add(printButton);
+    //    toolBar.add(printButton);
 
-//    toolBar.add(traceButton);
+    //    toolBar.add(traceButton);
 
-//    toolBar.add(previousButton);
+    //    toolBar.add(previousButton);
 
-//    toolBar.add(nextButton);
+    //    toolBar.add(nextButton);
 
     toolBar.add(exitButton);
-
 
     editButton.addActionListener(new ActionListener() {
 
@@ -434,8 +426,6 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
       }
 
     });
-
-
 
     previousButton.addActionListener(new ActionListener() {
 
@@ -489,10 +479,6 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
     });
 
-   
-
-
-
     unAuditButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -505,7 +491,6 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
     });
 
-  
     printButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -516,8 +501,6 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
     });
   }
-
- 
 
   protected void doPrevious() {
 
@@ -595,13 +578,13 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
     String errorInfo = "";
 
-    SfJdTarget jdTarget= (SfJdTarget) this.listCursor.getCurrentObject();
+    SfJdTarget jdTarget = (SfJdTarget) this.listCursor.getCurrentObject();
 
     try {
 
       requestMeta.setFuncId(saveButton.getFuncId());
 
-//      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
+      //      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
 
       jdTarget = sfJdTargetServiceDelegate.saveFN(jdTarget, this.requestMeta);
 
@@ -621,7 +604,7 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
       JOptionPane.showMessageDialog(this, "保存成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
       setOldObject();
-      
+
       if (this.forenEntityDialog == null) {
         this.listPanel.refreshCurrentTabData();
         refreshData();
@@ -638,12 +621,14 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     return success;
 
   }
+
   void refreshParentForeignDialog(SfJdTarget jdTarget) {
 
     this.forenEntityDialog.refresh(jdTarget);
     this.parent.dispose();
 
   }
+
   /**
 
    * 保存前校验
@@ -658,7 +643,7 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     List mainNotNullList = mainBillElementMeta.getNotNullBillElement();
     SfJdTarget jdTarget = (SfJdTarget) this.listCursor.getCurrentObject();
     StringBuilder errorInfo = new StringBuilder();
-    String mainValidateInfo = ZcUtil.validateBillElementNull(jdTarget, mainNotNullList);     
+    String mainValidateInfo = ZcUtil.validateBillElementNull(jdTarget, mainNotNullList);
     if (mainValidateInfo.length() != 0) {
       errorInfo.append("\n").append(mainValidateInfo.toString()).append("\n");
     }
@@ -669,7 +654,6 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     }
     return true;
   }
- 
 
   protected void doDelete() {
 
@@ -677,8 +661,8 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
     SfJdTarget jdTarget = (SfJdTarget) this.listCursor.getCurrentObject();
 
-    if(sfJdTargetServiceDelegate.isUsing(jdTarget.getJdTargetId(), requestMeta)){
-      JOptionPane.showMessageDialog(this, "已经被使用，不能删除 ！\n" , "错误", JOptionPane.ERROR_MESSAGE);
+    if (sfJdTargetServiceDelegate.isUsing(jdTarget.getJdTargetId(), requestMeta)) {
+      JOptionPane.showMessageDialog(this, "已经被使用，不能删除 ！\n", "错误", JOptionPane.ERROR_MESSAGE);
       return;
     }
     int num = JOptionPane.showConfirmDialog(this, "是否删除当前单据", "删除确认", 0);
@@ -726,7 +710,6 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
   }
 
- 
   public boolean isDataChanged() {
 
     if (!this.saveButton.isVisible() || !saveButton.isEnabled()) {
@@ -736,7 +719,6 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     return !DigestUtil.digest(oldjdTarget).equals(DigestUtil.digest(listCursor.getCurrentObject()));
 
   }
-
 
   private void doPrintButton() {
 
@@ -760,11 +742,11 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
 
     List<AbstractFieldEditor> editorList = new ArrayList<AbstractFieldEditor>();
 
-//    AutoNumFieldEditor code = new AutoNumFieldEditor(LangTransMeta.translate(SfJdTarget.JD_TARGET_ID), "jdTargetId");
+    //    AutoNumFieldEditor code = new AutoNumFieldEditor(LangTransMeta.translate(SfJdTarget.JD_TARGET_ID), "jdTargetId");
     TextFieldEditor name = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_NAME), "name");
-    AsValFieldEditor sex = new AsValFieldEditor(LangTransMeta.translate(SfJdTarget.COL_SEX), "sex",SfElementConstants.VS_SEX);
-    IntFieldEditor age = new IntFieldEditor(LangTransMeta.translate(SfJdTarget.COL_AGE), "age",3);
-   
+    AsValFieldEditor sex = new AsValFieldEditor(LangTransMeta.translate(SfJdTarget.COL_SEX), "sex", SfElementConstants.VS_SEX);
+    IntFieldEditor age = new IntFieldEditor(LangTransMeta.translate(SfJdTarget.COL_AGE), "age", 3);
+
     TextFieldEditor idName = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ID_NAME), "idName");
     TextFieldEditor idCode = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ID_CODE), "idCode");
     TextFieldEditor phone = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_PHONE), "phone");
@@ -776,23 +758,21 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     editorList.add(age);
     editorList.add(idName);
     editorList.add(idCode);
-//    editorList.add(phone);
+    //    editorList.add(phone);
     editorList.add(address);
     editorList.add(zip);
-    
+
     return editorList;
 
   }
-
 
   /* (non-Javadoc)
    * @see com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel#createSubBillPanel()
    */
   @Override
   public JComponent createSubBillPanel() {
-   return null;
+    return null;
   }
-
 
   public void doExit() {
     // TODO Auto-generated method stub
@@ -816,7 +796,5 @@ public class SfJdTargetEditPanel  extends AbstractMainSubEditPanel {
     this.parent.dispose();
 
   }
-
- 
 
 }

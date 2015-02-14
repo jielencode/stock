@@ -45,7 +45,6 @@ import com.ufgov.zc.client.component.zc.fieldeditor.AutoNumFieldEditor;
 import com.ufgov.zc.client.component.zc.fieldeditor.TextFieldEditor;
 import com.ufgov.zc.client.zc.ButtonStatus;
 import com.ufgov.zc.client.zc.ZcUtil;
-import com.ufgov.zc.common.sf.model.SfEntrust;
 import com.ufgov.zc.common.sf.model.SfOutInfoType;
 import com.ufgov.zc.common.sf.publish.ISfOutInfoTypeServiceDelegate;
 import com.ufgov.zc.common.system.RequestMeta;
@@ -55,7 +54,7 @@ import com.ufgov.zc.common.system.util.DigestUtil;
 import com.ufgov.zc.common.system.util.ObjectUtil;
 import com.ufgov.zc.common.zc.publish.IZcEbBaseServiceDelegate;
 
-public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
+public class SfOutInfoTypeEditPanel extends AbstractMainSubEditPanel {
 
   private static final Logger logger = Logger.getLogger(SfOutInfoTypeEditPanel.class);
 
@@ -119,18 +118,19 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
 
   private ElementConditionDto eaccDto = new ElementConditionDto();
 
-  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate ;
-  
-  private ISfOutInfoTypeServiceDelegate sfOutInfoTypeServiceDelegate ;
-  
+  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate;
+
+  private ISfOutInfoTypeServiceDelegate sfOutInfoTypeServiceDelegate;
+
   public SfOutInfoTypeEditPanel(SfOutInfoTypeDialog parent, ListCursor listCursor, String tabStatus, SfOutInfoTypeListPanel listPanel) {
     // TODO Auto-generated constructor stub
     super(SfOutInfoTypeEditPanel.class, BillElementMeta.getBillElementMetaWithoutNd(compoId));
-    
-    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,"zcEbBaseServiceDelegate");
-    sfOutInfoTypeServiceDelegate = (ISfOutInfoTypeServiceDelegate) ServiceFactory.create(ISfOutInfoTypeServiceDelegate.class,"sfOutInfoTypeServiceDelegate");
+
+    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
+    sfOutInfoTypeServiceDelegate = (ISfOutInfoTypeServiceDelegate) ServiceFactory.create(ISfOutInfoTypeServiceDelegate.class,
+      "sfOutInfoTypeServiceDelegate");
     mainBillElementMeta = BillElementMeta.getBillElementMetaWithoutNd(compoId);
-    
+
     this.workPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId),
       TitledBorder.CENTER, TitledBorder.TOP,
 
@@ -185,25 +185,21 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
 
   }
 
-
   protected void updateFieldEditorsEditable() {
 
-      for (AbstractFieldEditor editor : fieldEditors) {
-        if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
-          if ("outInfoTypeCode".equals(editor.getFieldName())){
-            editor.setEnabled(false);            
-          }else{
-            editor.setEnabled(true);
-          }
-        } else {
+    for (AbstractFieldEditor editor : fieldEditors) {
+      if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
+        if ("outInfoTypeCode".equals(editor.getFieldName())) {
           editor.setEnabled(false);
+        } else {
+          editor.setEnabled(true);
         }
+      } else {
+        editor.setEnabled(false);
       }
-    
+    }
 
   }
-
- 
 
   protected void setButtonStatus() {
     SfOutInfoType outInfoType = (SfOutInfoType) listCursor.getCurrentObject();
@@ -223,14 +219,14 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
       bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
 
       btnStatusList.add(bs);
-      
+
       bs = new ButtonStatus();
 
       bs.setButton(this.editButton);
 
       bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
 
-      bs.addBillStatus(ZcSettingConstants.WF_STATUS_DRAFT);
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
 
       btnStatusList.add(bs);
 
@@ -331,7 +327,7 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
     }
 
     SfOutInfoType outInfoType = (SfOutInfoType) this.listCursor.getCurrentObject();
-     
+
     ZcUtil.setButtonEnable(this.btnStatusList, null, this.pageStatus, getCompoId(), outInfoType.getProcessInstId());
 
   }
@@ -341,9 +337,6 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
     oldOutInfoType = (SfOutInfoType) ObjectUtil.deepCopy(listCursor.getCurrentObject());
 
   }
-
- 
- 
 
   public String getCompoId() {
     // TODO Auto-generated method stub
@@ -366,31 +359,31 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
 
     toolBar.add(saveButton);
 
-//    toolBar.add(sendButton);
+    //    toolBar.add(sendButton);
 
-//    toolBar.add(saveAndSendButton);
+    //    toolBar.add(saveAndSendButton);
 
-//    toolBar.add(suggestPassButton);
+    //    toolBar.add(suggestPassButton);
 
-//    toolBar.add(sendGkButton);
+    //    toolBar.add(sendGkButton);
 
-//    toolBar.add(unAuditButton);
+    //    toolBar.add(unAuditButton);
 
-//    toolBar.add(unTreadButton);
+    //    toolBar.add(unTreadButton);
 
-//    toolBar.add(callbackButton);
+    //    toolBar.add(callbackButton);
 
     toolBar.add(deleteButton);
 
-//    toolBar.add(importButton);
+    //    toolBar.add(importButton);
 
-//    toolBar.add(printButton);
+    //    toolBar.add(printButton);
 
-//    toolBar.add(traceButton);
+    //    toolBar.add(traceButton);
 
-//    toolBar.add(previousButton);
+    //    toolBar.add(previousButton);
 
-//    toolBar.add(nextButton);
+    //    toolBar.add(nextButton);
 
     toolBar.add(exitButton);
 
@@ -413,8 +406,6 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
       }
 
     });
-
-
 
     previousButton.addActionListener(new ActionListener() {
 
@@ -468,10 +459,6 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
 
     });
 
-   
-
-
-
     unAuditButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -484,7 +471,6 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
 
     });
 
-  
     printButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -503,8 +489,8 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
 
   public void doAdd() {
 
-    pageStatus=ZcSettingConstants.PAGE_STATUS_NEW;
-    SfOutInfoType bill=new SfOutInfoType();
+    pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
+    SfOutInfoType bill = new SfOutInfoType();
     setDefaultValue(bill);
     listCursor.setCurrentObject(bill);
     refreshData();
@@ -515,7 +501,7 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
 
   private void setDefaultValue(SfOutInfoType bill) {
     // TODO Auto-generated method stub
-    
+
   }
 
   protected void doPrevious() {
@@ -600,7 +586,7 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
 
       SfOutInfoType inData = (SfOutInfoType) this.listCursor.getCurrentObject();
 
-//      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
+      //      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
 
       SfOutInfoType outInfoType = sfOutInfoTypeServiceDelegate.saveFN(inData, this.requestMeta);
 
@@ -648,11 +634,11 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
     List mainNotNullList = mainBillElementMeta.getNotNullBillElement();
     SfOutInfoType outInfoType = (SfOutInfoType) this.listCursor.getCurrentObject();
     StringBuilder errorInfo = new StringBuilder();
-    String mainValidateInfo = ZcUtil.validateBillElementNull(outInfoType, mainNotNullList);     
+    String mainValidateInfo = ZcUtil.validateBillElementNull(outInfoType, mainNotNullList);
     if (mainValidateInfo.length() != 0) {
       errorInfo.append("\n").append(mainValidateInfo.toString()).append("\n");
     }
-    
+
     if (errorInfo.length() != 0) {
       JOptionPane.showMessageDialog(this, errorInfo.toString(), "提示", JOptionPane.WARNING_MESSAGE);
       return false;
@@ -660,22 +646,18 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
     return true;
   }
 
- 
-
- 
-
   protected void doDelete() {
 
     requestMeta.setFuncId(deleteButton.getFuncId());
 
     SfOutInfoType outInfoType = (SfOutInfoType) this.listCursor.getCurrentObject();
 
-    ElementConditionDto dto=new ElementConditionDto();
+    ElementConditionDto dto = new ElementConditionDto();
     dto.setDattr1("isUsing");
-    List usingLst=sfOutInfoTypeServiceDelegate.getMainDataLst(dto, requestMeta);
-    
-    if(usingLst!=null && usingLst.size()>0){
-      JOptionPane.showMessageDialog(this, "已经被使用，不能删除 ！\n" , "错误", JOptionPane.ERROR_MESSAGE);
+    List usingLst = sfOutInfoTypeServiceDelegate.getMainDataLst(dto, requestMeta);
+
+    if (usingLst != null && usingLst.size() > 0) {
+      JOptionPane.showMessageDialog(this, "已经被使用，不能删除 ！\n", "错误", JOptionPane.ERROR_MESSAGE);
       return;
     }
     int num = JOptionPane.showConfirmDialog(this, "是否删除当前单据", "删除确认", 0);
@@ -722,7 +704,6 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
 
   }
 
- 
   public boolean isDataChanged() {
 
     if (!this.saveButton.isVisible() || !saveButton.isEnabled()) {
@@ -732,7 +713,6 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
     return !DigestUtil.digest(oldOutInfoType).equals(DigestUtil.digest(listCursor.getCurrentObject()));
 
   }
-
 
   private void doPrintButton() {
 
@@ -755,26 +735,24 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
   public List<AbstractFieldEditor> createFieldEditors() {
 
     List<AbstractFieldEditor> editorList = new ArrayList<AbstractFieldEditor>();
-  
+
     AutoNumFieldEditor code = new AutoNumFieldEditor(LangTransMeta.translate(SfOutInfoType.COL_OUT_INFO_TYPE_CODE), "outInfoTypeCode");
     TextFieldEditor name = new TextFieldEditor(LangTransMeta.translate(SfOutInfoType.COL_OUT_INFO_TYPE_NAME), "outInfoTypeName");
 
     editorList.add(code);
     editorList.add(name);
-    
+
     return editorList;
 
   }
-
 
   /* (non-Javadoc)
    * @see com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel#createSubBillPanel()
    */
   @Override
   public JComponent createSubBillPanel() {
-   return null;
+    return null;
   }
-
 
   public void doExit() {
     // TODO Auto-generated method stub
@@ -798,7 +776,5 @@ public class SfOutInfoTypeEditPanel  extends AbstractMainSubEditPanel {
     this.parent.dispose();
 
   }
-
- 
 
 }

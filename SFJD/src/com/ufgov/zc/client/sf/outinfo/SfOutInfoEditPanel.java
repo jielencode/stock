@@ -1015,7 +1015,7 @@ public class SfOutInfoEditPanel extends AbstractMainSubEditPanel {
           currentBill.setEntrustId(entrust.getEntrustId());
           currentBill.setEntrustCode(entrust.getCode());
           currentBill.setName(entrust.getName() + "外部信息");
-          currentBill.setTgf(entrust.getEntrustor() == null ? null : entrust.getEntrustor().getName());
+          //          currentBill.setTgf(entrust.getEntrustor() == null ? null : entrust.getEntrustor().getName());
           currentBill.setTgfPhone(entrust.getEntrustor() == null ? null : entrust.getEntrustor().getLinkTel());
           setEditingObject(currentBill);
           break;

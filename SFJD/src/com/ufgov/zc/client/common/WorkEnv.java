@@ -442,7 +442,7 @@ public class WorkEnv {
     workEvn.orgCode = "002";
     workEvn.poCode = "ysdwcg";
     workEvn.orgPoCode = "003007";
-    workEvn.token = "ss";
+    workEvn.token = "" + System.currentTimeMillis();
 
     workEvn.setTransDate("2015-10-22");
     workEvn.setEmpCode("EM-00000286");
@@ -634,7 +634,7 @@ public class WorkEnv {
           workEvn.orgCode = po.getOrgCode();
           workEvn.poCode = po.getPosiCode();
           workEvn.orgPoCode = org_posi_id;
-          workEvn.setToken("sss1");
+          workEvn.setToken("" + System.currentTimeMillis());
           workEvn.setTransDate("2015-06-01");
           workEvn.setEmpCode(po.getEmpCode());
           workEvn.setEmpName(user.getUserName());

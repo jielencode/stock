@@ -79,6 +79,10 @@ public class SfUtil {
     return haveFunc(compoId, null, func, meta);
   }
 
+  public static boolean haveFunc(String compoId, String func, RequestMeta meta, String moduleCode) {
+    return haveFunc(compoId, null, func, meta, moduleCode);
+  }
+
   /**
    * 判断当前用户对当前部件是否有对应权限
    * @param compoId
@@ -110,7 +114,7 @@ public class SfUtil {
       ElementConditionDto dto = new ElementConditionDto();
       dto.setUserId(meta.getSvUserID());
       //      dto.setCompoId(compoId);
-      dto.setDattr1(compoPreFix);
+      dto.setDattr1(compoPreFix == null ? "" : compoPreFix);
       List rtn = baseDataServiceDelegate.queryDataForList("com.ufgov.zc.server.sf.dao.SfEntrustMapper.selectUserFunc", dto, meta);
       if (rtn != null) {
         //        userFuncs.addAll(rtn);

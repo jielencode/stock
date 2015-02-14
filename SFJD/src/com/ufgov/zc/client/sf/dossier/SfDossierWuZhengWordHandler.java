@@ -12,7 +12,7 @@ import com.ufgov.zc.common.sf.model.SfEntrust;
 import com.ufgov.zc.common.sf.model.SfEntrustor;
 import com.ufgov.zc.common.system.constants.SfElementConstants;
 
-public class SfDossierWuZhengWordHandler  extends WordHandlerAdapter {
+public class SfDossierWuZhengWordHandler extends WordHandlerAdapter {
 
   @Override
   public String getTemplateFileId() {
@@ -34,6 +34,9 @@ public class SfDossierWuZhengWordHandler  extends WordHandlerAdapter {
 
     String jgmc = AsOptionMeta.getOptVal(SfElementConstants.OPT_SF_JD_COMPANY_NAME);
     dataMap.put("jgmc", StringUtil.freeMarkFillWordChar(jgmc));
+    dataMap.put("bh", StringUtil.freeMarkFillWordChar("编号KPTJ-492-2-14"));
+    dataMap.put("bb", StringUtil.freeMarkFillWordChar("第1版"));
+    dataMap.put("xd", StringUtil.freeMarkFillWordChar("第0次修订"));
 
     /*String jgxkz=AsOptionMeta.getOptVal(SfElementConstants.OPT_SF_JD_COMPANY_XKZ);    
     dataMap.put("jgxkz", StringUtil.freeMarkFillWordChar(jgxkz));
@@ -47,7 +50,7 @@ public class SfDossierWuZhengWordHandler  extends WordHandlerAdapter {
     String jgdh = AsOptionMeta.getOptVal(SfElementConstants.OPT_SF_JD_COMPANY_TEL);
     dataMap.put("jgdh", StringUtil.freeMarkFillWordChar(jgdh));
 
-//    dataMap.put("jgdh", "12345678");
+    //    dataMap.put("jgdh", "12345678");
     dataMap.put("wtbh", StringUtil.freeMarkFillWordChar(entrust.getCode()));
 
     dataMap.put("wtf", StringUtil.freeMarkFillWordChar(entrust.getEntrustor().getName()));

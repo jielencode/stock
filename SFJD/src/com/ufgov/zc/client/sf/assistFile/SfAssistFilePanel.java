@@ -32,7 +32,6 @@ import com.ufgov.zc.client.common.WorkEnv;
 import com.ufgov.zc.client.common.converter.sf.SfAssistFileToTableModelConverter;
 import com.ufgov.zc.client.component.JFuncToolBar;
 import com.ufgov.zc.client.component.JTablePanel;
-import com.ufgov.zc.client.component.button.AddButton;
 import com.ufgov.zc.client.component.button.EditButton;
 import com.ufgov.zc.client.component.button.FuncButton;
 import com.ufgov.zc.client.component.button.SaveButton;
@@ -60,7 +59,6 @@ import com.ufgov.zc.common.zc.publish.IZcEbBaseServiceDelegate;
  */
 public class SfAssistFilePanel extends AbstractMainSubEditPanel {
 
-
   /**
    * 
    */
@@ -73,32 +71,34 @@ public class SfAssistFilePanel extends AbstractMainSubEditPanel {
   protected RequestMeta requestMeta = WorkEnv.getInstance().getRequestMeta();
 
   private static String compoId = "SF_ASSIST_FILE";
-  
-  private List<SfAssistFile> fileLst=new ArrayList<SfAssistFile>();
+
+  private List<SfAssistFile> fileLst = new ArrayList<SfAssistFile>();
 
   protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate;
-  
+
   private ISfAssistFileServiceDelegate sfAssistFileServiceDelegate;
 
   protected FuncButton saveButton = new SaveButton();
 
   protected FuncButton editButton = new EditButton();
 
-  protected JTablePanel detailTablePanel ;
-  
+  protected JTablePanel detailTablePanel;
+
   static {
 
     LangTransMeta.init("SF%");
 
   }
-  public SfAssistFilePanel(){
+
+  public SfAssistFilePanel() {
     zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
-    sfAssistFileServiceDelegate = (ISfAssistFileServiceDelegate) ServiceFactory.create(ISfAssistFileServiceDelegate.class, "sfAssistFileServiceDelegate");
-    
+    sfAssistFileServiceDelegate = (ISfAssistFileServiceDelegate) ServiceFactory.create(ISfAssistFileServiceDelegate.class,
+      "sfAssistFileServiceDelegate");
+
     this.workPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId),
       TitledBorder.CENTER, TitledBorder.TOP, new Font("宋体", Font.BOLD, 15), Color.BLUE));
-    
-    detailTablePanel = new JTablePanel("SfAssistFilePanel_detail",AsOptionMeta.getOptVal("SF_OPTION_SF_ASSIST_FILE_HELP_MSG"));
+
+    detailTablePanel = new JTablePanel("SfAssistFilePanel_detail", AsOptionMeta.getOptVal("SF_OPTION_SF_ASSIST_FILE_HELP_MSG"));
 
     init();
 
@@ -109,25 +109,30 @@ public class SfAssistFilePanel extends AbstractMainSubEditPanel {
     setButtonStatus();
 
     updateFieldEditorsEditable();
-    
+
   }
+
   private void refreshData() {
     // TODO Auto-generated method stub
     this.pageStatus = ZcSettingConstants.PAGE_STATUS_BROWSE;
-    fileLst=sfAssistFileServiceDelegate.getMainDataLst(new ElementConditionDto(), requestMeta);
+    fileLst = sfAssistFileServiceDelegate.getMainDataLst(new ElementConditionDto(), requestMeta);
     refreshSubData();
     setButtonStatus();
   }
-  private void refreshSubData(){
+
+  private void refreshSubData() {
     detailTablePanel.setTableModel(SfAssistFileToTableModelConverter.convertFileLst(fileLst, false));
     ZcUtil.translateColName(detailTablePanel.getTable(), SfAssistFileToTableModelConverter.getDetailInfo());
     setTablePorperty();
   }
+
   private void setTablePorperty() {
     // TODO Auto-generated method stub
     detailTablePanel.getTable().setDefaultEditor(String.class, new TextCellEditor());
-    SwingUtil.setTableCellEditor(detailTablePanel.getTable(), SfAssistFile.COL_FILE_NAME, new FileCellEditor("fileId",(BeanTableModel) detailTablePanel.getTable().getModel()));
+    SwingUtil.setTableCellEditor(detailTablePanel.getTable(), SfAssistFile.COL_FILE_NAME, new FileCellEditor("fileId",
+      (BeanTableModel) detailTablePanel.getTable().getModel()));
   }
+
   /* (non-Javadoc)
    * @see com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel#initToolBar(com.ufgov.zc.client.component.JFuncToolBar)
    */
@@ -140,7 +145,6 @@ public class SfAssistFilePanel extends AbstractMainSubEditPanel {
     toolBar.setCompoId(getCompoId());
     toolBar.add(editButton);
     toolBar.add(saveButton);
-
 
     editButton.addActionListener(new ActionListener() {
 
@@ -162,13 +166,15 @@ public class SfAssistFilePanel extends AbstractMainSubEditPanel {
       }
 
     });
-    
+
   }
-  private void doSave(){
-    if(fileLst==null)return;
-    for(int i=0;i<fileLst.size();i++){
-      SfAssistFile file=(SfAssistFile)fileLst.get(i);
-      if(file.getFileName()==null || file.getFileName().trim().length()==0){
+
+  private void doSave() {
+    if (fileLst == null)
+      return;
+    for (int i = 0; i < fileLst.size(); i++) {
+      SfAssistFile file = (SfAssistFile) fileLst.get(i);
+      if (file.getFileName() == null || file.getFileName().trim().length() == 0) {
         JOptionPane.showMessageDialog(this, "文档名称不能为空", "提示", JOptionPane.INFORMATION_MESSAGE);
         return;
       }
@@ -197,8 +203,8 @@ public class SfAssistFilePanel extends AbstractMainSubEditPanel {
     if (success) {
 
       JOptionPane.showMessageDialog(this, "保存成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
-      this.pageStatus=ZcSettingConstants.PAGE_STATUS_BROWSE;
-      this.isEdit=false;
+      this.pageStatus = ZcSettingConstants.PAGE_STATUS_BROWSE;
+      this.isEdit = false;
       refreshSubData();
       setButtonStatus();
 
@@ -212,25 +218,26 @@ public class SfAssistFilePanel extends AbstractMainSubEditPanel {
   private void doEdit() {
 
     this.pageStatus = ZcSettingConstants.PAGE_STATUS_EDIT;
-    this.isEdit=true;    
+    this.isEdit = true;
     setButtonStatus();
   }
 
   protected void setButtonStatus() {
-    
-      editButton.setVisible(SfUtil.haveFunc(compoId, null, editButton.getFuncId()));
-      editButton.setVisible(SfUtil.haveFunc(compoId, null, saveButton.getFuncId()));
-      
-    if(this.pageStatus.equals(ZcSettingConstants.PAGE_STATUS_BROWSE)){
+
+    editButton.setVisible(SfUtil.haveFunc(compoId, null, editButton.getFuncId(), requestMeta));
+    saveButton.setVisible(SfUtil.haveFunc(compoId, null, saveButton.getFuncId(), requestMeta));
+
+    if (this.pageStatus.equals(ZcSettingConstants.PAGE_STATUS_BROWSE)) {
       editButton.setEnabled(true);
       saveButton.setEnabled(false);
       setWFSubTableEditable(detailTablePanel, false);
-    }else{
+    } else {
       editButton.setEnabled(false);
-      saveButton.setEnabled(true); 
-      setWFSubTableEditable(detailTablePanel, true); 
+      saveButton.setEnabled(true);
+      setWFSubTableEditable(detailTablePanel, true);
     }
   }
+
   /* (non-Javadoc)
    * @see com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel#createFieldEditors()
    */
@@ -307,8 +314,9 @@ public class SfAssistFilePanel extends AbstractMainSubEditPanel {
 
   protected void setFileDefaultValue(SfAssistFile item) {
     // TODO Auto-generated method stub
-    item.setTempId(""+System.currentTimeMillis());
+    item.setTempId("" + System.currentTimeMillis());
   }
+
   /**
    * @param args
    */
@@ -348,6 +356,7 @@ public class SfAssistFilePanel extends AbstractMainSubEditPanel {
     });
 
   }
+
   public String getCompoId() {
     // TODO Auto-generated method stub
     return compoId;

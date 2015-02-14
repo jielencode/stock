@@ -23,21 +23,21 @@ import com.ufgov.zc.common.zc.publish.IZcEbBaseServiceDelegate;
 
 public class SfJdResultNodeBusiness implements ISfFlowNodeBusiness {
 
+  String compoId = "SF_MATERIALS_TRANSFER";
 
-  String compoId="SF_MATERIALS_TRANSFER";
   @Override
   public void excute(SfDataFowPanel flowPanel, SfFlowNode node, SfEntrust entrust, RequestMeta meta) {
     // TODO Auto-generated method stub
-   String compoId="SF_JD_RESULT";
-    JComponent component=flowPanel.getTabComponent(compoId);
-    if(component!=null){
+    String compoId = "SF_JD_RESULT";
+    JComponent component = flowPanel.getTabComponent(compoId);
+    if (component != null) {
       flowPanel.setSelectedTab(compoId);
-    }else{
-      List<SfJdResult> billLst=getDataLst(entrust.getEntrustId(),meta);
-      if(billLst==null || billLst.size()==0){
-        List<SfJdResult> lst=new ArrayList<SfJdResult>();
-        ListCursor lstCursor=new ListCursor(lst, -1);
-        SfJdResult r=new SfJdResult();
+    } else {
+      List<SfJdResult> billLst = getDataLst(entrust.getEntrustId(), meta);
+      if (billLst == null || billLst.size() == 0) {
+        List<SfJdResult> lst = new ArrayList<SfJdResult>();
+        ListCursor lstCursor = new ListCursor(lst, -1);
+        SfJdResult r = new SfJdResult();
         r.setEntrustCode(entrust.getCode());
         r.setEntrustId(entrust.getEntrustId());
         r.setName(entrust.getName() + "鉴定结果");
@@ -45,19 +45,19 @@ public class SfJdResultNodeBusiness implements ISfFlowNodeBusiness {
         r.setJdr(entrust.getJdFzr());
         lstCursor.getDataList().add(r);
         lstCursor.setCurrentObject(r);
-        SfJdResultEditPanel editPanel=new SfJdResultEditPanel(flowPanel.getParentDlg(), lstCursor, null, null);
+        SfJdResultEditPanel editPanel = new SfJdResultEditPanel(flowPanel.getParentDlg(), lstCursor, null, null);
         flowPanel.addTab(editPanel, compoId);
-      }else{
-        if(billLst.size()==1){//加载编辑界面
-          List<SfJdResult> lst=new ArrayList<SfJdResult>();
-          ListCursor lstCursor=new ListCursor(lst, -1);
+      } else {
+        if (billLst.size() == 1) {//加载编辑界面
+          List<SfJdResult> lst = new ArrayList<SfJdResult>();
+          ListCursor lstCursor = new ListCursor(lst, -1);
           lstCursor.getDataList().addAll(billLst);
-          SfJdResult e=billLst.get(0);
+          SfJdResult e = billLst.get(0);
           lstCursor.setCurrentObject(e);
-          SfJdResultEditPanel editPanel=new SfJdResultEditPanel(flowPanel.getParentDlg(), lstCursor, null, null);
+          SfJdResultEditPanel editPanel = new SfJdResultEditPanel(flowPanel.getParentDlg(), lstCursor, null, null);
           flowPanel.addTab(editPanel, compoId);
-        }else{//加载列表界面          
-          SfJdResultListPanel listPanel=new SfJdResultListPanel(entrust);
+        } else {//加载列表界面          
+          SfJdResultListPanel listPanel = new SfJdResultListPanel(entrust);
           flowPanel.addTab(listPanel, compoId);
         }
       }
@@ -65,43 +65,43 @@ public class SfJdResultNodeBusiness implements ISfFlowNodeBusiness {
     }
   }
 
-  private List<SfJdResult> getDataLst(BigDecimal entrustId,RequestMeta meta) {
+  private List<SfJdResult> getDataLst(BigDecimal entrustId, RequestMeta meta) {
     // TODO Auto-generated method stub
-    IZcEbBaseServiceDelegate zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,"zcEbBaseServiceDelegate");
-    ElementConditionDto dto=new ElementConditionDto();
-    dto.setDattr1(""+entrustId.intValue());
-    List<SfJdResult> billLst = zcEbBaseServiceDelegate.queryDataForList("com.ufgov.zc.server.sf.dao.SfJdResultMapper.selectMainDataLst", dto, meta);    
+    IZcEbBaseServiceDelegate zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,
+      "zcEbBaseServiceDelegate");
+    ElementConditionDto dto = new ElementConditionDto();
+    dto.setDattr1("" + entrustId.intValue());
+    List<SfJdResult> billLst = zcEbBaseServiceDelegate.queryDataForList("com.ufgov.zc.server.sf.dao.SfJdResultMapper.selectMainDataLst", dto, meta);
     return billLst;
   }
 
-
   @Override
-  public boolean isEnable(SfEntrust entrust,RequestMeta meta) {
+  public boolean isEnable(SfEntrust entrust, RequestMeta meta) {
     // TODO Auto-generated method stub
-    if(!isEnougthCondition(entrust)){
+    if (!isEnougthCondition(entrust)) {
       return false;
     }
-    List evalst=getDataLst(entrust.getEntrustId(),meta);
-    if(evalst!=null && evalst.size()>0){
-      if(SfUtil.haveFunc(compoId, entrust, SfElementConstants.FUNC_WATCH) ){
+    List evalst = getDataLst(entrust.getEntrustId(), meta);
+    if (evalst != null && evalst.size() > 0) {
+      if (SfUtil.haveFunc(compoId, entrust, SfElementConstants.FUNC_WATCH, meta)) {
         return true;
-      }      
-    }else{
-      if(SfUtil.canNew(compoId, entrust)){
+      }
+    } else {
+      if (SfUtil.canNew(compoId, entrust, meta)) {
         return true;
       }
     }
     return false;
   }
 
-/**
- * 检查其业务前提条件是否满足
- * @param entrust
- * @return
- */
+  /**
+   * 检查其业务前提条件是否满足
+   * @param entrust
+   * @return
+   */
   private boolean isEnougthCondition(SfEntrust entrust) {
     // TODO Auto-generated method stub
-    if(SfElementConstants.VAL_Y.equals(entrust.getIsAccept())){
+    if (SfElementConstants.VAL_Y.equals(entrust.getIsAccept())) {
       return true;
     }
     return false;
