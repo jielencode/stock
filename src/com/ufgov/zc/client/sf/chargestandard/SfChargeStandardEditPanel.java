@@ -49,7 +49,6 @@ import com.ufgov.zc.client.component.zc.fieldeditor.TextFieldEditor;
 import com.ufgov.zc.client.zc.ButtonStatus;
 import com.ufgov.zc.client.zc.ZcUtil;
 import com.ufgov.zc.common.sf.model.SfChargeStandard;
-import com.ufgov.zc.common.sf.model.SfEntrust;
 import com.ufgov.zc.common.sf.publish.ISfChargeStandardServiceDelegate;
 import com.ufgov.zc.common.system.RequestMeta;
 import com.ufgov.zc.common.system.constants.SfElementConstants;
@@ -124,23 +123,23 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
   private ArrayList<ButtonStatus> btnStatusList = new ArrayList<ButtonStatus>();
 
-  private BillElementMeta mainBillElementMeta ;
+  private BillElementMeta mainBillElementMeta;
 
   private ElementConditionDto eaccDto = new ElementConditionDto();
 
-  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate ;
-  
-  private ISfChargeStandardServiceDelegate sfChargeStandardServiceDelegate ;
-  
- public SfChargeStandardEditPanel(SfChargeStandardDialog parent, ListCursor listCursor, String tabStatus, SfChargeStandardListPanel listPanel) {
+  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate;
+
+  private ISfChargeStandardServiceDelegate sfChargeStandardServiceDelegate;
+
+  public SfChargeStandardEditPanel(SfChargeStandardDialog parent, ListCursor listCursor, String tabStatus, SfChargeStandardListPanel listPanel) {
     // TODO Auto-generated constructor stub
     super(SfChargeStandardEditPanel.class, BillElementMeta.getBillElementMetaWithoutNd(compoId));
-    
+
     mainBillElementMeta = BillElementMeta.getBillElementMetaWithoutNd(compoId);
-    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,"zcEbBaseServiceDelegate");
-    sfChargeStandardServiceDelegate = (ISfChargeStandardServiceDelegate) ServiceFactory.create(ISfChargeStandardServiceDelegate.class,"sfChargeStandardServiceDelegate");
-    
-    
+    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
+    sfChargeStandardServiceDelegate = (ISfChargeStandardServiceDelegate) ServiceFactory.create(ISfChargeStandardServiceDelegate.class,
+      "sfChargeStandardServiceDelegate");
+
     this.workPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId),
       TitledBorder.CENTER, TitledBorder.TOP,
 
@@ -179,7 +178,7 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
       this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
 
       chargeStandard = new SfChargeStandard();
-      
+
       setDefaultValue(chargeStandard);
 
       listCursor.getDataList().add(chargeStandard);
@@ -197,7 +196,6 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
   }
 
-
   private void setDefaultValue(SfChargeStandard chargeStandard) {
     // TODO Auto-generated method stub
     chargeStandard.setStatus("Y");
@@ -206,20 +204,18 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
   protected void updateFieldEditorsEditable() {
 
-      for (AbstractFieldEditor editor : fieldEditors) {
-        if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
-          if ("code".equals(editor.getFieldName())){
-            editor.setEnabled(false);            
-          }else{
-            editor.setEnabled(true);
-          }
+    for (AbstractFieldEditor editor : fieldEditors) {
+      if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
+        if ("code".equals(editor.getFieldName())) {
+          editor.setEnabled(false);
         } else {
-          editor.setEnabled(false);            
+          editor.setEnabled(true);
         }
+      } else {
+        editor.setEnabled(false);
       }
+    }
   }
-
- 
 
   protected void setButtonStatus() {
     SfChargeStandard chargeStandard = (SfChargeStandard) listCursor.getCurrentObject();
@@ -245,7 +241,7 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
       bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
 
-      bs.addBillStatus(ZcSettingConstants.WF_STATUS_DRAFT);
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
 
       btnStatusList.add(bs);
 
@@ -346,7 +342,7 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
     }
 
     SfChargeStandard chargeStandard = (SfChargeStandard) this.listCursor.getCurrentObject();
-     
+
     ZcUtil.setButtonEnable(this.btnStatusList, null, this.pageStatus, getCompoId(), chargeStandard.getProcessInstId());
 
   }
@@ -356,9 +352,6 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
     oldChargeStandard = (SfChargeStandard) ObjectUtil.deepCopy(listCursor.getCurrentObject());
 
   }
-
- 
- 
 
   public String getCompoId() {
     // TODO Auto-generated method stub
@@ -380,34 +373,33 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
     toolBar.add(saveButton);
 
-//    toolBar.add(sendButton);
+    //    toolBar.add(sendButton);
 
-//    toolBar.add(saveAndSendButton);
+    //    toolBar.add(saveAndSendButton);
 
-//    toolBar.add(suggestPassButton);
+    //    toolBar.add(suggestPassButton);
 
-//    toolBar.add(sendGkButton);
+    //    toolBar.add(sendGkButton);
 
-//    toolBar.add(unAuditButton);
+    //    toolBar.add(unAuditButton);
 
-//    toolBar.add(unTreadButton);
+    //    toolBar.add(unTreadButton);
 
-//    toolBar.add(callbackButton);
+    //    toolBar.add(callbackButton);
 
     toolBar.add(deleteButton);
 
-//    toolBar.add(importButton);
+    //    toolBar.add(importButton);
 
-//    toolBar.add(printButton);
+    //    toolBar.add(printButton);
 
-//    toolBar.add(traceButton);
+    //    toolBar.add(traceButton);
 
-//    toolBar.add(previousButton);
+    //    toolBar.add(previousButton);
 
-//    toolBar.add(nextButton);
+    //    toolBar.add(nextButton);
 
     toolBar.add(exitButton);
-
 
     editButton.addActionListener(new ActionListener() {
 
@@ -418,8 +410,6 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
       }
 
     });
-
-
 
     previousButton.addActionListener(new ActionListener() {
 
@@ -473,10 +463,6 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
     });
 
-   
-
-
-
     unAuditButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -489,7 +475,6 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
     });
 
-  
     printButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -500,8 +485,6 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
     });
   }
-
- 
 
   protected void doPrevious() {
 
@@ -585,7 +568,7 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
       SfChargeStandard inData = (SfChargeStandard) this.listCursor.getCurrentObject();
 
-//      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
+      //      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
 
       SfChargeStandard chargeStandard = sfChargeStandardServiceDelegate.saveFN(inData, this.requestMeta);
 
@@ -633,11 +616,11 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
     List mainNotNullList = mainBillElementMeta.getNotNullBillElement();
     SfChargeStandard chargeStandard = (SfChargeStandard) this.listCursor.getCurrentObject();
     StringBuilder errorInfo = new StringBuilder();
-    String mainValidateInfo = ZcUtil.validateBillElementNull(chargeStandard, mainNotNullList);     
+    String mainValidateInfo = ZcUtil.validateBillElementNull(chargeStandard, mainNotNullList);
     if (mainValidateInfo.length() != 0) {
       errorInfo.append("\n").append(mainValidateInfo.toString()).append("\n");
     }
-    
+
     if (errorInfo.length() != 0) {
       JOptionPane.showMessageDialog(this, errorInfo.toString(), "提示", JOptionPane.WARNING_MESSAGE);
       return false;
@@ -645,22 +628,18 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
     return true;
   }
 
- 
-
- 
-
   protected void doDelete() {
 
     requestMeta.setFuncId(deleteButton.getFuncId());
 
     SfChargeStandard chargeStandard = (SfChargeStandard) this.listCursor.getCurrentObject();
-    ElementConditionDto dto=new ElementConditionDto();
+    ElementConditionDto dto = new ElementConditionDto();
     dto.setDattr1("isUsing");
-    dto.setDattr2(""+chargeStandard.getChargeStandardId().intValue());    
-    List usingLst=zcEbBaseServiceDelegate.queryDataForList("com.ufgov.zc.server.sf.dao.SfChargeStandardMapper.selectMainDataLst", dto, requestMeta);
+    dto.setDattr2("" + chargeStandard.getChargeStandardId().intValue());
+    List usingLst = zcEbBaseServiceDelegate.queryDataForList("com.ufgov.zc.server.sf.dao.SfChargeStandardMapper.selectMainDataLst", dto, requestMeta);
 
-    if(usingLst!=null && usingLst.size()>0){
-      JOptionPane.showMessageDialog(this, "已经被使用，不能删除 ！\n" , "错误", JOptionPane.ERROR_MESSAGE);
+    if (usingLst != null && usingLst.size() > 0) {
+      JOptionPane.showMessageDialog(this, "已经被使用，不能删除 ！\n", "错误", JOptionPane.ERROR_MESSAGE);
       return;
     }
     int num = JOptionPane.showConfirmDialog(this, "是否删除当前单据", "删除确认", 0);
@@ -707,7 +686,6 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
   }
 
- 
   public boolean isDataChanged() {
 
     if (!this.saveButton.isVisible() || !saveButton.isEnabled()) {
@@ -717,7 +695,6 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
     return !DigestUtil.digest(oldChargeStandard).equals(DigestUtil.digest(listCursor.getCurrentObject()));
 
   }
-
 
   private void doPrintButton() {
 
@@ -741,10 +718,9 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
 
     List<AbstractFieldEditor> editorList = new ArrayList<AbstractFieldEditor>();
 
-
     AutoNumFieldEditor code = new AutoNumFieldEditor(LangTransMeta.translate(SfChargeStandard.COL_CODE), "code");
     TextFieldEditor name = new TextFieldEditor(LangTransMeta.translate(SfChargeStandard.COL_NAME), "name");
-    AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfChargeStandard.COL_STATUS), "status",SfElementConstants.VS_Y_N);
+    AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfChargeStandard.COL_STATUS), "status", SfElementConstants.VS_Y_N);
     DateFieldEditor wtDate = new DateFieldEditor(LangTransMeta.translate(SfChargeStandard.COL_ENABLE_DATE), "enableDate");
     MoneyFieldEditor price = new MoneyFieldEditor(LangTransMeta.translate(SfChargeStandard.COL_PRICE), "price");
 
@@ -753,20 +729,18 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
     editorList.add(status);
     editorList.add(wtDate);
     editorList.add(price);
-    
+
     return editorList;
 
   }
-
 
   /* (non-Javadoc)
    * @see com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel#createSubBillPanel()
    */
   @Override
   public JComponent createSubBillPanel() {
-   return null;
+    return null;
   }
-
 
   public void doExit() {
     // TODO Auto-generated method stub
@@ -792,4 +766,3 @@ public class SfChargeStandardEditPanel extends AbstractMainSubEditPanel {
   }
 
 }
-

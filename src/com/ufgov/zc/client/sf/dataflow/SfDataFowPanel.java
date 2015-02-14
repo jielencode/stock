@@ -5,8 +5,10 @@ package com.ufgov.zc.client.sf.dataflow;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
@@ -15,7 +17,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -74,8 +75,8 @@ public class SfDataFowPanel extends JPanel {
    */
   private static final long serialVersionUID = 257121107953297793L;
 
-//  private BigDecimal entrustId = new BigDecimal(2);//当时为了调试程序，在本界面直接启动，所以设置了这个值2，运行环境时外面传递进来的
-  
+  //  private BigDecimal entrustId = new BigDecimal(2);//当时为了调试程序，在本界面直接启动，所以设置了这个值2，运行环境时外面传递进来的
+
   private String currentCompo = null;
 
   private ListCursor listCursor;
@@ -86,7 +87,7 @@ public class SfDataFowPanel extends JPanel {
 
   private JClosableTabbedPane tabPanel = new JClosableTabbedPane(JTabbedPane.BOTTOM);
 
-  private SfDataFowPanel self=this;
+  private SfDataFowPanel self = this;
 
   private GkBaseDialog parentWindow;
 
@@ -103,30 +104,30 @@ public class SfDataFowPanel extends JPanel {
   private List<String> userCompoLst;
 
   private List<SfFlowNode> nodeLst;
-  
-  private HashMap<String, JEnableImageButton> nodeBtnMap=new HashMap<String, JEnableImageButton>();
-  
-  private HashMap<String, ISfFlowNodeBusiness> nodeBusinessMap=new HashMap<String, ISfFlowNodeBusiness>();
 
-  private List<Class> wordPanelLst=new ArrayList<Class>();
+  private HashMap<String, JEnableImageButton> nodeBtnMap = new HashMap<String, JEnableImageButton>();
+
+  private HashMap<String, ISfFlowNodeBusiness> nodeBusinessMap = new HashMap<String, ISfFlowNodeBusiness>();
+
+  private List<Class> wordPanelLst = new ArrayList<Class>();
 
   private RequestMeta requestMeta = WorkEnv.getInstance().getRequestMeta();
 
   public SfDataFowPanel(SfEntrust entrust) {
     // TODO Auto-generated constructor stub
     super();
-    this.entrust=entrust;
+    this.entrust = entrust;
     init();
   }
 
   public SfDataFowPanel(GkBaseDialog window, String compoId, SfEntrust entrust, AbstractEditListBill listPanel) {
     super();
-    this.entrust=entrust;
+    this.entrust = entrust;
     currentCompo = compoId;
     parentWindow = window;
     this.listPanel = listPanel;
     init();
-    
+
     //setSelectedTab(); 将其放到dialog层来调用，dialog显示后再调用，用于有word控件时的swt错误
   }
 
@@ -135,19 +136,19 @@ public class SfDataFowPanel extends JPanel {
     entrustService = (ISfEntrustServiceDelegate) ServiceFactory.create(ISfEntrustServiceDelegate.class, "sfEntrustServiceDelegate");
     zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
     meta = WorkEnv.getInstance().getRequestMeta();
-    
+
     //初始化当前用户可以查看的compo列表
     initUserCompos();
     //创建界面
     initPanel();
-    
+
     updateFieldEditors();
   }
 
   /**
    * 设置当前选中的页签
    */
-   void setSelectedTab() {
+  void setSelectedTab() {
     // TODO Auto-generated method stub
     setNodePanelSelected();
   }
@@ -176,7 +177,7 @@ public class SfDataFowPanel extends JPanel {
     }
     if (nodePanel != null) {
       if (!find) {
-         tabPanel.addTab(LangTransMeta.translate(currentCompo), nodePanel);
+        tabPanel.addTab(LangTransMeta.translate(currentCompo), nodePanel);
       }
       tabPanel.setSelectedComponent(nodePanel);
     }
@@ -185,7 +186,7 @@ public class SfDataFowPanel extends JPanel {
   public void addTab(JComponent component, String compoId) {
 
     if (!nodePanels.containsKey(compoId) && !isWordPanel(component)) {
-      
+
       nodePanels.put(compoId, component);
     }
 
@@ -199,8 +200,8 @@ public class SfDataFowPanel extends JPanel {
     }
     if (!find) {
       tabPanel.addTab(LangTransMeta.translate(compoId), component);
-//      self.getParentDlg().validate();
-      if(getParentDlg().isVisible()){
+      //      self.getParentDlg().validate();
+      if (getParentDlg().isVisible()) {
         _refreshWord(component);
       }
     }
@@ -214,59 +215,59 @@ public class SfDataFowPanel extends JPanel {
    */
   private boolean isWordPanel(JComponent component) {
     // TODO Auto-generated method stub
-    if(component instanceof SfAgreementEditPanel 
-      || component instanceof SfReceiptEditPanel
-      || component instanceof SfAppendMaterialNoticeEditPanel
-      || component instanceof SfDossierEditPanel)return true;
+    if (component instanceof SfAgreementEditPanel || component instanceof SfReceiptEditPanel || component instanceof SfAppendMaterialNoticeEditPanel
+      || component instanceof SfDossierEditPanel)
+      return true;
     return false;
   }
 
-  public void removeTab(JComponent component,String compoId){
+  public void removeTab(JComponent component, String compoId) {
     if (nodePanels.containsKey(compoId)) {
       nodePanels.remove(component);
     }
     tabPanel.remove(component);
   }
+
   public JComponent getTabComponent(String compoId) {
-    if(compoId.equals("SF_AGREEMENT")){
+    if (compoId.equals("SF_AGREEMENT")) {
       for (int i = 0; i < tabPanel.getTabCount(); i++) {
         JComponent c = (JComponent) tabPanel.getComponentAt(i);
-        if(c instanceof SfAgreementEditPanel){
+        if (c instanceof SfAgreementEditPanel) {
           return c;
         }
       }
-    }else if(compoId.equals("SF_RECEIPT")){
+    } else if (compoId.equals("SF_RECEIPT")) {
       for (int i = 0; i < tabPanel.getTabCount(); i++) {
         JComponent c = (JComponent) tabPanel.getComponentAt(i);
-        if(c instanceof SfReceiptEditPanel || c instanceof SfReceiptListPanel){
+        if (c instanceof SfReceiptEditPanel || c instanceof SfReceiptListPanel) {
           return c;
         }
       }
-    }else if(compoId.equals("SF_APPEND_MATERIAL_NOTICE")){
+    } else if (compoId.equals("SF_APPEND_MATERIAL_NOTICE")) {
       for (int i = 0; i < tabPanel.getTabCount(); i++) {
         JComponent c = (JComponent) tabPanel.getComponentAt(i);
-        if(c instanceof SfAppendMaterialNoticeEditPanel || c instanceof SfAppendMaterialNoticeListPanel){
+        if (c instanceof SfAppendMaterialNoticeEditPanel || c instanceof SfAppendMaterialNoticeListPanel) {
           return c;
         }
       }
-    }else if(compoId.equals("SF_DOSSIER")){
+    } else if (compoId.equals("SF_DOSSIER")) {
       for (int i = 0; i < tabPanel.getTabCount(); i++) {
         JComponent c = (JComponent) tabPanel.getComponentAt(i);
-        if(c instanceof SfDossierEditPanel || c instanceof SfDossierListPanel){
+        if (c instanceof SfDossierEditPanel || c instanceof SfDossierListPanel) {
           return c;
         }
       }
     }
-      return nodePanels.get(compoId);   
+    return nodePanels.get(compoId);
   }
 
   public void refresh(BigDecimal entrustId) {
-    entrust=SfDataFlowUtil.getEntrust(entrustId);
-    Iterator<String> compos=nodeBtnMap.keySet().iterator();
-    while(compos.hasNext()){
-      String compo=compos.next();
-      JEnableImageButton btn=nodeBtnMap.get(compo);
-      ISfFlowNodeBusiness nodebusiness=nodeBusinessMap.get(compo);
+    entrust = SfDataFlowUtil.getEntrust(entrustId);
+    Iterator<String> compos = nodeBtnMap.keySet().iterator();
+    while (compos.hasNext()) {
+      String compo = compos.next();
+      JEnableImageButton btn = nodeBtnMap.get(compo);
+      ISfFlowNodeBusiness nodebusiness = nodeBusinessMap.get(compo);
       btn.setEnable(nodebusiness.isEnable(entrust, requestMeta));
     }
     updateFieldEditors();
@@ -276,7 +277,8 @@ public class SfDataFowPanel extends JPanel {
     this.currentCompo = compoId;
     setSelectedTab();
   }
-  public void setSelectedTab(String compoId,JComponent componet) {
+
+  public void setSelectedTab(String compoId, JComponent componet) {
     this.currentCompo = compoId;
     boolean find = false;
     for (int i = 0; i < tabPanel.getTabCount(); i++) {
@@ -288,7 +290,7 @@ public class SfDataFowPanel extends JPanel {
     }
     if (componet != null) {
       if (!find) {
-         tabPanel.addTab(LangTransMeta.translate(currentCompo), componet);
+        tabPanel.addTab(LangTransMeta.translate(currentCompo), componet);
       }
       tabPanel.setSelectedComponent(componet);
     }
@@ -314,48 +316,49 @@ public class SfDataFowPanel extends JPanel {
 
     TextFieldEditor code = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_CODE), "code");
     TextFieldEditor name = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_NAME), "name");
-    AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_STATUS), "status","SF_VS_ENTRUST_STATUS");
+    AsValFieldEditor status = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_STATUS), "status", "SF_VS_ENTRUST_STATUS");
 
     TextFieldEditor entrustor = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_ENTRUSTOR_NAME), "entrustor.name");
-    TextFieldEditor  entrustorAddress= new TextFieldEditor(LangTransMeta.translate(SfEntrustor.ADDRESS), "entrustor.address");
-    TextFieldEditor  entrustorLinkMan= new TextFieldEditor(LangTransMeta.translate(SfEntrustor.LINK_MAN), "entrustor.linkMan");
-    TextFieldEditor  entrustorTel= new TextFieldEditor(LangTransMeta.translate(SfEntrustor.LINK_TEL), "entrustor.linkTel");
+    TextFieldEditor entrustorAddress = new TextFieldEditor(LangTransMeta.translate(SfEntrustor.ADDRESS), "entrustor.address");
+    TextFieldEditor entrustorLinkMan = new TextFieldEditor(LangTransMeta.translate(SfEntrustor.LINK_MAN), "entrustor.linkMan");
+    TextFieldEditor entrustorTel = new TextFieldEditor(LangTransMeta.translate(SfEntrustor.LINK_TEL), "entrustor.linkTel");
 
     DateFieldEditor wtDate = new DateFieldEditor(LangTransMeta.translate(SfEntrust.COL_WT_DATE), "wtDate");
-    
-    TextFieldEditor  sjr= new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR), "sjr");
-    TextFieldEditor  sjrTel= new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR_TEL), "sjrTel");
-    TextFieldEditor  sjrZjType= new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR_ZJ_TYPE), "sjrZjType");
-    TextFieldEditor  sjrZjCode= new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR_ZJ_CODE), "sjrZjCode");
-    
-    AsValFieldEditor majorCode = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_MAJOR_NAME), "majorCode","SF_VS_MAJOR");
-    AsValFieldEditor jdOrg = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_JD_ORG), "jdOrg",SfElementConstants.VS_SF_ORG);
 
-    TextFieldEditor  jdFzr= new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_JD_FZR), "jdFzrName");
-    
-    TextAreaFieldEditor jdHistory=new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_JD_HISTORY), "jdHistory", 500, 3, 5);
-    TextAreaFieldEditor jdRequire=new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_JD_REQUIRE), "jdRequire", 1000, 4, 5);
-    TextAreaFieldEditor remark=new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_REMARK), "remark", 100, 2, 5);
-    AsValFieldEditor isCxjd = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_IS_CXJD), "isCxjd","VS_Y/N");
-    TextAreaFieldEditor brief=new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_BRIEF), "brief", 100, 3, 5);
-    TextFieldEditor  inputor= new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_INPUTOR), "inputorName");
-    DateFieldEditor inputDate = new DateFieldEditor(LangTransMeta.translate(SfEntrust.COL_INPUT_DATE), "inputDate");    
-    TextFieldEditor  acceptor= new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_ACCEPTOR), "acceptorName");
-    DateFieldEditor acceptDate = new DateFieldEditor(LangTransMeta.translate(SfEntrust.COL_ACCEPT_DATE), "acceptDate"); 
-    AsValFieldEditor isAccept = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_IS_ACCEPT), "isAccept","VS_Y/N");
-    TextAreaFieldEditor notAcceptReason=new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_NOT_ACCEPT_REASON), "notAcceptReason", 100, 3, 5);
-    IntFieldEditor nd=new IntFieldEditor(LangTransMeta.translate(SfEntrust.COL_ND), "nd");
+    TextFieldEditor sjr = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR), "sjr");
+    TextFieldEditor sjrTel = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR_TEL), "sjrTel");
+    TextFieldEditor sjrZjType = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR_ZJ_TYPE), "sjrZjType");
+    TextFieldEditor sjrZjCode = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR_ZJ_CODE), "sjrZjCode");
 
-    TextFieldEditor  jdTarget= new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_NAME), "jdTarget.name");IntFieldEditor  jdTargetAge= new IntFieldEditor(LangTransMeta.translate(SfJdTarget.COL_AGE), "jdTarget.age");
-    AsValFieldEditor jdTargetSex = new AsValFieldEditor(LangTransMeta.translate(SfJdTarget.COL_SEX), "jdTarget.sex",SfElementConstants.VS_SEX);
-    TextFieldEditor  jdTargetIdName= new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ID_NAME), "jdTarget.idName");
-    TextFieldEditor  jdTargetIdCode= new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ID_CODE), "jdTarget.idCode");
-    TextFieldEditor  jdTargetPhone= new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_PHONE), "jdTarget.phone");
-    TextFieldEditor  jdTargetAddress= new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ADDRESS), "jdTarget.address");
+    AsValFieldEditor majorCode = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_MAJOR_NAME), "majorCode", "SF_VS_MAJOR");
+    AsValFieldEditor jdOrg = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_JD_ORG), "jdOrg", SfElementConstants.VS_SF_ORG);
 
+    TextFieldEditor jdFzr = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_JD_FZR), "jdFzrName");
+
+    TextAreaFieldEditor jdHistory = new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_JD_HISTORY), "jdHistory", 500, 3, 5);
+    TextAreaFieldEditor jdRequire = new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_JD_REQUIRE), "jdRequire", 1000, 4, 5);
+    TextAreaFieldEditor remark = new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_REMARK), "remark", 100, 2, 5);
+    AsValFieldEditor isCxjd = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_IS_CXJD), "isCxjd", "VS_Y/N");
+    TextAreaFieldEditor brief = new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_BRIEF), "brief", 100, 3, 5);
+    TextFieldEditor inputor = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_INPUTOR), "inputorName");
+    DateFieldEditor inputDate = new DateFieldEditor(LangTransMeta.translate(SfEntrust.COL_INPUT_DATE), "inputDate");
+    TextFieldEditor acceptor = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_ACCEPTOR), "acceptorName");
+    DateFieldEditor acceptDate = new DateFieldEditor(LangTransMeta.translate(SfEntrust.COL_ACCEPT_DATE), "acceptDate");
+    AsValFieldEditor isAccept = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_IS_ACCEPT), "isAccept", "VS_Y/N");
+    TextAreaFieldEditor notAcceptReason = new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_NOT_ACCEPT_REASON), "notAcceptReason", 100,
+      3, 5);
+    IntFieldEditor nd = new IntFieldEditor(LangTransMeta.translate(SfEntrust.COL_ND), "nd");
+
+    TextFieldEditor jdTarget = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_NAME), "jdTarget.name");
+    IntFieldEditor jdTargetAge = new IntFieldEditor(LangTransMeta.translate(SfJdTarget.COL_AGE), "jdTarget.age");
+    AsValFieldEditor jdTargetSex = new AsValFieldEditor(LangTransMeta.translate(SfJdTarget.COL_SEX), "jdTarget.sex", SfElementConstants.VS_SEX);
+    TextFieldEditor jdTargetIdName = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ID_NAME), "jdTarget.idName");
+    TextFieldEditor jdTargetIdCode = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ID_CODE), "jdTarget.idCode");
+    TextFieldEditor jdTargetPhone = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_PHONE), "jdTarget.phone");
+    TextFieldEditor jdTargetAddress = new TextFieldEditor(LangTransMeta.translate(SfJdTarget.COL_ADDRESS), "jdTarget.address");
 
     fieldEditors.add(new NewLineFieldEditor());
-    
+
     fieldEditors.add(code);
     fieldEditors.add(name);
     fieldEditors.add(isAccept);
@@ -363,13 +366,12 @@ public class SfDataFowPanel extends JPanel {
     fieldEditors.add(entrustor);
     fieldEditors.add(wtDate);
     fieldEditors.add(sjr);
-    
+
     fieldEditors.add(majorCode);
-//    fieldEditors.add(jdOrg);
-    fieldEditors.add(jdFzr);  
-    fieldEditors.add(sjrTel);   
-    
-    
+    //    fieldEditors.add(jdOrg);
+    fieldEditors.add(jdFzr);
+    fieldEditors.add(sjrTel);
+
     SfClientUtil util = new SfClientUtil();
 
     return util.createPanel(fieldEditors, 3, parentWindow);
@@ -381,38 +383,51 @@ public class SfDataFowPanel extends JPanel {
     FlowLayout fl = new FlowLayout(FlowLayout.CENTER, 40, 60);
     iconsPanel.setLayout(fl);
 
+    JPanel pp = new JPanel();
+    pp.setPreferredSize(new Dimension(800, 400));
+    pp.setLayout(new GridLayout(2, 5));
+
     try {
       SfClientUtil cu = new SfClientUtil();
-//      nodeLst = cu.loadModelNode("/com/ufgov/zc/client/sf/dataflow/sf_flow_node_config.xml");
+      //      nodeLst = cu.loadModelNode("/com/ufgov/zc/client/sf/dataflow/sf_flow_node_config.xml");
       nodeLst = cu.loadModelNode("sf_flow_node_config.xml");
       for (final SfFlowNode node : nodeLst) {
         for (int i = 0; i < userCompoLst.size(); i++) {
           String compo = userCompoLst.get(i);
           if (compo.equals(node.getCompoId())) {
-            JEnableImageButton imageLb = new JEnableImageButton(ResourceUtil.getImageIcon(node.getIcon()));
+            JEnableImageButton nodeImageBtn = new JEnableImageButton(ResourceUtil.getImageIcon(node.getIcon()));
             //            JLabel imageLb=new JLabel(ResourceUtil.getImageIcon(node.getIcon()));
-            imageLb.setToolTipText(node.getToolTip());
+            nodeImageBtn.setToolTipText(node.getToolTip());
             final ISfFlowNodeBusiness nodebusiness = node.getNodeBusiness();
-            imageLb.addMouseListener(new MouseAdapter() {
-              public void mouseClicked(MouseEvent e) {                
-                if(((JEnableImageButton)e.getComponent()).isEnable()){
+            nodeImageBtn.addMouseListener(new MouseAdapter() {
+              public void mouseClicked(MouseEvent e) {
+                if (((JEnableImageButton) e.getComponent()).isEnable()) {
                   nodebusiness.excute(self, node, entrust, meta);
                 }
               }
             });
-            imageLb.setEnable(nodebusiness.isEnable(entrust, requestMeta));
+            nodeImageBtn.setEnable(nodebusiness.isEnable(entrust, requestMeta));
             JLabel lb = new JLabel();
             lb.setHorizontalAlignment(JLabel.CENTER);
             lb.setText(LangTransMeta.translate(node.getCompoId()));
 
             JPanel p1 = new JPanel();
+            //            p1.setBorder(BorderFactory.createLineBorder(Color.red));
+            //            nodeImageBtn.setBorder(BorderFactory.createLineBorder(Color.yellow));
+            JPanel p3 = new JPanel();
+            p3.setLayout(new FlowLayout(FlowLayout.CENTER));
+            p3.add(nodeImageBtn);
             p1.setLayout(new BorderLayout());
-            p1.add(imageLb, BorderLayout.CENTER);
+            p1.add(p3, BorderLayout.CENTER);
             p1.add(lb, BorderLayout.SOUTH);
 
-            iconsPanel.add(p1);
-            
-            nodeBtnMap.put(compo, imageLb);
+            //            iconsPanel.add(p1);
+            JPanel p2 = new JPanel();
+            p2.setLayout(new BorderLayout());
+            p2.add(p1, BorderLayout.NORTH);
+            pp.add(p2);
+
+            nodeBtnMap.put(compo, nodeImageBtn);
             nodeBusinessMap.put(compo, nodebusiness);
           }
         }
@@ -423,6 +438,7 @@ public class SfDataFowPanel extends JPanel {
       JOptionPane.showMessageDialog(parentWindow, "创建图形面板出错！\n" + e.getMessage(), "错误", JOptionPane.ERROR_MESSAGE);
       parentWindow.dispose();
     }
+    iconsPanel.add(pp);
     return iconsPanel;
   }
 
@@ -431,29 +447,29 @@ public class SfDataFowPanel extends JPanel {
     JDragPanel headPanel = createHeadPanel();
     //创建图标panel
     JDragPanel flowPanel = createDataFowPanel();
-    
-    JTabbedPane jt=new JTabbedPane();
+
+    JTabbedPane jt = new JTabbedPane();
     jt.addTab("相关业务", flowPanel);
 
     JPanel panel = new JPanel();
-    panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "鉴定信息", TitledBorder.CENTER, TitledBorder.TOP, new Font("宋体",
-      Font.BOLD, 18), Color.BLUE));
+    panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "鉴定信息", TitledBorder.CENTER, TitledBorder.TOP, new Font(
+      "宋体", Font.BOLD, 18), Color.BLUE));
     panel.setLayout(new BorderLayout());
     panel.add(headPanel, BorderLayout.NORTH);
     panel.add(jt, BorderLayout.CENTER);
 
-    System.out.println(panel.getPreferredSize().width+" "+panel.getPreferredSize().height );
+    System.out.println(panel.getPreferredSize().width + " " + panel.getPreferredSize().height);
     //       tabPanel.addTabNotClose("全部", p);
-//    tabPanel.addTab("全部0", new JButton("hello0"));
+    //    tabPanel.addTab("全部0", new JButton("hello0"));
     tabPanel.addTabNotClose("全部", panel);
-//    tabPanel.addTab("全部1", new JButton("hello1"));
-//    tabPanel.addTab("全部2", new JButton("hello2"));
-//    tabPanel.addTab("全部3", new JButton("hello3"));
+    //    tabPanel.addTab("全部1", new JButton("hello1"));
+    //    tabPanel.addTab("全部2", new JButton("hello2"));
+    //    tabPanel.addTab("全部3", new JButton("hello3"));
 
     JTabbedPane tt = new JTabbedPane();
-//    tt.addTab("全部", panel);
-//    tt.addTab("全部2", new JButton("hello2"));
-//    tt.addTab("全部3", new JButton("hello3"));
+    //    tt.addTab("全部", panel);
+    //    tt.addTab("全部2", new JButton("hello2"));
+    //    tt.addTab("全部3", new JButton("hello3"));
 
     setLayout(new BorderLayout());
     add(tabPanel, BorderLayout.CENTER);
@@ -467,7 +483,6 @@ public class SfDataFowPanel extends JPanel {
     return parentWindow;
   }
 
-
   protected void updateFieldEditors() {
 
     for (AbstractFieldEditor editor : fieldEditors) {
@@ -478,6 +493,7 @@ public class SfDataFowPanel extends JPanel {
     }
 
   }
+
   public static void main(String[] args) {
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
@@ -487,7 +503,8 @@ public class SfDataFowPanel extends JPanel {
         } catch (Exception e) {
           e.printStackTrace();
         }
-        ISfEntrustServiceDelegate entrustService = (ISfEntrustServiceDelegate) ServiceFactory.create(ISfEntrustServiceDelegate.class, "sfEntrustServiceDelegate");
+        ISfEntrustServiceDelegate entrustService = (ISfEntrustServiceDelegate) ServiceFactory.create(ISfEntrustServiceDelegate.class,
+          "sfEntrustServiceDelegate");
         SfEntrust entrust = entrustService.selectByPrimaryKey(new BigDecimal(2), WorkEnv.getInstance().getRequestMeta());
         JComponent pane = new SfDataFowPanel(entrust);
         JFrame frame = new JFrame("frame");
@@ -499,15 +516,17 @@ public class SfDataFowPanel extends JPanel {
       }
     });
   }
-  public void refreshWordPanel(){
+
+  public void refreshWordPanel() {
     for (int i = 0; i < tabPanel.getTabCount(); i++) {
       JComponent c = (JComponent) tabPanel.getComponentAt(i);
       _refreshWord(c);
     }
   }
-  private void _refreshWord(JComponent c){
-    if(isWordPanel(c) && c instanceof AbstractMainSubEditPanel){
-      ((AbstractMainSubEditPanel)c).refreshWordPanel();
+
+  private void _refreshWord(JComponent c) {
+    if (isWordPanel(c) && c instanceof AbstractMainSubEditPanel) {
+      ((AbstractMainSubEditPanel) c).refreshWordPanel();
     }
   }
 }

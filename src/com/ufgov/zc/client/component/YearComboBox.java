@@ -122,16 +122,16 @@ public class YearComboBox extends JComboBoxEx {
 
   private List initDataList() {
     // TODO Auto-generated method stub
-    String beginYear=AsOptionMeta.getOptVal("SF_OPTION_BEGIN_YEAR");
-    int year=2010;
-    if(beginYear!=null && Integer.parseInt(beginYear)>0){
-      year=Integer.parseInt(beginYear);
+    String beginYear = AsOptionMeta.getOptVal("SF_OPTION_BEGIN_YEAR");
+    int year = 2010;
+    if (beginYear != null && Integer.parseInt(beginYear) > 0) {
+      year = Integer.parseInt(beginYear);
     }
-    int curYear=WorkEnv.getInstance().getTransNd();
-    for(int i=year;i<=curYear;i++){
-      AsVal val=new AsVal();
-      val.setVal(""+i);
-      val.setValId(""+i);
+    int curYear = WorkEnv.getInstance().getTransNd();
+    for (int i = year; i <= curYear; i++) {
+      AsVal val = new AsVal();
+      val.setVal("" + i);
+      val.setValId("" + i);
       dataList.add(val);
     }
     return dataList;
@@ -151,6 +151,9 @@ public class YearComboBox extends JComboBoxEx {
 
   public void setSelectedAsValByCode(String asValCode) {
 
+    if (asValCode == null) {
+      this.setSelectedItem(null);
+    }
     AsVal asVal = dataMap.get(asValCode);
 
     this.setSelectedItem(asVal);

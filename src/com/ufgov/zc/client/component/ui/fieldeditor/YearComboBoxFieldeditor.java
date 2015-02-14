@@ -48,9 +48,12 @@ public class YearComboBoxFieldeditor extends AbstractFieldEditor {
 
     } else if (value instanceof ZcBaseBill) {
 
-      int v = (Integer) BeanUtil.get(fieldName, value);
-
-      field.setSelectedAsValByCode("" + v);
+      Integer integerV = (Integer) BeanUtil.get(fieldName, value);
+      if (integerV != null) {
+        field.setSelectedAsValByCode("" + integerV.intValue());
+      } else {
+        field.setSelectedAsValByCode(null);
+      }
 
     }
   }

@@ -44,7 +44,7 @@ public class SfJdFeeNodeBusiness implements ISfFlowNodeBusiness {
     if (!isEnougthCondition(entrust)) {
       return false;
     }
-    if (SfUtil.haveFunc(compoId, entrust, SfElementConstants.FUNC_WATCH) || SfUtil.canNew(compoId, entrust)) {
+    if (SfUtil.haveFunc(compoId, entrust, SfElementConstants.FUNC_WATCH, meta) || SfUtil.canNew(compoId, entrust, meta)) {
       return true;
     }
     return false;

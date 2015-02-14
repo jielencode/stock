@@ -33,7 +33,7 @@ public class SfEvaluationNodeBusiness implements ISfFlowNodeBusiness {
     } else {
       List<SfEvaluation> evalst = getEvalution(entrust.getEntrustId(), meta);
       if (evalst == null || evalst.size() == 0) {
-        if (SfUtil.canNew(compoId, entrust)) {
+        if (SfUtil.canNew(compoId, entrust, meta)) {
           List<SfEvaluation> lst = new ArrayList<SfEvaluation>();
           ListCursor lstCursor = new ListCursor(lst, -1);
           SfEvaluation e = new SfEvaluation();
@@ -76,11 +76,11 @@ public class SfEvaluationNodeBusiness implements ISfFlowNodeBusiness {
     // TODO Auto-generated method stub
     List<SfEvaluation> evalst = getEvalution(entrust.getEntrustId(), meta);
     if (evalst != null && evalst.size() > 0) {
-      if (SfUtil.haveFunc(compoId, entrust, SfElementConstants.FUNC_WATCH)) {
+      if (SfUtil.haveFunc(compoId, entrust, SfElementConstants.FUNC_WATCH, meta)) {
         return true;
       }
     } else {
-      if (SfUtil.canNew(compoId, entrust)) {
+      if (SfUtil.canNew(compoId, entrust, meta)) {
         return true;
       }
     }

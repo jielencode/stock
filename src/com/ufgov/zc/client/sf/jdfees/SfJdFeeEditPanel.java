@@ -786,4 +786,7 @@ public class SfJdFeeEditPanel extends AbstractMainSubEditPanel {
 
   }
 
+  protected String getCompoId() {
+    return compoId;
+  }
 }

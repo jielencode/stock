@@ -8,11 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ufgov.zc.client.common.AsOptionMeta;
+import com.ufgov.zc.client.datacache.AsValDataCache;
 import com.ufgov.zc.client.sf.util.SfUtil;
 import com.ufgov.zc.client.util.freemark.StringUtil;
 import com.ufgov.zc.client.util.freemark.WordHandlerAdapter;
 import com.ufgov.zc.common.sf.model.SfEntrust;
 import com.ufgov.zc.common.sf.model.SfEntrustor;
+import com.ufgov.zc.common.sf.model.SfMajor;
 import com.ufgov.zc.common.sf.model.SfMaterials;
 import com.ufgov.zc.common.system.constants.SfElementConstants;
 
@@ -72,7 +74,8 @@ public class SfEntrustWordPrintHandler extends WordHandlerAdapter {
     dataMap.put("sjrtel", StringUtil.freeMarkFillWordChar(entrust.getSjrTel()));
     dataMap.put("sjraddress", StringUtil.freeMarkFillWordChar(entrust.getSjrAddress()));
     dataMap.put("wtmc", StringUtil.freeMarkFillWordChar(entrust.getName()));
-    dataMap.put("jdzy", StringUtil.freeMarkFillWordChar(entrust.getMajor() == null ? null : entrust.getMajor().getMajorName()));
+    dataMap.put("jdzy",
+      StringUtil.freeMarkFillWordChar(entrust.getMajor() == null ? null : AsValDataCache.getName(SfMajor.SF_VS_MAJOR, entrust.getMajorCode())));
     dataMap.put("slr", StringUtil.freeMarkFillWordChar(entrust.getAcceptorName()));
     dataMap.put("brief", StringUtil.freeMarkFillWordChar(entrust.getBrief()));
     StringBuffer sb = new StringBuffer();

@@ -52,7 +52,6 @@ import com.ufgov.zc.client.print.Printer;
 import com.ufgov.zc.client.sf.component.JClosableTabbedPane;
 import com.ufgov.zc.client.sf.dataflow.SfDataFlowDialog;
 import com.ufgov.zc.client.sf.dataflow.SfDataFlowUtil;
-import com.ufgov.zc.client.sf.util.SfUtil;
 import com.ufgov.zc.client.util.ListUtil;
 import com.ufgov.zc.client.zc.ZcUtil;
 import com.ufgov.zc.common.commonbiz.model.SearchCondition;
@@ -831,7 +830,7 @@ public class SfJdResultListPanel extends AbstractEditListBill implements ParentW
   }
 
   private void setButtonStatus() {
-    addButton.setVisible(SfUtil.canNew(compoId, null));
+    //    addButton.setVisible(SfUtil.canNew(compoId, null));
   }
 
   public String getcompoId() {

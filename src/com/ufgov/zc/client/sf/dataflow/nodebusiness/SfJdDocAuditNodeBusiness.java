@@ -92,11 +92,11 @@ public class SfJdDocAuditNodeBusiness implements ISfFlowNodeBusiness {
     }
     List evalst = getDataLst(entrust.getEntrustId(), meta);
     if (evalst != null && evalst.size() > 0) {
-      if (SfUtil.haveFunc(compoId, entrust, SfElementConstants.FUNC_WATCH)) {
+      if (SfUtil.haveFunc(compoId, entrust, SfElementConstants.FUNC_WATCH, meta)) {
         return true;
       }
     } else {
-      if (SfUtil.canNew(compoId, entrust)) {
+      if (SfUtil.canNew(compoId, entrust, meta)) {
         return true;
       }
     }

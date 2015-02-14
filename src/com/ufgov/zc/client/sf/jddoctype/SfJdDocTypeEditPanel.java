@@ -54,7 +54,7 @@ import com.ufgov.zc.common.system.util.DigestUtil;
 import com.ufgov.zc.common.system.util.ObjectUtil;
 import com.ufgov.zc.common.zc.publish.IZcEbBaseServiceDelegate;
 
-public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
+public class SfJdDocTypeEditPanel extends AbstractMainSubEditPanel {
 
   /**
    * 
@@ -119,23 +119,22 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
   private ArrayList<ButtonStatus> btnStatusList = new ArrayList<ButtonStatus>();
 
-  private BillElementMeta mainBillElementMeta ;
+  private BillElementMeta mainBillElementMeta;
 
   private ElementConditionDto eaccDto = new ElementConditionDto();
 
-  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate ;
-  
-  private ISfJdDocTypeServiceDelegate sfJdDocTypeServiceDelegate ;
-  
- public SfJdDocTypeEditPanel(SfJdDocTypeDialog parent, ListCursor listCursor, String tabStatus, SfJdDocTypeListPanel listPanel) {
+  protected IZcEbBaseServiceDelegate zcEbBaseServiceDelegate;
+
+  private ISfJdDocTypeServiceDelegate sfJdDocTypeServiceDelegate;
+
+  public SfJdDocTypeEditPanel(SfJdDocTypeDialog parent, ListCursor listCursor, String tabStatus, SfJdDocTypeListPanel listPanel) {
     // TODO Auto-generated constructor stub
     super(SfJdDocTypeEditPanel.class, BillElementMeta.getBillElementMetaWithoutNd(compoId));
-    
+
     mainBillElementMeta = BillElementMeta.getBillElementMetaWithoutNd(compoId);
-    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,"zcEbBaseServiceDelegate");
-    sfJdDocTypeServiceDelegate = (ISfJdDocTypeServiceDelegate) ServiceFactory.create(ISfJdDocTypeServiceDelegate.class,"sfJdDocTypeServiceDelegate");
-    
-    
+    zcEbBaseServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class, "zcEbBaseServiceDelegate");
+    sfJdDocTypeServiceDelegate = (ISfJdDocTypeServiceDelegate) ServiceFactory.create(ISfJdDocTypeServiceDelegate.class, "sfJdDocTypeServiceDelegate");
+
     this.workPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), LangTransMeta.translate(compoId),
       TitledBorder.CENTER, TitledBorder.TOP,
 
@@ -161,7 +160,8 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
     SfJdDocType jdDocType = (SfJdDocType) listCursor.getCurrentObject();
 
-    if (jdDocType != null &&( !"自动编号".equals(ZcUtil.safeString(jdDocType.getDocTypeCode()))||!"".equals(ZcUtil.safeString(jdDocType.getDocTypeCode())))) {//列表页面双击进入
+    if (jdDocType != null
+      && (!"自动编号".equals(ZcUtil.safeString(jdDocType.getDocTypeCode())) || !"".equals(ZcUtil.safeString(jdDocType.getDocTypeCode())))) {//列表页面双击进入
 
       this.pageStatus = ZcSettingConstants.PAGE_STATUS_BROWSE;
 
@@ -174,7 +174,7 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
       this.pageStatus = ZcSettingConstants.PAGE_STATUS_NEW;
 
       jdDocType = new SfJdDocType();
-      
+
       setDefaultValue(jdDocType);
 
       listCursor.getDataList().add(jdDocType);
@@ -192,27 +192,24 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
   }
 
-
   private void setDefaultValue(SfJdDocType jdDocType) {
     // TODO Auto-generated method stub
   }
 
   protected void updateFieldEditorsEditable() {
 
-      for (AbstractFieldEditor editor : fieldEditors) {
-        if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
-          if ("code".equals(editor.getFieldName())){
-            editor.setEnabled(false);            
-          }else{
-            editor.setEnabled(true);
-          }
+    for (AbstractFieldEditor editor : fieldEditors) {
+      if (pageStatus.equals(ZcSettingConstants.PAGE_STATUS_EDIT) || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_NEW)) {
+        if ("code".equals(editor.getFieldName())) {
+          editor.setEnabled(false);
         } else {
-          editor.setEnabled(false);            
+          editor.setEnabled(true);
         }
+      } else {
+        editor.setEnabled(false);
       }
+    }
   }
-
- 
 
   protected void setButtonStatus() {
     SfJdDocType jdDocType = (SfJdDocType) listCursor.getCurrentObject();
@@ -238,7 +235,7 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
       bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
 
-      bs.addBillStatus(ZcSettingConstants.WF_STATUS_DRAFT);
+      bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
 
       btnStatusList.add(bs);
 
@@ -339,7 +336,7 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
     }
 
     SfJdDocType jdDocType = (SfJdDocType) this.listCursor.getCurrentObject();
-     
+
     ZcUtil.setButtonEnable(this.btnStatusList, null, this.pageStatus, getCompoId(), jdDocType.getProcessInstId());
 
   }
@@ -349,9 +346,6 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
     oldJdDocType = (SfJdDocType) ObjectUtil.deepCopy(listCursor.getCurrentObject());
 
   }
-
- 
- 
 
   public String getCompoId() {
     // TODO Auto-generated method stub
@@ -373,34 +367,33 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
     toolBar.add(saveButton);
 
-//    toolBar.add(sendButton);
+    //    toolBar.add(sendButton);
 
-//    toolBar.add(saveAndSendButton);
+    //    toolBar.add(saveAndSendButton);
 
-//    toolBar.add(suggestPassButton);
+    //    toolBar.add(suggestPassButton);
 
-//    toolBar.add(sendGkButton);
+    //    toolBar.add(sendGkButton);
 
-//    toolBar.add(unAuditButton);
+    //    toolBar.add(unAuditButton);
 
-//    toolBar.add(unTreadButton);
+    //    toolBar.add(unTreadButton);
 
-//    toolBar.add(callbackButton);
+    //    toolBar.add(callbackButton);
 
     toolBar.add(deleteButton);
 
-//    toolBar.add(importButton);
+    //    toolBar.add(importButton);
 
-//    toolBar.add(printButton);
+    //    toolBar.add(printButton);
 
-//    toolBar.add(traceButton);
+    //    toolBar.add(traceButton);
 
-//    toolBar.add(previousButton);
+    //    toolBar.add(previousButton);
 
-//    toolBar.add(nextButton);
+    //    toolBar.add(nextButton);
 
     toolBar.add(exitButton);
-
 
     editButton.addActionListener(new ActionListener() {
 
@@ -411,8 +404,6 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
       }
 
     });
-
-
 
     previousButton.addActionListener(new ActionListener() {
 
@@ -466,10 +457,6 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
     });
 
-   
-
-
-
     unAuditButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -482,7 +469,6 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
     });
 
-  
     printButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -493,8 +479,6 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
     });
   }
-
- 
 
   protected void doPrevious() {
 
@@ -578,7 +562,7 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
       SfJdDocType inData = (SfJdDocType) this.listCursor.getCurrentObject();
 
-//      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
+      //      System.out.println("before=" + inData.getCoCode() + inData.getCoName());
 
       SfJdDocType jdDocType = sfJdDocTypeServiceDelegate.saveFN(inData, this.requestMeta);
 
@@ -626,11 +610,11 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
     List mainNotNullList = mainBillElementMeta.getNotNullBillElement();
     SfJdDocType jdDocType = (SfJdDocType) this.listCursor.getCurrentObject();
     StringBuilder errorInfo = new StringBuilder();
-    String mainValidateInfo = ZcUtil.validateBillElementNull(jdDocType, mainNotNullList);     
+    String mainValidateInfo = ZcUtil.validateBillElementNull(jdDocType, mainNotNullList);
     if (mainValidateInfo.length() != 0) {
       errorInfo.append("\n").append(mainValidateInfo.toString()).append("\n");
     }
-    
+
     if (errorInfo.length() != 0) {
       JOptionPane.showMessageDialog(this, errorInfo.toString(), "提示", JOptionPane.WARNING_MESSAGE);
       return false;
@@ -638,21 +622,17 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
     return true;
   }
 
- 
-
- 
-
   protected void doDelete() {
 
     requestMeta.setFuncId(deleteButton.getFuncId());
 
     SfJdDocType jdDocType = (SfJdDocType) this.listCursor.getCurrentObject();
-    ElementConditionDto dto=new ElementConditionDto();
+    ElementConditionDto dto = new ElementConditionDto();
     dto.setDattr1("isUsing");
-    List usingLst=zcEbBaseServiceDelegate.queryDataForList("com.ufgov.zc.server.sf.dao.SfJdDocTypeMapper.selectMainDataLst", dto, requestMeta);
+    List usingLst = zcEbBaseServiceDelegate.queryDataForList("com.ufgov.zc.server.sf.dao.SfJdDocTypeMapper.selectMainDataLst", dto, requestMeta);
 
-    if(usingLst!=null && usingLst.size()>0){
-      JOptionPane.showMessageDialog(this, "已经被使用，不能删除 ！\n" , "错误", JOptionPane.ERROR_MESSAGE);
+    if (usingLst != null && usingLst.size() > 0) {
+      JOptionPane.showMessageDialog(this, "已经被使用，不能删除 ！\n", "错误", JOptionPane.ERROR_MESSAGE);
       return;
     }
     int num = JOptionPane.showConfirmDialog(this, "是否删除当前单据", "删除确认", 0);
@@ -699,7 +679,6 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
   }
 
- 
   public boolean isDataChanged() {
 
     if (!this.saveButton.isVisible() || !saveButton.isEnabled()) {
@@ -709,7 +688,6 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
     return !DigestUtil.digest(oldJdDocType).equals(DigestUtil.digest(listCursor.getCurrentObject()));
 
   }
-
 
   private void doPrintButton() {
 
@@ -733,26 +711,23 @@ public class SfJdDocTypeEditPanel  extends AbstractMainSubEditPanel {
 
     List<AbstractFieldEditor> editorList = new ArrayList<AbstractFieldEditor>();
 
-
     AutoNumFieldEditor code = new AutoNumFieldEditor(LangTransMeta.translate(SfJdDocType.COL_DOC_TYPE_CODE), "docTypeCode");
     TextFieldEditor name = new TextFieldEditor(LangTransMeta.translate(SfJdDocType.COL_DOC_TYPE_NAME), "docTypeName");
 
     editorList.add(code);
     editorList.add(name);
-    
+
     return editorList;
 
   }
-
 
   /* (non-Javadoc)
    * @see com.ufgov.zc.client.component.zc.AbstractMainSubEditPanel#createSubBillPanel()
    */
   @Override
   public JComponent createSubBillPanel() {
-   return null;
+    return null;
   }
-
 
   public void doExit() {
     // TODO Auto-generated method stub
