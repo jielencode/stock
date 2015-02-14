@@ -51,12 +51,14 @@ public class SfUtil {
   static IZcEbBaseServiceDelegate baseDataServiceDelegate = (IZcEbBaseServiceDelegate) ServiceFactory.create(IZcEbBaseServiceDelegate.class,
     "zcEbBaseServiceDelegate");
 
-  static RequestMeta meta = WorkEnv.getInstance().getRequestMeta();
+  //  static RequestMeta meta = WorkEnv.getInstance().getRequestMeta();
 
   static List<HashMap<String, String>> userFuncs = new ArrayList<HashMap<String, String>>();
 
-  public static boolean canNew(String compoId) {
-    return canNew(compoId, null);
+  static HashMap<String, List> userCompoFuncCache = new HashMap<String, List>();
+
+  public static boolean canNew(String compoId, RequestMeta meta) {
+    return canNew(compoId, null, meta);
   }
 
   /**
@@ -65,16 +67,16 @@ public class SfUtil {
    * @param entrust
    * @return
    */
-  public static boolean canNew(String compoId, SfEntrust entrust) {
+  public static boolean canNew(String compoId, SfEntrust entrust, RequestMeta meta) {
     // TODO Auto-generated method stub
-    boolean rtn = haveFunc(compoId, entrust, SfElementConstants.FUNC_NEW);
+    boolean rtn = haveFunc(compoId, entrust, SfElementConstants.FUNC_NEW, meta);
     if (rtn)
       return rtn;
-    return haveFunc(compoId, entrust, SfElementConstants.FUNC_ADD);
+    return haveFunc(compoId, entrust, SfElementConstants.FUNC_ADD, meta);
   }
 
-  public static boolean haveFunc(String compoId, String func) {
-    return haveFunc(compoId, null, func);
+  public static boolean haveFunc(String compoId, String func, RequestMeta meta) {
+    return haveFunc(compoId, null, func, meta);
   }
 
   /**
@@ -84,39 +86,55 @@ public class SfUtil {
    * @param func
    * @return
    */
-  public static boolean haveFunc(String compoId, SfEntrust entrust, String func) {
+  public static boolean haveFunc(String compoId, SfEntrust entrust, String func, RequestMeta meta) {
+
+    return haveFunc(compoId, entrust, func, meta, "SF");
+  }
+
+  /**
+   * 判断当前用户对当前部件是否有对应权限
+   * @param compoId
+   * @param entrust
+   * @param func
+   * @param compoPreFix
+   * @return
+   */
+  public static boolean haveFunc(String compoId, SfEntrust entrust, String func, RequestMeta meta, String compoPreFix) {
     if (compoId == null || compoId.trim().length() == 0 || func == null || func.trim().length() == 0) {
       return false;
     }
     // TODO Auto-generated method stub
-    if (!haveInitCompoFunc(compoId)) {
+    String key = WorkEnv.getInstance().getToken();
+    if (!haveInitCompoFunc(key)) {
+      userCompoFuncCache.clear();
       ElementConditionDto dto = new ElementConditionDto();
       dto.setUserId(meta.getSvUserID());
-      dto.setCompoId(compoId);
+      //      dto.setCompoId(compoId);
+      dto.setDattr1(compoPreFix);
       List rtn = baseDataServiceDelegate.queryDataForList("com.ufgov.zc.server.sf.dao.SfEntrustMapper.selectUserFunc", dto, meta);
       if (rtn != null) {
-        userFuncs.addAll(rtn);
+        //        userFuncs.addAll(rtn);
+        userCompoFuncCache.put(key, rtn);
       }
     }
-    if (userFuncs == null)
+    List funcs = userCompoFuncCache.get(key);
+    if (funcs == null || funcs.size() == 0)
       return false;
-    for (HashMap<String, String> funcMap : userFuncs) {
-      if (funcMap.containsValue(func)) {
+    for (int i = 0; i < funcs.size(); i++) {
+      HashMap<String, String> funcMap = (HashMap<String, String>) funcs.get(i);
+      if (funcMap.containsValue(compoId) && funcMap.containsValue(func)) {
         return true;
       }
     }
     return false;
   }
 
-  private static boolean haveInitCompoFunc(String compoId) {
-    if (compoId == null || compoId.trim().length() == 0 || userFuncs == null || userFuncs.size() == 0)
+  private static boolean haveInitCompoFunc(String token) {
+    if (userCompoFuncCache == null || userCompoFuncCache.size() == 0)
       return false;
+    if (userCompoFuncCache.containsKey(token))
+      return true;
 
-    for (HashMap<String, String> funcMap : userFuncs) {
-      if (funcMap.containsValue(compoId)) {
-        return true;
-      }
-    }
     return false;
   }
 
