@@ -287,7 +287,6 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
           editor.setEnabled(false);
         }
       }
-
       //工作流中该节点选中了保存按钮可用，则当前状态当前人可用编辑
       if (saveButton.isVisible() && saveButton.isEnabled()) {
         isEdit = true;
