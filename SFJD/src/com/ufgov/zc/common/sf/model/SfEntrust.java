@@ -130,6 +130,8 @@ public class SfEntrust extends ZcBaseBill {
 
   private String sjrAddress;
 
+  private String jdTargetName;
+
   /**
    * 委托方
    */
@@ -1016,5 +1018,13 @@ public class SfEntrust extends ZcBaseBill {
 
   public void setJdChargeDetaillst(List jdChargeDetaillst) {
     this.jdChargeDetaillst = jdChargeDetaillst;
+  }
+
+  public String getJdTargetName() {
+    return getJdTarget().getName();
+  }
+
+  public void setJdTargetName(String jdTargetName) {
+    this.jdTargetName = jdTargetName;
   }
 }
