@@ -664,7 +664,7 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
     IWordHandler handler;
     if (SfJdResult.RESULT_TYPE_JYBG.equalsIgnoreCase(jdResult.getResultType())) {
       userData.put(IWordHandler.FILE_NAME, jdResult.getEntrust().getName() + "检验报告" + zfb);
-      handler = new SfJdReportWordHandler(printZb);
+      handler = new SfJdReport1WordHandler(printZb);
     } else {
       userData.put(IWordHandler.FILE_NAME, jdResult.getEntrust().getName() + "检验意见书" + zfb);
       handler = new SfJdReport2WordHandler(printZb);
