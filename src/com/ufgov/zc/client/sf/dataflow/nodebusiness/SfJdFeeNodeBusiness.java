@@ -32,7 +32,7 @@ public class SfJdFeeNodeBusiness implements ISfFlowNodeBusiness {
     if (component != null) {
       flowPanel.setSelectedTab(compoId);
     } else {
-      SfJdFeeMainPanel jdFeeMainPanel = new SfJdFeeMainPanel(entrust);
+      SfJdFeeMainPanel jdFeeMainPanel = new SfJdFeeMainPanel(entrust, true);
       flowPanel.addTab(jdFeeMainPanel, compoId);
       flowPanel.setSelectedTab(compoId);
     }

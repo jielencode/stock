@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -90,7 +91,7 @@ import com.ufgov.zc.common.zc.publish.IZcEbBaseServiceDelegate;
  * @author Administrator
  *
  */
-public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
+public class SfJdFeeMainPanel extends JComponent implements ParentWindowAware {
 
   /**
    * 
@@ -127,6 +128,8 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
 
   private FuncButton clearButton = new CommonButton("fclear", "清空", "clear.png");
 
+  private FuncButton showSearchBtn = new CommonButton("fshowsearch", "收费", "search.png");
+
   private FuncButton deleteButton = new DeleteButton();
 
   private FuncButton addButton = new AddButton();
@@ -147,6 +150,8 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
 
   private ArrayList<ButtonStatus> btnStatusList = new ArrayList<ButtonStatus>();
 
+  private boolean showSearchPanel = false;
+
   static {
 
     LangTransMeta.init("SF%");
@@ -157,8 +162,19 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
     init();
   }
 
+  public SfJdFeeMainPanel(boolean showSearchPanel) {
+    this.showSearchPanel = showSearchPanel;
+    init();
+  }
+
   public SfJdFeeMainPanel(SfEntrust entrust) {
     searchDto.setEntrust(entrust);
+    init();
+  }
+
+  public SfJdFeeMainPanel(SfEntrust entrust, boolean showSearchPanel) {
+    searchDto.setEntrust(entrust);
+    this.showSearchPanel = showSearchPanel;
     init();
   }
 
@@ -191,11 +207,39 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
     JPanel payPanel = initFeePanel();
     this.setLayout(new BorderLayout());
 
-    add(searchConditonPanel, BorderLayout.NORTH);
+    if (showSearchPanel) {
+      add(searchConditonPanel, BorderLayout.NORTH);
+      add(payPanel, BorderLayout.SOUTH);
+    } else {
+      JPanel p = new JPanel();
+      p.setLayout(new FlowLayout(SwingConstants.LEFT, 60, 5));
+      p.add(showSearchBtn);
+      showSearchBtn.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          // TODO Auto-generated method stub
+          doShowSearchBtn();
+        }
+      });
+      add(p, BorderLayout.NORTH);
+    }
     add(mainPanel, BorderLayout.CENTER);
-    add(payPanel, BorderLayout.SOUTH);
     Dimension d = SfUtil.getScreenSize();
     setPreferredSize(new Dimension(d.width - 100, d.height - 100));
+
+    onInitFinish();
+
+  }
+
+  protected void doShowSearchBtn() {
+    // TODO Auto-generated method stub
+    SfJdFeeBigWindowDialog dialog = new SfJdFeeBigWindowDialog(self);
+  }
+
+  public void onInitFinish() {
+
+    this.firePropertyChange("initfinish", 0, 1);
 
   }
 
@@ -818,7 +862,7 @@ public class SfJdFeeMainPanel extends JPanel implements ParentWindowAware {
           e.printStackTrace();
 
         }
-        SfJdFeeMainPanel bill = new SfJdFeeMainPanel();
+        SfJdFeeMainPanel bill = new SfJdFeeMainPanel(false);
 
         JFrame frame = new JFrame("frame");
 
