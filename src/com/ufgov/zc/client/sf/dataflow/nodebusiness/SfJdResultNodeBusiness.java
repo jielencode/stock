@@ -43,6 +43,8 @@ public class SfJdResultNodeBusiness implements ISfFlowNodeBusiness {
         r.setName(entrust.getName() + "鉴定结果");
         r.setBrief(entrust.getBrief());
         r.setJdr(entrust.getJdFzr());
+        r.setJdTarget(entrust.getJdTarget());
+        r.setEntrust(entrust);
         lstCursor.getDataList().add(r);
         lstCursor.setCurrentObject(r);
         SfJdResultEditPanel editPanel = new SfJdResultEditPanel(flowPanel.getParentDlg(), lstCursor, null, null);

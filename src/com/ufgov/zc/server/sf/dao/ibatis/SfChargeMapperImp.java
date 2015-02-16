@@ -5,45 +5,40 @@ import java.util.List;
 
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
-import com.ufgov.zc.common.sf.model.SfAgreement;
 import com.ufgov.zc.common.sf.model.SfCharge;
+import com.ufgov.zc.common.system.constants.NumLimConstants;
 import com.ufgov.zc.common.system.dto.ElementConditionDto;
 import com.ufgov.zc.server.sf.dao.SfChargeMapper;
+import com.ufgov.zc.server.system.util.NumLimUtil;
 
 public class SfChargeMapperImp extends SqlMapClientDaoSupport implements SfChargeMapper {
 
-  
   public int deleteByPrimaryKey(BigDecimal chargeId) {
     // TODO Auto-generated method stub
     return getSqlMapClientTemplate().delete("com.ufgov.zc.server.sf.dao.SfChargeMapper.deleteByPrimaryKey", chargeId);
   }
 
-  
   public int insert(SfCharge record) {
     // TODO Auto-generated method stub
     getSqlMapClientTemplate().insert("com.ufgov.zc.server.sf.dao.SfChargeMapper.insert", record);
     return 1;
   }
 
-  
   public int insertSelective(SfCharge record) {
     // TODO Auto-generated method stub
     return 0;
   }
 
-  
   public SfCharge selectByPrimaryKey(BigDecimal chargeId) {
     // TODO Auto-generated method stub
     return (SfCharge) getSqlMapClientTemplate().queryForObject("com.ufgov.zc.server.sf.dao.SfChargeMapper.selectByPrimaryKey", chargeId);
   }
 
-  
   public int updateByPrimaryKeySelective(SfCharge record) {
     // TODO Auto-generated method stub
     return 0;
   }
 
-  
   public int updateByPrimaryKey(SfCharge record) {
     // TODO Auto-generated method stub
     return getSqlMapClientTemplate().update("com.ufgov.zc.server.sf.dao.SfChargeMapper.updateByPrimaryKey", record);
@@ -51,7 +46,9 @@ public class SfChargeMapperImp extends SqlMapClientDaoSupport implements SfCharg
 
   public List getMainDataLst(ElementConditionDto elementConditionDto) {
     // TODO Auto-generated method stub
-    return getSqlMapClientTemplate().queryForList("com.ufgov.zc.server.sf.dao.SfChargeMapper.selectMainDataLst",elementConditionDto);
+    elementConditionDto.setNumLimitStr(NumLimUtil.getInstance().getNumLimCondByCoType(elementConditionDto.getWfcompoId(), NumLimConstants.FWATCH));
+
+    return getSqlMapClientTemplate().queryForList("com.ufgov.zc.server.sf.dao.SfChargeMapper.selectMainDataLst", elementConditionDto);
   }
 
 }

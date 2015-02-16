@@ -9,8 +9,10 @@ import java.util.List;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.ufgov.zc.common.sf.model.SfEntrust;
+import com.ufgov.zc.common.system.constants.NumLimConstants;
 import com.ufgov.zc.common.system.dto.ElementConditionDto;
 import com.ufgov.zc.server.sf.dao.SfEntrustMapper;
+import com.ufgov.zc.server.system.util.NumLimUtil;
 
 /**
  * @author Administrator
@@ -75,6 +77,9 @@ public class SfEntrustMapperImp extends SqlMapClientDaoSupport implements SfEntr
 
   public List getEntrustLst(ElementConditionDto dto) {
     // TODO Auto-generated method stub
+
+    dto.setNumLimitStr(NumLimUtil.getInstance().getNumLimCondByCoType(dto.getWfcompoId(), NumLimConstants.FWATCH));
+
     return getSqlMapClientTemplate().queryForList("com.ufgov.zc.server.sf.dao.SfEntrustMapper.selectEntrustLst", dto);
   }
 

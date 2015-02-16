@@ -201,6 +201,7 @@ public class SfEntrustListPanel extends AbstractEditListBill implements ParentWi
               List viewList = (List) ObjectUtil.deepCopy(ListUtil.convertToTableViewOrderList(model.getList(), table));
 
               SfEntrust entrust = (SfEntrust) viewList.get(row);
+              entrust = sfEntrustServiceDelegate.selectByPrimaryKey(entrust.getEntrustId(), requestMeta);
               new SfDataFlowDialog(compoId, entrust, self);
 
             }

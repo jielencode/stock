@@ -703,6 +703,8 @@ public class SfJdResult extends ZcBaseBill {
   }
 
   public SfJdTarget getJdTarget() {
+    if (getEntrust() != null)
+      return getEntrust().getJdTarget();
     return jdTarget;
   }
 

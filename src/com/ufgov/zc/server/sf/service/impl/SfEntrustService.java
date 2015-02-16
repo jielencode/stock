@@ -247,6 +247,7 @@ public class SfEntrustService implements ISfEntrustService {
 
   public SfEntrust newCommitFN(SfEntrust qx, RequestMeta requestMeta) {
     // TODO Auto-generated method stub
+    qx = saveFN(qx, requestMeta);
     wfEngineAdapter.newCommit(qx.getComment(), qx, requestMeta);
     return selectByPrimaryKey(qx.getEntrustId(), requestMeta);
   }

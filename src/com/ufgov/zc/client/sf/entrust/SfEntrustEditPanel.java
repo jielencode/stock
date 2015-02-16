@@ -62,7 +62,6 @@ import com.ufgov.zc.client.component.button.NextButton;
 import com.ufgov.zc.client.component.button.PreviousButton;
 import com.ufgov.zc.client.component.button.PrintButton;
 import com.ufgov.zc.client.component.button.SaveButton;
-import com.ufgov.zc.client.component.button.SaveSendButton;
 import com.ufgov.zc.client.component.button.SendButton;
 import com.ufgov.zc.client.component.button.SendGkButton;
 import com.ufgov.zc.client.component.button.SubaddButton;
@@ -158,8 +157,6 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
 
   private FuncButton exitButton = new ExitButton();
 
-  private FuncButton saveAndSendButton = new SaveSendButton();
-
   protected FuncButton sendButton = new SendButton();
 
   public FuncButton printWtButton = new PrintButton();
@@ -194,8 +191,6 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
 
   private BillElementMeta mainBillElementMeta = BillElementMeta.getBillElementMetaWithoutNd(compoId);
 
-  private ElementConditionDto eaccDto = new ElementConditionDto();
-
   protected JTablePanel materialsTablePanel = new JTablePanel();
 
   protected JTablePanel jdChargeTablePanel = new JTablePanel();
@@ -223,6 +218,8 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
   private TextFieldEditor jdDocSendTypeFz;
 
   private Hashtable<BigDecimal, JComponent> xysxComponents = new Hashtable<BigDecimal, JComponent>();// 协议事项部件
+
+  final ElementConditionDto majorPersonDto = new ElementConditionDto();
 
   public SfEntrustEditPanel(GkBaseDialog parent, ListCursor listCursor, String tabStatus, SfEntrustListPanel listPanel) {
     // TODO Auto-generated constructor stub
@@ -861,13 +858,13 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
     SfEntrust entrust = (SfEntrust) this.listCursor.getCurrentObject();
     XysxPanelUtil.getValue(entrust, xysxComponents);
 
-    if (!isDataChanged()) {
+    /* if (!isDataChanged()) {
 
-      JOptionPane.showMessageDialog(this, "数据没有发生改变，不用保存.", "提示", JOptionPane.INFORMATION_MESSAGE);
+       JOptionPane.showMessageDialog(this, "数据没有发生改变，不用保存.", "提示", JOptionPane.INFORMATION_MESSAGE);
 
-      return true;
+       return true;
 
-    }
+     }*/
 
     if (!checkBeforeSave()) {
 
@@ -1107,11 +1104,10 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
     TextFieldEditor sjrZjCode = new TextFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR_ZJ_CODE), "sjrZjCode");
     TextAreaFieldEditor sjrAddress = new TextAreaFieldEditor(LangTransMeta.translate(SfEntrust.COL_SJR_ADDRESS), "sjrAddress", -1, 1, 5);
 
-    final ElementConditionDto majorPersonDto = new ElementConditionDto();
     AsValFieldEditor majorCode = new AsValFieldEditor(LangTransMeta.translate(SfEntrust.COL_MAJOR_NAME), "majorCode", "SF_VS_MAJOR") {
       @Override
       protected void afterChange(AsValComboBox field) {
-        if (field.getSelectedAsVal() == null || pageStatus.equals(ZcSettingConstants.PAGE_STATUS_BROWSE)) {
+        if (field.getSelectedAsVal() == null) {
           majorPersonDto.setDattr1(null);
           return;
         }
@@ -1820,17 +1816,17 @@ public class SfEntrustEditPanel extends AbstractMainSubEditPanel {
     SfEntrust bill = this.listCursor.getCurrentObject();
     XysxPanelUtil.getValue(bill, xysxComponents);
 
-    if (bill.getJdFzr() == null) {
-      JOptionPane.showMessageDialog(this, "请指定鉴定负责人.", "提示", JOptionPane.INFORMATION_MESSAGE);
-      return;
-    }
+    /* if (bill.getJdFzr() == null) {
+       JOptionPane.showMessageDialog(this, "请指定鉴定负责人.", "提示", JOptionPane.INFORMATION_MESSAGE);
+       return;
+     }*/
 
     SfEntrust afterSaveBill = null;
 
-    if (this.isDataChanged()) {
-      JOptionPane.showMessageDialog(this, "数据发生改变，请先保存.", "提示", JOptionPane.INFORMATION_MESSAGE);
-      return;
-    }
+    /* if (this.isDataChanged()) {
+       JOptionPane.showMessageDialog(this, "数据发生改变，请先保存.", "提示", JOptionPane.INFORMATION_MESSAGE);
+       return;
+     }*/
 
     try {
       requestMeta.setFuncId(this.sendButton.getFuncId());
