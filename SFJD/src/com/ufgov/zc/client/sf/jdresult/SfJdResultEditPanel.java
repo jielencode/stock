@@ -410,6 +410,8 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
 
       bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
 
+      btnStatusList.add(bs);
+
       bs = new ButtonStatus();
 
       bs.setButton(this.printButton);
@@ -418,6 +420,8 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
 
       bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
 
+      btnStatusList.add(bs);
+
       bs = new ButtonStatus();
 
       bs.setButton(this.printZbButton);
@@ -425,6 +429,8 @@ public class SfJdResultEditPanel extends AbstractMainSubEditPanel {
       bs.addPageStatus(ZcSettingConstants.PAGE_STATUS_BROWSE);
 
       bs.addBillStatus(ZcSettingConstants.BILL_STATUS_ALL);
+
+      btnStatusList.add(bs);
 
       bs = new ButtonStatus();
 

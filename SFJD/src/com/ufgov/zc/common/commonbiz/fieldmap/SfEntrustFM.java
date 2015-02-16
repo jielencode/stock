@@ -22,8 +22,8 @@ public class SfEntrustFM {
     fieldMap.put("IS_ACCEPT", "isAccept");
     fieldMap.put("IS_CXJD", "isCxjd");
     fieldMap.put("JD_COMPANY", "jdCompany");
-    fieldMap.put("JD_FZR", "jdFzr");
-    fieldMap.put("JD_FHR", "jdFhr");
+    fieldMap.put("JD_FZR", "jdFzrName");
+    fieldMap.put("JD_FHR", "jdFhrName");
     fieldMap.put("JD_HISTORY", "jdHistory");
     fieldMap.put("JD_ORG", "jdOrg");
     fieldMap.put("JD_REQUIRE", "jdRequire");
