@@ -161,10 +161,10 @@
 		   	</isNotNull>	   		   	
 	   		<isNotNull prepend="AND" property="isPay">	
 				<isEqual property="isPay" compareValue="Y">
-					<![CDATA[TP.TOTAL_FEE<=PAY.PAYED_FEE]]>
+					<![CDATA[nvl(TP.TOTAL_FEE,0)<=nvl(PAY.PAYED_FEE,0)]]>
 				</isEqual>  
 	   			<isEqual property="isPay" compareValue="N">
-	   				<![CDATA[TP.TOTAL_FEE>PAY.PAYED_FEE]]>
+	   				<![CDATA[nvl(TP.TOTAL_FEE,0)>nvl(PAY.PAYED_FEE,0)]]>
 	   			</isEqual>
 	   		</isNotNull> 
 		   	<isNotNull prepend="AND" property="major.majorCode">
