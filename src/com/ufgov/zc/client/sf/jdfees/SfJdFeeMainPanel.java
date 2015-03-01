@@ -653,7 +653,7 @@ public class SfJdFeeMainPanel extends JComponent implements ParentWindowAware {
     }
     this.currentEntrustFee.setPayedFeeslst(payedFeeLst == null ? new ArrayList() : payedFeeLst);
     payFeeTable.setModel(SfChargeToTableModelConverter.convertPayFeesTableData(this.currentEntrustFee.getPayedFeeslst()));
-    payFeeTable.fitColumnsWidth();
+    //    payFeeTable.fitColumnsWidth();
     for (int i = 0; i < payFeeTable.getColumnModel().getColumnCount(); i++) {
       payFeeTable.getColumnModel().getColumn(i).setPreferredWidth(100);
     }
